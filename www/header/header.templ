@@ -1,0 +1,31 @@
+package header
+
+templ Header() {
+    <header>
+        <hgroup>
+            <h1>DanWolf.net</h1>
+            <h2>Hi. I'm Dan. I like to write Go, Python, C#, Typescript, and SQL, but most of all I enjoy solving interesting problems.</h2>
+        </hgroup>
+        <nav>
+            <ul>
+                <li><a href="/">home</a></li>
+                <li>blog</li>
+            </ul>
+            <ul>
+                <li role="list" dir="rtl">
+                    <a href="#" aria-haspopup="listbox">login</a>
+                    <ul role="listbox">
+                        <li>
+                            <form dir="ltr">
+                                <input type="email" id="email" name="email"
+                                       class="login-email" placeholder="email" required/>
+                                <small>powered by Keypasser</small>
+                                <button type="submit">go</button>
+                            </form>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+    </header>
+}

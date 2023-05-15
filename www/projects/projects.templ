@@ -1,0 +1,15 @@
+package projects
+
+templ ProjectCard(project Project) {
+    <article>
+        <h3>{ project.Name }</h3>
+        <p>{ project.Description }</p>
+        <p><a href={ templ.URL("/projects/" + project.Slug) }>let's go!</a></p>
+    </article>
+}
+
+templ ProjectsViewer(projects []Project) {
+    for _, project := range projects {
+        @ProjectCard(project)
+    }
+}

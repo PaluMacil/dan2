@@ -1,0 +1,18 @@
+.login-email {
+    min-width: 12em;
+}
+
+.thirds-parent {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: 1fr;
+    grid-column-gap: 40px;
+    grid-row-gap: 0;
+}
+
+.left-two-thirds { grid-area: 1 / 1 / 2 / 3; }
+.right-third { grid-area: 1 / 3 / 2 / 4; }
+
+main {
+    padding-top: 0;
+}

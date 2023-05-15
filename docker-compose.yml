@@ -1,0 +1,19 @@
+version: "3.9"
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=dev
+      - POSTGRES_DB=dan2
+      - POSTGRES_USER=dev
+      - DAN2_TEST_DB_HOST=db # this would be moved to the app
+    volumes:
+      - ./data/pg:/var/lib/postgresql
+    ports:
+      - "5400:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "--dbname=dan2", "--port=5432", "--username=dev"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
