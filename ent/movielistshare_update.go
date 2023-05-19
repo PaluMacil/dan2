@@ -58,34 +58,42 @@ func (mlsu *MovieListShareUpdate) SetNillableCreatedAt(t *time.Time) *MovieListS
 	return mlsu
 }
 
-// AddUserIDs adds the "user" edge to the User entity by IDs.
-func (mlsu *MovieListShareUpdate) AddUserIDs(ids ...int) *MovieListShareUpdate {
-	mlsu.mutation.AddUserIDs(ids...)
+// SetUserID sets the "user" edge to the User entity by ID.
+func (mlsu *MovieListShareUpdate) SetUserID(id int) *MovieListShareUpdate {
+	mlsu.mutation.SetUserID(id)
 	return mlsu
 }
 
-// AddUser adds the "user" edges to the User entity.
-func (mlsu *MovieListShareUpdate) AddUser(u ...*User) *MovieListShareUpdate {
-	ids := make([]int, len(u))
-	for i := range u {
-		ids[i] = u[i].ID
+// SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
+func (mlsu *MovieListShareUpdate) SetNillableUserID(id *int) *MovieListShareUpdate {
+	if id != nil {
+		mlsu = mlsu.SetUserID(*id)
 	}
-	return mlsu.AddUserIDs(ids...)
-}
-
-// AddMovieListIDs adds the "movie_list" edge to the MovieList entity by IDs.
-func (mlsu *MovieListShareUpdate) AddMovieListIDs(ids ...int) *MovieListShareUpdate {
-	mlsu.mutation.AddMovieListIDs(ids...)
 	return mlsu
 }
 
-// AddMovieList adds the "movie_list" edges to the MovieList entity.
-func (mlsu *MovieListShareUpdate) AddMovieList(m ...*MovieList) *MovieListShareUpdate {
-	ids := make([]int, len(m))
-	for i := range m {
-		ids[i] = m[i].ID
+// SetUser sets the "user" edge to the User entity.
+func (mlsu *MovieListShareUpdate) SetUser(u *User) *MovieListShareUpdate {
+	return mlsu.SetUserID(u.ID)
+}
+
+// SetMovieListID sets the "movie_list" edge to the MovieList entity by ID.
+func (mlsu *MovieListShareUpdate) SetMovieListID(id int) *MovieListShareUpdate {
+	mlsu.mutation.SetMovieListID(id)
+	return mlsu
+}
+
+// SetNillableMovieListID sets the "movie_list" edge to the MovieList entity by ID if the given value is not nil.
+func (mlsu *MovieListShareUpdate) SetNillableMovieListID(id *int) *MovieListShareUpdate {
+	if id != nil {
+		mlsu = mlsu.SetMovieListID(*id)
 	}
-	return mlsu.AddMovieListIDs(ids...)
+	return mlsu
+}
+
+// SetMovieList sets the "movie_list" edge to the MovieList entity.
+func (mlsu *MovieListShareUpdate) SetMovieList(m *MovieList) *MovieListShareUpdate {
+	return mlsu.SetMovieListID(m.ID)
 }
 
 // Mutation returns the MovieListShareMutation object of the builder.
@@ -93,46 +101,16 @@ func (mlsu *MovieListShareUpdate) Mutation() *MovieListShareMutation {
 	return mlsu.mutation
 }
 
-// ClearUser clears all "user" edges to the User entity.
+// ClearUser clears the "user" edge to the User entity.
 func (mlsu *MovieListShareUpdate) ClearUser() *MovieListShareUpdate {
 	mlsu.mutation.ClearUser()
 	return mlsu
 }
 
-// RemoveUserIDs removes the "user" edge to User entities by IDs.
-func (mlsu *MovieListShareUpdate) RemoveUserIDs(ids ...int) *MovieListShareUpdate {
-	mlsu.mutation.RemoveUserIDs(ids...)
-	return mlsu
-}
-
-// RemoveUser removes "user" edges to User entities.
-func (mlsu *MovieListShareUpdate) RemoveUser(u ...*User) *MovieListShareUpdate {
-	ids := make([]int, len(u))
-	for i := range u {
-		ids[i] = u[i].ID
-	}
-	return mlsu.RemoveUserIDs(ids...)
-}
-
-// ClearMovieList clears all "movie_list" edges to the MovieList entity.
+// ClearMovieList clears the "movie_list" edge to the MovieList entity.
 func (mlsu *MovieListShareUpdate) ClearMovieList() *MovieListShareUpdate {
 	mlsu.mutation.ClearMovieList()
 	return mlsu
-}
-
-// RemoveMovieListIDs removes the "movie_list" edge to MovieList entities by IDs.
-func (mlsu *MovieListShareUpdate) RemoveMovieListIDs(ids ...int) *MovieListShareUpdate {
-	mlsu.mutation.RemoveMovieListIDs(ids...)
-	return mlsu
-}
-
-// RemoveMovieList removes "movie_list" edges to MovieList entities.
-func (mlsu *MovieListShareUpdate) RemoveMovieList(m ...*MovieList) *MovieListShareUpdate {
-	ids := make([]int, len(m))
-	for i := range m {
-		ids[i] = m[i].ID
-	}
-	return mlsu.RemoveMovieListIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -179,39 +157,23 @@ func (mlsu *MovieListShareUpdate) sqlSave(ctx context.Context) (n int, err error
 	}
 	if mlsu.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   movielistshare.UserTable,
-			Columns: movielistshare.UserPrimaryKey,
+			Columns: []string{movielistshare.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
 			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := mlsu.mutation.RemovedUserIDs(); len(nodes) > 0 && !mlsu.mutation.UserCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   movielistshare.UserTable,
-			Columns: movielistshare.UserPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := mlsu.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   movielistshare.UserTable,
-			Columns: movielistshare.UserPrimaryKey,
+			Columns: []string{movielistshare.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
@@ -224,39 +186,23 @@ func (mlsu *MovieListShareUpdate) sqlSave(ctx context.Context) (n int, err error
 	}
 	if mlsu.mutation.MovieListCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   movielistshare.MovieListTable,
-			Columns: movielistshare.MovieListPrimaryKey,
+			Columns: []string{movielistshare.MovieListColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(movielist.FieldID, field.TypeInt),
 			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := mlsu.mutation.RemovedMovieListIDs(); len(nodes) > 0 && !mlsu.mutation.MovieListCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   movielistshare.MovieListTable,
-			Columns: movielistshare.MovieListPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(movielist.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := mlsu.mutation.MovieListIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   movielistshare.MovieListTable,
-			Columns: movielistshare.MovieListPrimaryKey,
+			Columns: []string{movielistshare.MovieListColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(movielist.FieldID, field.TypeInt),
@@ -315,34 +261,42 @@ func (mlsuo *MovieListShareUpdateOne) SetNillableCreatedAt(t *time.Time) *MovieL
 	return mlsuo
 }
 
-// AddUserIDs adds the "user" edge to the User entity by IDs.
-func (mlsuo *MovieListShareUpdateOne) AddUserIDs(ids ...int) *MovieListShareUpdateOne {
-	mlsuo.mutation.AddUserIDs(ids...)
+// SetUserID sets the "user" edge to the User entity by ID.
+func (mlsuo *MovieListShareUpdateOne) SetUserID(id int) *MovieListShareUpdateOne {
+	mlsuo.mutation.SetUserID(id)
 	return mlsuo
 }
 
-// AddUser adds the "user" edges to the User entity.
-func (mlsuo *MovieListShareUpdateOne) AddUser(u ...*User) *MovieListShareUpdateOne {
-	ids := make([]int, len(u))
-	for i := range u {
-		ids[i] = u[i].ID
+// SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
+func (mlsuo *MovieListShareUpdateOne) SetNillableUserID(id *int) *MovieListShareUpdateOne {
+	if id != nil {
+		mlsuo = mlsuo.SetUserID(*id)
 	}
-	return mlsuo.AddUserIDs(ids...)
-}
-
-// AddMovieListIDs adds the "movie_list" edge to the MovieList entity by IDs.
-func (mlsuo *MovieListShareUpdateOne) AddMovieListIDs(ids ...int) *MovieListShareUpdateOne {
-	mlsuo.mutation.AddMovieListIDs(ids...)
 	return mlsuo
 }
 
-// AddMovieList adds the "movie_list" edges to the MovieList entity.
-func (mlsuo *MovieListShareUpdateOne) AddMovieList(m ...*MovieList) *MovieListShareUpdateOne {
-	ids := make([]int, len(m))
-	for i := range m {
-		ids[i] = m[i].ID
+// SetUser sets the "user" edge to the User entity.
+func (mlsuo *MovieListShareUpdateOne) SetUser(u *User) *MovieListShareUpdateOne {
+	return mlsuo.SetUserID(u.ID)
+}
+
+// SetMovieListID sets the "movie_list" edge to the MovieList entity by ID.
+func (mlsuo *MovieListShareUpdateOne) SetMovieListID(id int) *MovieListShareUpdateOne {
+	mlsuo.mutation.SetMovieListID(id)
+	return mlsuo
+}
+
+// SetNillableMovieListID sets the "movie_list" edge to the MovieList entity by ID if the given value is not nil.
+func (mlsuo *MovieListShareUpdateOne) SetNillableMovieListID(id *int) *MovieListShareUpdateOne {
+	if id != nil {
+		mlsuo = mlsuo.SetMovieListID(*id)
 	}
-	return mlsuo.AddMovieListIDs(ids...)
+	return mlsuo
+}
+
+// SetMovieList sets the "movie_list" edge to the MovieList entity.
+func (mlsuo *MovieListShareUpdateOne) SetMovieList(m *MovieList) *MovieListShareUpdateOne {
+	return mlsuo.SetMovieListID(m.ID)
 }
 
 // Mutation returns the MovieListShareMutation object of the builder.
@@ -350,46 +304,16 @@ func (mlsuo *MovieListShareUpdateOne) Mutation() *MovieListShareMutation {
 	return mlsuo.mutation
 }
 
-// ClearUser clears all "user" edges to the User entity.
+// ClearUser clears the "user" edge to the User entity.
 func (mlsuo *MovieListShareUpdateOne) ClearUser() *MovieListShareUpdateOne {
 	mlsuo.mutation.ClearUser()
 	return mlsuo
 }
 
-// RemoveUserIDs removes the "user" edge to User entities by IDs.
-func (mlsuo *MovieListShareUpdateOne) RemoveUserIDs(ids ...int) *MovieListShareUpdateOne {
-	mlsuo.mutation.RemoveUserIDs(ids...)
-	return mlsuo
-}
-
-// RemoveUser removes "user" edges to User entities.
-func (mlsuo *MovieListShareUpdateOne) RemoveUser(u ...*User) *MovieListShareUpdateOne {
-	ids := make([]int, len(u))
-	for i := range u {
-		ids[i] = u[i].ID
-	}
-	return mlsuo.RemoveUserIDs(ids...)
-}
-
-// ClearMovieList clears all "movie_list" edges to the MovieList entity.
+// ClearMovieList clears the "movie_list" edge to the MovieList entity.
 func (mlsuo *MovieListShareUpdateOne) ClearMovieList() *MovieListShareUpdateOne {
 	mlsuo.mutation.ClearMovieList()
 	return mlsuo
-}
-
-// RemoveMovieListIDs removes the "movie_list" edge to MovieList entities by IDs.
-func (mlsuo *MovieListShareUpdateOne) RemoveMovieListIDs(ids ...int) *MovieListShareUpdateOne {
-	mlsuo.mutation.RemoveMovieListIDs(ids...)
-	return mlsuo
-}
-
-// RemoveMovieList removes "movie_list" edges to MovieList entities.
-func (mlsuo *MovieListShareUpdateOne) RemoveMovieList(m ...*MovieList) *MovieListShareUpdateOne {
-	ids := make([]int, len(m))
-	for i := range m {
-		ids[i] = m[i].ID
-	}
-	return mlsuo.RemoveMovieListIDs(ids...)
 }
 
 // Where appends a list predicates to the MovieListShareUpdate builder.
@@ -466,39 +390,23 @@ func (mlsuo *MovieListShareUpdateOne) sqlSave(ctx context.Context) (_node *Movie
 	}
 	if mlsuo.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   movielistshare.UserTable,
-			Columns: movielistshare.UserPrimaryKey,
+			Columns: []string{movielistshare.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
 			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := mlsuo.mutation.RemovedUserIDs(); len(nodes) > 0 && !mlsuo.mutation.UserCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   movielistshare.UserTable,
-			Columns: movielistshare.UserPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := mlsuo.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   movielistshare.UserTable,
-			Columns: movielistshare.UserPrimaryKey,
+			Columns: []string{movielistshare.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
@@ -511,39 +419,23 @@ func (mlsuo *MovieListShareUpdateOne) sqlSave(ctx context.Context) (_node *Movie
 	}
 	if mlsuo.mutation.MovieListCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   movielistshare.MovieListTable,
-			Columns: movielistshare.MovieListPrimaryKey,
+			Columns: []string{movielistshare.MovieListColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(movielist.FieldID, field.TypeInt),
 			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := mlsuo.mutation.RemovedMovieListIDs(); len(nodes) > 0 && !mlsuo.mutation.MovieListCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   movielistshare.MovieListTable,
-			Columns: movielistshare.MovieListPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(movielist.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := mlsuo.mutation.MovieListIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   movielistshare.MovieListTable,
-			Columns: movielistshare.MovieListPrimaryKey,
+			Columns: []string{movielistshare.MovieListColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(movielist.FieldID, field.TypeInt),

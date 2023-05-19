@@ -94,19 +94,23 @@ func (mlc *MovieListCreate) AddMovies(m ...*Movie) *MovieListCreate {
 	return mlc.AddMovieIDs(ids...)
 }
 
-// AddOwnerIDs adds the "owner" edge to the User entity by IDs.
-func (mlc *MovieListCreate) AddOwnerIDs(ids ...int) *MovieListCreate {
-	mlc.mutation.AddOwnerIDs(ids...)
+// SetOwnerID sets the "owner" edge to the User entity by ID.
+func (mlc *MovieListCreate) SetOwnerID(id int) *MovieListCreate {
+	mlc.mutation.SetOwnerID(id)
 	return mlc
 }
 
-// AddOwner adds the "owner" edges to the User entity.
-func (mlc *MovieListCreate) AddOwner(u ...*User) *MovieListCreate {
-	ids := make([]int, len(u))
-	for i := range u {
-		ids[i] = u[i].ID
+// SetNillableOwnerID sets the "owner" edge to the User entity by ID if the given value is not nil.
+func (mlc *MovieListCreate) SetNillableOwnerID(id *int) *MovieListCreate {
+	if id != nil {
+		mlc = mlc.SetOwnerID(*id)
 	}
-	return mlc.AddOwnerIDs(ids...)
+	return mlc
+}
+
+// SetOwner sets the "owner" edge to the User entity.
+func (mlc *MovieListCreate) SetOwner(u *User) *MovieListCreate {
+	return mlc.SetOwnerID(u.ID)
 }
 
 // AddMovieListShareIDs adds the "movie_list_shares" edge to the MovieListShare entity by IDs.
@@ -235,10 +239,10 @@ func (mlc *MovieListCreate) createSpec() (*MovieList, *sqlgraph.CreateSpec) {
 	}
 	if nodes := mlc.mutation.MoviesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   movielist.MoviesTable,
-			Columns: movielist.MoviesPrimaryKey,
+			Columns: []string{movielist.MoviesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(movie.FieldID, field.TypeInt),
@@ -251,10 +255,10 @@ func (mlc *MovieListCreate) createSpec() (*MovieList, *sqlgraph.CreateSpec) {
 	}
 	if nodes := mlc.mutation.OwnerIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   movielist.OwnerTable,
-			Columns: movielist.OwnerPrimaryKey,
+			Columns: []string{movielist.OwnerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
@@ -263,14 +267,15 @@ func (mlc *MovieListCreate) createSpec() (*MovieList, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
+		_node.user_movie_lists = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := mlc.mutation.MovieListSharesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   movielist.MovieListSharesTable,
-			Columns: movielist.MovieListSharesPrimaryKey,
+			Columns: []string{movielist.MovieListSharesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(movielistshare.FieldID, field.TypeInt),

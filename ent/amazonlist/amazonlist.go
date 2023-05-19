@@ -24,21 +24,25 @@ const (
 	EdgeAmazonShares = "amazon_shares"
 	// Table holds the table name of the amazonlist in the database.
 	Table = "amazon_lists"
-	// AmazonOrdersTable is the table that holds the amazon_orders relation/edge. The primary key declared below.
-	AmazonOrdersTable = "amazon_list_amazon_orders"
+	// AmazonOrdersTable is the table that holds the amazon_orders relation/edge.
+	AmazonOrdersTable = "amazon_orders"
 	// AmazonOrdersInverseTable is the table name for the AmazonOrder entity.
 	// It exists in this package in order to avoid circular dependency with the "amazonorder" package.
 	AmazonOrdersInverseTable = "amazon_orders"
+	// AmazonOrdersColumn is the table column denoting the amazon_orders relation/edge.
+	AmazonOrdersColumn = "amazon_list_amazon_orders"
 	// OwnerTable is the table that holds the owner relation/edge. The primary key declared below.
 	OwnerTable = "user_amazon_lists"
 	// OwnerInverseTable is the table name for the User entity.
 	// It exists in this package in order to avoid circular dependency with the "user" package.
 	OwnerInverseTable = "users"
-	// AmazonSharesTable is the table that holds the amazon_shares relation/edge. The primary key declared below.
-	AmazonSharesTable = "amazon_list_amazon_shares"
+	// AmazonSharesTable is the table that holds the amazon_shares relation/edge.
+	AmazonSharesTable = "amazon_shares"
 	// AmazonSharesInverseTable is the table name for the AmazonShare entity.
 	// It exists in this package in order to avoid circular dependency with the "amazonshare" package.
 	AmazonSharesInverseTable = "amazon_shares"
+	// AmazonSharesColumn is the table column denoting the amazon_shares relation/edge.
+	AmazonSharesColumn = "amazon_list_amazon_shares"
 )
 
 // Columns holds all SQL columns for amazonlist fields.
@@ -48,15 +52,9 @@ var Columns = []string{
 }
 
 var (
-	// AmazonOrdersPrimaryKey and AmazonOrdersColumn2 are the table columns denoting the
-	// primary key for the amazon_orders relation (M2M).
-	AmazonOrdersPrimaryKey = []string{"amazon_list_id", "amazon_order_id"}
 	// OwnerPrimaryKey and OwnerColumn2 are the table columns denoting the
 	// primary key for the owner relation (M2M).
 	OwnerPrimaryKey = []string{"user_id", "amazon_list_id"}
-	// AmazonSharesPrimaryKey and AmazonSharesColumn2 are the table columns denoting the
-	// primary key for the amazon_shares relation (M2M).
-	AmazonSharesPrimaryKey = []string{"amazon_list_id", "amazon_share_id"}
 )
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -132,7 +130,7 @@ func newAmazonOrdersStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(AmazonOrdersInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2M, false, AmazonOrdersTable, AmazonOrdersPrimaryKey...),
+		sqlgraph.Edge(sqlgraph.O2M, false, AmazonOrdersTable, AmazonOrdersColumn),
 	)
 }
 func newOwnerStep() *sqlgraph.Step {
@@ -146,6 +144,6 @@ func newAmazonSharesStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(AmazonSharesInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2M, false, AmazonSharesTable, AmazonSharesPrimaryKey...),
+		sqlgraph.Edge(sqlgraph.O2M, false, AmazonSharesTable, AmazonSharesColumn),
 	)
 }

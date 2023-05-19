@@ -120,7 +120,7 @@ func HasUser() predicate.AmazonShare {
 	return predicate.AmazonShare(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, UserTable, UserPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2O, true, UserTable, UserColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -143,7 +143,7 @@ func HasAmazonList() predicate.AmazonShare {
 	return predicate.AmazonShare(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, AmazonListTable, AmazonListPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2O, true, AmazonListTable, AmazonListColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})

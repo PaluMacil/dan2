@@ -16,7 +16,7 @@ type Drink struct {
 func (Drink) Fields() []ent.Field {
 	return []ent.Field{
 		field.Enum("type").
-			Values("unknown", "lightbeer", "craftbeer", "wine", "liquor", "highball", "cocktail").
+			Values("unknown", "light_beer", "craft_beer", "wine", "liquor", "highball", "cocktail").
 			Default("unknown"),
 		field.Int8("abv").
 			Default(0),
@@ -39,6 +39,7 @@ func (Drink) Fields() []ent.Field {
 func (Drink) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("owner", User.Type).
-			Ref("drinks"),
+			Ref("drinks").
+			Unique(),
 	}
 }

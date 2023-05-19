@@ -94,19 +94,23 @@ func (glc *GroceryListCreate) AddGroceryListItems(g ...*GroceryListItem) *Grocer
 	return glc.AddGroceryListItemIDs(ids...)
 }
 
-// AddOwnerIDs adds the "owner" edge to the User entity by IDs.
-func (glc *GroceryListCreate) AddOwnerIDs(ids ...int) *GroceryListCreate {
-	glc.mutation.AddOwnerIDs(ids...)
+// SetOwnerID sets the "owner" edge to the User entity by ID.
+func (glc *GroceryListCreate) SetOwnerID(id int) *GroceryListCreate {
+	glc.mutation.SetOwnerID(id)
 	return glc
 }
 
-// AddOwner adds the "owner" edges to the User entity.
-func (glc *GroceryListCreate) AddOwner(u ...*User) *GroceryListCreate {
-	ids := make([]int, len(u))
-	for i := range u {
-		ids[i] = u[i].ID
+// SetNillableOwnerID sets the "owner" edge to the User entity by ID if the given value is not nil.
+func (glc *GroceryListCreate) SetNillableOwnerID(id *int) *GroceryListCreate {
+	if id != nil {
+		glc = glc.SetOwnerID(*id)
 	}
-	return glc.AddOwnerIDs(ids...)
+	return glc
+}
+
+// SetOwner sets the "owner" edge to the User entity.
+func (glc *GroceryListCreate) SetOwner(u *User) *GroceryListCreate {
+	return glc.SetOwnerID(u.ID)
 }
 
 // AddGroceryListShareIDs adds the "grocery_list_shares" edge to the GroceryListShare entity by IDs.
@@ -235,10 +239,10 @@ func (glc *GroceryListCreate) createSpec() (*GroceryList, *sqlgraph.CreateSpec) 
 	}
 	if nodes := glc.mutation.GroceryListItemsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   grocerylist.GroceryListItemsTable,
-			Columns: grocerylist.GroceryListItemsPrimaryKey,
+			Columns: []string{grocerylist.GroceryListItemsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(grocerylistitem.FieldID, field.TypeInt),
@@ -251,10 +255,10 @@ func (glc *GroceryListCreate) createSpec() (*GroceryList, *sqlgraph.CreateSpec) 
 	}
 	if nodes := glc.mutation.OwnerIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   grocerylist.OwnerTable,
-			Columns: grocerylist.OwnerPrimaryKey,
+			Columns: []string{grocerylist.OwnerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
@@ -263,14 +267,15 @@ func (glc *GroceryListCreate) createSpec() (*GroceryList, *sqlgraph.CreateSpec) 
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
+		_node.user_grocery_lists = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := glc.mutation.GroceryListSharesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   grocerylist.GroceryListSharesTable,
-			Columns: grocerylist.GroceryListSharesPrimaryKey,
+			Columns: []string{grocerylist.GroceryListSharesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(grocerylistshare.FieldID, field.TypeInt),

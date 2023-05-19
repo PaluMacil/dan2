@@ -29,6 +29,7 @@ func (Movie) Fields() []ent.Field {
 func (Movie) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("movie_list", MovieList.Type).
-			Ref("movies"),
+			Ref("movies").
+			Unique(),
 	}
 }

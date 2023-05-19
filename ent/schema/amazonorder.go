@@ -37,6 +37,7 @@ func (AmazonOrder) Fields() []ent.Field {
 func (AmazonOrder) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("amazon_list", AmazonList.Type).
-			Ref("amazon_orders"),
+			Ref("amazon_orders").
+			Unique(),
 	}
 }

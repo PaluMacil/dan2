@@ -26,11 +26,13 @@ const (
 	EdgeMovieList = "movie_list"
 	// Table holds the table name of the movie in the database.
 	Table = "movies"
-	// MovieListTable is the table that holds the movie_list relation/edge. The primary key declared below.
-	MovieListTable = "movie_list_movies"
+	// MovieListTable is the table that holds the movie_list relation/edge.
+	MovieListTable = "movies"
 	// MovieListInverseTable is the table name for the MovieList entity.
 	// It exists in this package in order to avoid circular dependency with the "movielist" package.
 	MovieListInverseTable = "movie_lists"
+	// MovieListColumn is the table column denoting the movie_list relation/edge.
+	MovieListColumn = "movie_list_movies"
 )
 
 // Columns holds all SQL columns for movie fields.
@@ -42,16 +44,21 @@ var Columns = []string{
 	FieldCreatedAt,
 }
 
-var (
-	// MovieListPrimaryKey and MovieListColumn2 are the table columns denoting the
-	// primary key for the movie_list relation (M2M).
-	MovieListPrimaryKey = []string{"movie_list_id", "movie_id"}
-)
+// ForeignKeys holds the SQL foreign-keys that are owned by the "movies"
+// table and are not defined as standalone fields in the schema.
+var ForeignKeys = []string{
+	"movie_list_movies",
+}
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
+			return true
+		}
+	}
+	for i := range ForeignKeys {
+		if column == ForeignKeys[i] {
 			return true
 		}
 	}
@@ -95,23 +102,16 @@ func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
 }
 
-// ByMovieListCount orders the results by movie_list count.
-func ByMovieListCount(opts ...sql.OrderTermOption) OrderOption {
+// ByMovieListField orders the results by movie_list field.
+func ByMovieListField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newMovieListStep(), opts...)
-	}
-}
-
-// ByMovieList orders the results by movie_list terms.
-func ByMovieList(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newMovieListStep(), append([]sql.OrderTerm{term}, terms...)...)
+		sqlgraph.OrderByNeighborTerms(s, newMovieListStep(), sql.OrderByField(field, opts...))
 	}
 }
 func newMovieListStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(MovieListInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2M, true, MovieListTable, MovieListPrimaryKey...),
+		sqlgraph.Edge(sqlgraph.M2O, true, MovieListTable, MovieListColumn),
 	)
 }

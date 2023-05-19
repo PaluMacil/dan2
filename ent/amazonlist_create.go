@@ -160,10 +160,10 @@ func (alc *AmazonListCreate) createSpec() (*AmazonList, *sqlgraph.CreateSpec) {
 	}
 	if nodes := alc.mutation.AmazonOrdersIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   amazonlist.AmazonOrdersTable,
-			Columns: amazonlist.AmazonOrdersPrimaryKey,
+			Columns: []string{amazonlist.AmazonOrdersColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(amazonorder.FieldID, field.TypeInt),
@@ -192,10 +192,10 @@ func (alc *AmazonListCreate) createSpec() (*AmazonList, *sqlgraph.CreateSpec) {
 	}
 	if nodes := alc.mutation.AmazonSharesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   amazonlist.AmazonSharesTable,
-			Columns: amazonlist.AmazonSharesPrimaryKey,
+			Columns: []string{amazonlist.AmazonSharesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(amazonshare.FieldID, field.TypeInt),

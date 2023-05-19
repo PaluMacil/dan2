@@ -4,7 +4,6 @@ package ent
 
 import (
 	"context"
-	"database/sql/driver"
 	"fmt"
 	"math"
 
@@ -26,6 +25,7 @@ type GroceryListShareQuery struct {
 	predicates      []predicate.GroceryListShare
 	withUser        *UserQuery
 	withGroceryList *GroceryListQuery
+	withFKs         bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -76,7 +76,7 @@ func (glsq *GroceryListShareQuery) QueryUser() *UserQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(grocerylistshare.Table, grocerylistshare.FieldID, selector),
 			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, grocerylistshare.UserTable, grocerylistshare.UserPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2O, true, grocerylistshare.UserTable, grocerylistshare.UserColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(glsq.driver.Dialect(), step)
 		return fromU, nil
@@ -98,7 +98,7 @@ func (glsq *GroceryListShareQuery) QueryGroceryList() *GroceryListQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(grocerylistshare.Table, grocerylistshare.FieldID, selector),
 			sqlgraph.To(grocerylist.Table, grocerylist.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, grocerylistshare.GroceryListTable, grocerylistshare.GroceryListPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2O, true, grocerylistshare.GroceryListTable, grocerylistshare.GroceryListColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(glsq.driver.Dialect(), step)
 		return fromU, nil
@@ -405,12 +405,19 @@ func (glsq *GroceryListShareQuery) prepareQuery(ctx context.Context) error {
 func (glsq *GroceryListShareQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*GroceryListShare, error) {
 	var (
 		nodes       = []*GroceryListShare{}
+		withFKs     = glsq.withFKs
 		_spec       = glsq.querySpec()
 		loadedTypes = [2]bool{
 			glsq.withUser != nil,
 			glsq.withGroceryList != nil,
 		}
 	)
+	if glsq.withUser != nil || glsq.withGroceryList != nil {
+		withFKs = true
+	}
+	if withFKs {
+		_spec.Node.Columns = append(_spec.Node.Columns, grocerylistshare.ForeignKeys...)
+	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*GroceryListShare).scanValues(nil, columns)
 	}
@@ -430,16 +437,14 @@ func (glsq *GroceryListShareQuery) sqlAll(ctx context.Context, hooks ...queryHoo
 		return nodes, nil
 	}
 	if query := glsq.withUser; query != nil {
-		if err := glsq.loadUser(ctx, query, nodes,
-			func(n *GroceryListShare) { n.Edges.User = []*User{} },
-			func(n *GroceryListShare, e *User) { n.Edges.User = append(n.Edges.User, e) }); err != nil {
+		if err := glsq.loadUser(ctx, query, nodes, nil,
+			func(n *GroceryListShare, e *User) { n.Edges.User = e }); err != nil {
 			return nil, err
 		}
 	}
 	if query := glsq.withGroceryList; query != nil {
-		if err := glsq.loadGroceryList(ctx, query, nodes,
-			func(n *GroceryListShare) { n.Edges.GroceryList = []*GroceryList{} },
-			func(n *GroceryListShare, e *GroceryList) { n.Edges.GroceryList = append(n.Edges.GroceryList, e) }); err != nil {
+		if err := glsq.loadGroceryList(ctx, query, nodes, nil,
+			func(n *GroceryListShare, e *GroceryList) { n.Edges.GroceryList = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -447,123 +452,65 @@ func (glsq *GroceryListShareQuery) sqlAll(ctx context.Context, hooks ...queryHoo
 }
 
 func (glsq *GroceryListShareQuery) loadUser(ctx context.Context, query *UserQuery, nodes []*GroceryListShare, init func(*GroceryListShare), assign func(*GroceryListShare, *User)) error {
-	edgeIDs := make([]driver.Value, len(nodes))
-	byID := make(map[int]*GroceryListShare)
-	nids := make(map[int]map[*GroceryListShare]struct{})
-	for i, node := range nodes {
-		edgeIDs[i] = node.ID
-		byID[node.ID] = node
-		if init != nil {
-			init(node)
+	ids := make([]int, 0, len(nodes))
+	nodeids := make(map[int][]*GroceryListShare)
+	for i := range nodes {
+		if nodes[i].user_grocery_list_shares == nil {
+			continue
 		}
+		fk := *nodes[i].user_grocery_list_shares
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
-	query.Where(func(s *sql.Selector) {
-		joinT := sql.Table(grocerylistshare.UserTable)
-		s.Join(joinT).On(s.C(user.FieldID), joinT.C(grocerylistshare.UserPrimaryKey[0]))
-		s.Where(sql.InValues(joinT.C(grocerylistshare.UserPrimaryKey[1]), edgeIDs...))
-		columns := s.SelectedColumns()
-		s.Select(joinT.C(grocerylistshare.UserPrimaryKey[1]))
-		s.AppendSelect(columns...)
-		s.SetDistinct(false)
-	})
-	if err := query.prepareQuery(ctx); err != nil {
-		return err
+	if len(ids) == 0 {
+		return nil
 	}
-	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
-		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
-			assign := spec.Assign
-			values := spec.ScanValues
-			spec.ScanValues = func(columns []string) ([]any, error) {
-				values, err := values(columns[1:])
-				if err != nil {
-					return nil, err
-				}
-				return append([]any{new(sql.NullInt64)}, values...), nil
-			}
-			spec.Assign = func(columns []string, values []any) error {
-				outValue := int(values[0].(*sql.NullInt64).Int64)
-				inValue := int(values[1].(*sql.NullInt64).Int64)
-				if nids[inValue] == nil {
-					nids[inValue] = map[*GroceryListShare]struct{}{byID[outValue]: {}}
-					return assign(columns[1:], values[1:])
-				}
-				nids[inValue][byID[outValue]] = struct{}{}
-				return nil
-			}
-		})
-	})
-	neighbors, err := withInterceptors[[]*User](ctx, query, qr, query.inters)
+	query.Where(user.IDIn(ids...))
+	neighbors, err := query.All(ctx)
 	if err != nil {
 		return err
 	}
 	for _, n := range neighbors {
-		nodes, ok := nids[n.ID]
+		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected "user" node returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "user_grocery_list_shares" returned %v`, n.ID)
 		}
-		for kn := range nodes {
-			assign(kn, n)
+		for i := range nodes {
+			assign(nodes[i], n)
 		}
 	}
 	return nil
 }
 func (glsq *GroceryListShareQuery) loadGroceryList(ctx context.Context, query *GroceryListQuery, nodes []*GroceryListShare, init func(*GroceryListShare), assign func(*GroceryListShare, *GroceryList)) error {
-	edgeIDs := make([]driver.Value, len(nodes))
-	byID := make(map[int]*GroceryListShare)
-	nids := make(map[int]map[*GroceryListShare]struct{})
-	for i, node := range nodes {
-		edgeIDs[i] = node.ID
-		byID[node.ID] = node
-		if init != nil {
-			init(node)
+	ids := make([]int, 0, len(nodes))
+	nodeids := make(map[int][]*GroceryListShare)
+	for i := range nodes {
+		if nodes[i].grocery_list_grocery_list_shares == nil {
+			continue
 		}
+		fk := *nodes[i].grocery_list_grocery_list_shares
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
-	query.Where(func(s *sql.Selector) {
-		joinT := sql.Table(grocerylistshare.GroceryListTable)
-		s.Join(joinT).On(s.C(grocerylist.FieldID), joinT.C(grocerylistshare.GroceryListPrimaryKey[0]))
-		s.Where(sql.InValues(joinT.C(grocerylistshare.GroceryListPrimaryKey[1]), edgeIDs...))
-		columns := s.SelectedColumns()
-		s.Select(joinT.C(grocerylistshare.GroceryListPrimaryKey[1]))
-		s.AppendSelect(columns...)
-		s.SetDistinct(false)
-	})
-	if err := query.prepareQuery(ctx); err != nil {
-		return err
+	if len(ids) == 0 {
+		return nil
 	}
-	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
-		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
-			assign := spec.Assign
-			values := spec.ScanValues
-			spec.ScanValues = func(columns []string) ([]any, error) {
-				values, err := values(columns[1:])
-				if err != nil {
-					return nil, err
-				}
-				return append([]any{new(sql.NullInt64)}, values...), nil
-			}
-			spec.Assign = func(columns []string, values []any) error {
-				outValue := int(values[0].(*sql.NullInt64).Int64)
-				inValue := int(values[1].(*sql.NullInt64).Int64)
-				if nids[inValue] == nil {
-					nids[inValue] = map[*GroceryListShare]struct{}{byID[outValue]: {}}
-					return assign(columns[1:], values[1:])
-				}
-				nids[inValue][byID[outValue]] = struct{}{}
-				return nil
-			}
-		})
-	})
-	neighbors, err := withInterceptors[[]*GroceryList](ctx, query, qr, query.inters)
+	query.Where(grocerylist.IDIn(ids...))
+	neighbors, err := query.All(ctx)
 	if err != nil {
 		return err
 	}
 	for _, n := range neighbors {
-		nodes, ok := nids[n.ID]
+		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected "grocery_list" node returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "grocery_list_grocery_list_shares" returned %v`, n.ID)
 		}
-		for kn := range nodes {
-			assign(kn, n)
+		for i := range nodes {
+			assign(nodes[i], n)
 		}
 	}
 	return nil

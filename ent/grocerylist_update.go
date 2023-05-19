@@ -102,19 +102,23 @@ func (glu *GroceryListUpdate) AddGroceryListItems(g ...*GroceryListItem) *Grocer
 	return glu.AddGroceryListItemIDs(ids...)
 }
 
-// AddOwnerIDs adds the "owner" edge to the User entity by IDs.
-func (glu *GroceryListUpdate) AddOwnerIDs(ids ...int) *GroceryListUpdate {
-	glu.mutation.AddOwnerIDs(ids...)
+// SetOwnerID sets the "owner" edge to the User entity by ID.
+func (glu *GroceryListUpdate) SetOwnerID(id int) *GroceryListUpdate {
+	glu.mutation.SetOwnerID(id)
 	return glu
 }
 
-// AddOwner adds the "owner" edges to the User entity.
-func (glu *GroceryListUpdate) AddOwner(u ...*User) *GroceryListUpdate {
-	ids := make([]int, len(u))
-	for i := range u {
-		ids[i] = u[i].ID
+// SetNillableOwnerID sets the "owner" edge to the User entity by ID if the given value is not nil.
+func (glu *GroceryListUpdate) SetNillableOwnerID(id *int) *GroceryListUpdate {
+	if id != nil {
+		glu = glu.SetOwnerID(*id)
 	}
-	return glu.AddOwnerIDs(ids...)
+	return glu
+}
+
+// SetOwner sets the "owner" edge to the User entity.
+func (glu *GroceryListUpdate) SetOwner(u *User) *GroceryListUpdate {
+	return glu.SetOwnerID(u.ID)
 }
 
 // AddGroceryListShareIDs adds the "grocery_list_shares" edge to the GroceryListShare entity by IDs.
@@ -158,25 +162,10 @@ func (glu *GroceryListUpdate) RemoveGroceryListItems(g ...*GroceryListItem) *Gro
 	return glu.RemoveGroceryListItemIDs(ids...)
 }
 
-// ClearOwner clears all "owner" edges to the User entity.
+// ClearOwner clears the "owner" edge to the User entity.
 func (glu *GroceryListUpdate) ClearOwner() *GroceryListUpdate {
 	glu.mutation.ClearOwner()
 	return glu
-}
-
-// RemoveOwnerIDs removes the "owner" edge to User entities by IDs.
-func (glu *GroceryListUpdate) RemoveOwnerIDs(ids ...int) *GroceryListUpdate {
-	glu.mutation.RemoveOwnerIDs(ids...)
-	return glu
-}
-
-// RemoveOwner removes "owner" edges to User entities.
-func (glu *GroceryListUpdate) RemoveOwner(u ...*User) *GroceryListUpdate {
-	ids := make([]int, len(u))
-	for i := range u {
-		ids[i] = u[i].ID
-	}
-	return glu.RemoveOwnerIDs(ids...)
 }
 
 // ClearGroceryListShares clears all "grocery_list_shares" edges to the GroceryListShare entity.
@@ -250,10 +239,10 @@ func (glu *GroceryListUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if glu.mutation.GroceryListItemsCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   grocerylist.GroceryListItemsTable,
-			Columns: grocerylist.GroceryListItemsPrimaryKey,
+			Columns: []string{grocerylist.GroceryListItemsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(grocerylistitem.FieldID, field.TypeInt),
@@ -263,10 +252,10 @@ func (glu *GroceryListUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if nodes := glu.mutation.RemovedGroceryListItemsIDs(); len(nodes) > 0 && !glu.mutation.GroceryListItemsCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   grocerylist.GroceryListItemsTable,
-			Columns: grocerylist.GroceryListItemsPrimaryKey,
+			Columns: []string{grocerylist.GroceryListItemsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(grocerylistitem.FieldID, field.TypeInt),
@@ -279,10 +268,10 @@ func (glu *GroceryListUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if nodes := glu.mutation.GroceryListItemsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   grocerylist.GroceryListItemsTable,
-			Columns: grocerylist.GroceryListItemsPrimaryKey,
+			Columns: []string{grocerylist.GroceryListItemsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(grocerylistitem.FieldID, field.TypeInt),
@@ -295,39 +284,23 @@ func (glu *GroceryListUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if glu.mutation.OwnerCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   grocerylist.OwnerTable,
-			Columns: grocerylist.OwnerPrimaryKey,
+			Columns: []string{grocerylist.OwnerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
 			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := glu.mutation.RemovedOwnerIDs(); len(nodes) > 0 && !glu.mutation.OwnerCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   grocerylist.OwnerTable,
-			Columns: grocerylist.OwnerPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := glu.mutation.OwnerIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   grocerylist.OwnerTable,
-			Columns: grocerylist.OwnerPrimaryKey,
+			Columns: []string{grocerylist.OwnerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
@@ -340,10 +313,10 @@ func (glu *GroceryListUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if glu.mutation.GroceryListSharesCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   grocerylist.GroceryListSharesTable,
-			Columns: grocerylist.GroceryListSharesPrimaryKey,
+			Columns: []string{grocerylist.GroceryListSharesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(grocerylistshare.FieldID, field.TypeInt),
@@ -353,10 +326,10 @@ func (glu *GroceryListUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if nodes := glu.mutation.RemovedGroceryListSharesIDs(); len(nodes) > 0 && !glu.mutation.GroceryListSharesCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   grocerylist.GroceryListSharesTable,
-			Columns: grocerylist.GroceryListSharesPrimaryKey,
+			Columns: []string{grocerylist.GroceryListSharesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(grocerylistshare.FieldID, field.TypeInt),
@@ -369,10 +342,10 @@ func (glu *GroceryListUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if nodes := glu.mutation.GroceryListSharesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   grocerylist.GroceryListSharesTable,
-			Columns: grocerylist.GroceryListSharesPrimaryKey,
+			Columns: []string{grocerylist.GroceryListSharesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(grocerylistshare.FieldID, field.TypeInt),
@@ -474,19 +447,23 @@ func (gluo *GroceryListUpdateOne) AddGroceryListItems(g ...*GroceryListItem) *Gr
 	return gluo.AddGroceryListItemIDs(ids...)
 }
 
-// AddOwnerIDs adds the "owner" edge to the User entity by IDs.
-func (gluo *GroceryListUpdateOne) AddOwnerIDs(ids ...int) *GroceryListUpdateOne {
-	gluo.mutation.AddOwnerIDs(ids...)
+// SetOwnerID sets the "owner" edge to the User entity by ID.
+func (gluo *GroceryListUpdateOne) SetOwnerID(id int) *GroceryListUpdateOne {
+	gluo.mutation.SetOwnerID(id)
 	return gluo
 }
 
-// AddOwner adds the "owner" edges to the User entity.
-func (gluo *GroceryListUpdateOne) AddOwner(u ...*User) *GroceryListUpdateOne {
-	ids := make([]int, len(u))
-	for i := range u {
-		ids[i] = u[i].ID
+// SetNillableOwnerID sets the "owner" edge to the User entity by ID if the given value is not nil.
+func (gluo *GroceryListUpdateOne) SetNillableOwnerID(id *int) *GroceryListUpdateOne {
+	if id != nil {
+		gluo = gluo.SetOwnerID(*id)
 	}
-	return gluo.AddOwnerIDs(ids...)
+	return gluo
+}
+
+// SetOwner sets the "owner" edge to the User entity.
+func (gluo *GroceryListUpdateOne) SetOwner(u *User) *GroceryListUpdateOne {
+	return gluo.SetOwnerID(u.ID)
 }
 
 // AddGroceryListShareIDs adds the "grocery_list_shares" edge to the GroceryListShare entity by IDs.
@@ -530,25 +507,10 @@ func (gluo *GroceryListUpdateOne) RemoveGroceryListItems(g ...*GroceryListItem) 
 	return gluo.RemoveGroceryListItemIDs(ids...)
 }
 
-// ClearOwner clears all "owner" edges to the User entity.
+// ClearOwner clears the "owner" edge to the User entity.
 func (gluo *GroceryListUpdateOne) ClearOwner() *GroceryListUpdateOne {
 	gluo.mutation.ClearOwner()
 	return gluo
-}
-
-// RemoveOwnerIDs removes the "owner" edge to User entities by IDs.
-func (gluo *GroceryListUpdateOne) RemoveOwnerIDs(ids ...int) *GroceryListUpdateOne {
-	gluo.mutation.RemoveOwnerIDs(ids...)
-	return gluo
-}
-
-// RemoveOwner removes "owner" edges to User entities.
-func (gluo *GroceryListUpdateOne) RemoveOwner(u ...*User) *GroceryListUpdateOne {
-	ids := make([]int, len(u))
-	for i := range u {
-		ids[i] = u[i].ID
-	}
-	return gluo.RemoveOwnerIDs(ids...)
 }
 
 // ClearGroceryListShares clears all "grocery_list_shares" edges to the GroceryListShare entity.
@@ -652,10 +614,10 @@ func (gluo *GroceryListUpdateOne) sqlSave(ctx context.Context) (_node *GroceryLi
 	}
 	if gluo.mutation.GroceryListItemsCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   grocerylist.GroceryListItemsTable,
-			Columns: grocerylist.GroceryListItemsPrimaryKey,
+			Columns: []string{grocerylist.GroceryListItemsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(grocerylistitem.FieldID, field.TypeInt),
@@ -665,10 +627,10 @@ func (gluo *GroceryListUpdateOne) sqlSave(ctx context.Context) (_node *GroceryLi
 	}
 	if nodes := gluo.mutation.RemovedGroceryListItemsIDs(); len(nodes) > 0 && !gluo.mutation.GroceryListItemsCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   grocerylist.GroceryListItemsTable,
-			Columns: grocerylist.GroceryListItemsPrimaryKey,
+			Columns: []string{grocerylist.GroceryListItemsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(grocerylistitem.FieldID, field.TypeInt),
@@ -681,10 +643,10 @@ func (gluo *GroceryListUpdateOne) sqlSave(ctx context.Context) (_node *GroceryLi
 	}
 	if nodes := gluo.mutation.GroceryListItemsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   grocerylist.GroceryListItemsTable,
-			Columns: grocerylist.GroceryListItemsPrimaryKey,
+			Columns: []string{grocerylist.GroceryListItemsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(grocerylistitem.FieldID, field.TypeInt),
@@ -697,39 +659,23 @@ func (gluo *GroceryListUpdateOne) sqlSave(ctx context.Context) (_node *GroceryLi
 	}
 	if gluo.mutation.OwnerCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   grocerylist.OwnerTable,
-			Columns: grocerylist.OwnerPrimaryKey,
+			Columns: []string{grocerylist.OwnerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
 			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := gluo.mutation.RemovedOwnerIDs(); len(nodes) > 0 && !gluo.mutation.OwnerCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   grocerylist.OwnerTable,
-			Columns: grocerylist.OwnerPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := gluo.mutation.OwnerIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   grocerylist.OwnerTable,
-			Columns: grocerylist.OwnerPrimaryKey,
+			Columns: []string{grocerylist.OwnerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
@@ -742,10 +688,10 @@ func (gluo *GroceryListUpdateOne) sqlSave(ctx context.Context) (_node *GroceryLi
 	}
 	if gluo.mutation.GroceryListSharesCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   grocerylist.GroceryListSharesTable,
-			Columns: grocerylist.GroceryListSharesPrimaryKey,
+			Columns: []string{grocerylist.GroceryListSharesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(grocerylistshare.FieldID, field.TypeInt),
@@ -755,10 +701,10 @@ func (gluo *GroceryListUpdateOne) sqlSave(ctx context.Context) (_node *GroceryLi
 	}
 	if nodes := gluo.mutation.RemovedGroceryListSharesIDs(); len(nodes) > 0 && !gluo.mutation.GroceryListSharesCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   grocerylist.GroceryListSharesTable,
-			Columns: grocerylist.GroceryListSharesPrimaryKey,
+			Columns: []string{grocerylist.GroceryListSharesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(grocerylistshare.FieldID, field.TypeInt),
@@ -771,10 +717,10 @@ func (gluo *GroceryListUpdateOne) sqlSave(ctx context.Context) (_node *GroceryLi
 	}
 	if nodes := gluo.mutation.GroceryListSharesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   grocerylist.GroceryListSharesTable,
-			Columns: grocerylist.GroceryListSharesPrimaryKey,
+			Columns: []string{grocerylist.GroceryListSharesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(grocerylistshare.FieldID, field.TypeInt),

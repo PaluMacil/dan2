@@ -9,7 +9,9 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/PaluMacil/dan2/ent/amazonlist"
 	"github.com/PaluMacil/dan2/ent/amazonshare"
+	"github.com/PaluMacil/dan2/ent/user"
 )
 
 // AmazonShare is the model entity for the AmazonShare schema.
@@ -23,34 +25,44 @@ type AmazonShare struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the AmazonShareQuery when eager-loading is set.
-	Edges        AmazonShareEdges `json:"edges"`
-	selectValues sql.SelectValues
+	Edges                     AmazonShareEdges `json:"edges"`
+	amazon_list_amazon_shares *int
+	user_amazon_shares        *int
+	selectValues              sql.SelectValues
 }
 
 // AmazonShareEdges holds the relations/edges for other nodes in the graph.
 type AmazonShareEdges struct {
 	// User holds the value of the user edge.
-	User []*User `json:"user,omitempty"`
+	User *User `json:"user,omitempty"`
 	// AmazonList holds the value of the amazon_list edge.
-	AmazonList []*AmazonList `json:"amazon_list,omitempty"`
+	AmazonList *AmazonList `json:"amazon_list,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [2]bool
 }
 
 // UserOrErr returns the User value or an error if the edge
-// was not loaded in eager-loading.
-func (e AmazonShareEdges) UserOrErr() ([]*User, error) {
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AmazonShareEdges) UserOrErr() (*User, error) {
 	if e.loadedTypes[0] {
+		if e.User == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: user.Label}
+		}
 		return e.User, nil
 	}
 	return nil, &NotLoadedError{edge: "user"}
 }
 
 // AmazonListOrErr returns the AmazonList value or an error if the edge
-// was not loaded in eager-loading.
-func (e AmazonShareEdges) AmazonListOrErr() ([]*AmazonList, error) {
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AmazonShareEdges) AmazonListOrErr() (*AmazonList, error) {
 	if e.loadedTypes[1] {
+		if e.AmazonList == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: amazonlist.Label}
+		}
 		return e.AmazonList, nil
 	}
 	return nil, &NotLoadedError{edge: "amazon_list"}
@@ -67,6 +79,10 @@ func (*AmazonShare) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case amazonshare.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
+		case amazonshare.ForeignKeys[0]: // amazon_list_amazon_shares
+			values[i] = new(sql.NullInt64)
+		case amazonshare.ForeignKeys[1]: // user_amazon_shares
+			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -99,6 +115,20 @@ func (as *AmazonShare) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
 				as.CreatedAt = value.Time
+			}
+		case amazonshare.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for edge-field amazon_list_amazon_shares", value)
+			} else if value.Valid {
+				as.amazon_list_amazon_shares = new(int)
+				*as.amazon_list_amazon_shares = int(value.Int64)
+			}
+		case amazonshare.ForeignKeys[1]:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for edge-field user_amazon_shares", value)
+			} else if value.Valid {
+				as.user_amazon_shares = new(int)
+				*as.user_amazon_shares = int(value.Int64)
 			}
 		default:
 			as.selectValues.Set(columns[i], values[i])

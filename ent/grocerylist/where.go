@@ -260,7 +260,7 @@ func HasGroceryListItems() predicate.GroceryList {
 	return predicate.GroceryList(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, GroceryListItemsTable, GroceryListItemsPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.O2M, false, GroceryListItemsTable, GroceryListItemsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -283,7 +283,7 @@ func HasOwner() predicate.GroceryList {
 	return predicate.GroceryList(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, OwnerTable, OwnerPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2O, true, OwnerTable, OwnerColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -306,7 +306,7 @@ func HasGroceryListShares() predicate.GroceryList {
 	return predicate.GroceryList(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, GroceryListSharesTable, GroceryListSharesPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.O2M, false, GroceryListSharesTable, GroceryListSharesColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})

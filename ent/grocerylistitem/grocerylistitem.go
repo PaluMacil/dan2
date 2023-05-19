@@ -26,11 +26,13 @@ const (
 	EdgeGroceryList = "grocery_list"
 	// Table holds the table name of the grocerylistitem in the database.
 	Table = "grocery_list_items"
-	// GroceryListTable is the table that holds the grocery_list relation/edge. The primary key declared below.
-	GroceryListTable = "grocery_list_grocery_list_items"
+	// GroceryListTable is the table that holds the grocery_list relation/edge.
+	GroceryListTable = "grocery_list_items"
 	// GroceryListInverseTable is the table name for the GroceryList entity.
 	// It exists in this package in order to avoid circular dependency with the "grocerylist" package.
 	GroceryListInverseTable = "grocery_lists"
+	// GroceryListColumn is the table column denoting the grocery_list relation/edge.
+	GroceryListColumn = "grocery_list_grocery_list_items"
 )
 
 // Columns holds all SQL columns for grocerylistitem fields.
@@ -42,16 +44,21 @@ var Columns = []string{
 	FieldCreatedAt,
 }
 
-var (
-	// GroceryListPrimaryKey and GroceryListColumn2 are the table columns denoting the
-	// primary key for the grocery_list relation (M2M).
-	GroceryListPrimaryKey = []string{"grocery_list_id", "grocery_list_item_id"}
-)
+// ForeignKeys holds the SQL foreign-keys that are owned by the "grocery_list_items"
+// table and are not defined as standalone fields in the schema.
+var ForeignKeys = []string{
+	"grocery_list_grocery_list_items",
+}
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
+			return true
+		}
+	}
+	for i := range ForeignKeys {
+		if column == ForeignKeys[i] {
 			return true
 		}
 	}
@@ -95,23 +102,16 @@ func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
 }
 
-// ByGroceryListCount orders the results by grocery_list count.
-func ByGroceryListCount(opts ...sql.OrderTermOption) OrderOption {
+// ByGroceryListField orders the results by grocery_list field.
+func ByGroceryListField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newGroceryListStep(), opts...)
-	}
-}
-
-// ByGroceryList orders the results by grocery_list terms.
-func ByGroceryList(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newGroceryListStep(), append([]sql.OrderTerm{term}, terms...)...)
+		sqlgraph.OrderByNeighborTerms(s, newGroceryListStep(), sql.OrderByField(field, opts...))
 	}
 }
 func newGroceryListStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(GroceryListInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2M, true, GroceryListTable, GroceryListPrimaryKey...),
+		sqlgraph.Edge(sqlgraph.M2O, true, GroceryListTable, GroceryListColumn),
 	)
 }

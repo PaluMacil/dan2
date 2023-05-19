@@ -84,19 +84,23 @@ func (gliu *GroceryListItemUpdate) SetNillableCreatedAt(t *time.Time) *GroceryLi
 	return gliu
 }
 
-// AddGroceryListIDs adds the "grocery_list" edge to the GroceryList entity by IDs.
-func (gliu *GroceryListItemUpdate) AddGroceryListIDs(ids ...int) *GroceryListItemUpdate {
-	gliu.mutation.AddGroceryListIDs(ids...)
+// SetGroceryListID sets the "grocery_list" edge to the GroceryList entity by ID.
+func (gliu *GroceryListItemUpdate) SetGroceryListID(id int) *GroceryListItemUpdate {
+	gliu.mutation.SetGroceryListID(id)
 	return gliu
 }
 
-// AddGroceryList adds the "grocery_list" edges to the GroceryList entity.
-func (gliu *GroceryListItemUpdate) AddGroceryList(g ...*GroceryList) *GroceryListItemUpdate {
-	ids := make([]int, len(g))
-	for i := range g {
-		ids[i] = g[i].ID
+// SetNillableGroceryListID sets the "grocery_list" edge to the GroceryList entity by ID if the given value is not nil.
+func (gliu *GroceryListItemUpdate) SetNillableGroceryListID(id *int) *GroceryListItemUpdate {
+	if id != nil {
+		gliu = gliu.SetGroceryListID(*id)
 	}
-	return gliu.AddGroceryListIDs(ids...)
+	return gliu
+}
+
+// SetGroceryList sets the "grocery_list" edge to the GroceryList entity.
+func (gliu *GroceryListItemUpdate) SetGroceryList(g *GroceryList) *GroceryListItemUpdate {
+	return gliu.SetGroceryListID(g.ID)
 }
 
 // Mutation returns the GroceryListItemMutation object of the builder.
@@ -104,25 +108,10 @@ func (gliu *GroceryListItemUpdate) Mutation() *GroceryListItemMutation {
 	return gliu.mutation
 }
 
-// ClearGroceryList clears all "grocery_list" edges to the GroceryList entity.
+// ClearGroceryList clears the "grocery_list" edge to the GroceryList entity.
 func (gliu *GroceryListItemUpdate) ClearGroceryList() *GroceryListItemUpdate {
 	gliu.mutation.ClearGroceryList()
 	return gliu
-}
-
-// RemoveGroceryListIDs removes the "grocery_list" edge to GroceryList entities by IDs.
-func (gliu *GroceryListItemUpdate) RemoveGroceryListIDs(ids ...int) *GroceryListItemUpdate {
-	gliu.mutation.RemoveGroceryListIDs(ids...)
-	return gliu
-}
-
-// RemoveGroceryList removes "grocery_list" edges to GroceryList entities.
-func (gliu *GroceryListItemUpdate) RemoveGroceryList(g ...*GroceryList) *GroceryListItemUpdate {
-	ids := make([]int, len(g))
-	for i := range g {
-		ids[i] = g[i].ID
-	}
-	return gliu.RemoveGroceryListIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -178,39 +167,23 @@ func (gliu *GroceryListItemUpdate) sqlSave(ctx context.Context) (n int, err erro
 	}
 	if gliu.mutation.GroceryListCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   grocerylistitem.GroceryListTable,
-			Columns: grocerylistitem.GroceryListPrimaryKey,
+			Columns: []string{grocerylistitem.GroceryListColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(grocerylist.FieldID, field.TypeInt),
 			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := gliu.mutation.RemovedGroceryListIDs(); len(nodes) > 0 && !gliu.mutation.GroceryListCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   grocerylistitem.GroceryListTable,
-			Columns: grocerylistitem.GroceryListPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(grocerylist.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := gliu.mutation.GroceryListIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   grocerylistitem.GroceryListTable,
-			Columns: grocerylistitem.GroceryListPrimaryKey,
+			Columns: []string{grocerylistitem.GroceryListColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(grocerylist.FieldID, field.TypeInt),
@@ -296,19 +269,23 @@ func (gliuo *GroceryListItemUpdateOne) SetNillableCreatedAt(t *time.Time) *Groce
 	return gliuo
 }
 
-// AddGroceryListIDs adds the "grocery_list" edge to the GroceryList entity by IDs.
-func (gliuo *GroceryListItemUpdateOne) AddGroceryListIDs(ids ...int) *GroceryListItemUpdateOne {
-	gliuo.mutation.AddGroceryListIDs(ids...)
+// SetGroceryListID sets the "grocery_list" edge to the GroceryList entity by ID.
+func (gliuo *GroceryListItemUpdateOne) SetGroceryListID(id int) *GroceryListItemUpdateOne {
+	gliuo.mutation.SetGroceryListID(id)
 	return gliuo
 }
 
-// AddGroceryList adds the "grocery_list" edges to the GroceryList entity.
-func (gliuo *GroceryListItemUpdateOne) AddGroceryList(g ...*GroceryList) *GroceryListItemUpdateOne {
-	ids := make([]int, len(g))
-	for i := range g {
-		ids[i] = g[i].ID
+// SetNillableGroceryListID sets the "grocery_list" edge to the GroceryList entity by ID if the given value is not nil.
+func (gliuo *GroceryListItemUpdateOne) SetNillableGroceryListID(id *int) *GroceryListItemUpdateOne {
+	if id != nil {
+		gliuo = gliuo.SetGroceryListID(*id)
 	}
-	return gliuo.AddGroceryListIDs(ids...)
+	return gliuo
+}
+
+// SetGroceryList sets the "grocery_list" edge to the GroceryList entity.
+func (gliuo *GroceryListItemUpdateOne) SetGroceryList(g *GroceryList) *GroceryListItemUpdateOne {
+	return gliuo.SetGroceryListID(g.ID)
 }
 
 // Mutation returns the GroceryListItemMutation object of the builder.
@@ -316,25 +293,10 @@ func (gliuo *GroceryListItemUpdateOne) Mutation() *GroceryListItemMutation {
 	return gliuo.mutation
 }
 
-// ClearGroceryList clears all "grocery_list" edges to the GroceryList entity.
+// ClearGroceryList clears the "grocery_list" edge to the GroceryList entity.
 func (gliuo *GroceryListItemUpdateOne) ClearGroceryList() *GroceryListItemUpdateOne {
 	gliuo.mutation.ClearGroceryList()
 	return gliuo
-}
-
-// RemoveGroceryListIDs removes the "grocery_list" edge to GroceryList entities by IDs.
-func (gliuo *GroceryListItemUpdateOne) RemoveGroceryListIDs(ids ...int) *GroceryListItemUpdateOne {
-	gliuo.mutation.RemoveGroceryListIDs(ids...)
-	return gliuo
-}
-
-// RemoveGroceryList removes "grocery_list" edges to GroceryList entities.
-func (gliuo *GroceryListItemUpdateOne) RemoveGroceryList(g ...*GroceryList) *GroceryListItemUpdateOne {
-	ids := make([]int, len(g))
-	for i := range g {
-		ids[i] = g[i].ID
-	}
-	return gliuo.RemoveGroceryListIDs(ids...)
 }
 
 // Where appends a list predicates to the GroceryListItemUpdate builder.
@@ -420,39 +382,23 @@ func (gliuo *GroceryListItemUpdateOne) sqlSave(ctx context.Context) (_node *Groc
 	}
 	if gliuo.mutation.GroceryListCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   grocerylistitem.GroceryListTable,
-			Columns: grocerylistitem.GroceryListPrimaryKey,
+			Columns: []string{grocerylistitem.GroceryListColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(grocerylist.FieldID, field.TypeInt),
 			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := gliuo.mutation.RemovedGroceryListIDs(); len(nodes) > 0 && !gliuo.mutation.GroceryListCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   grocerylistitem.GroceryListTable,
-			Columns: grocerylistitem.GroceryListPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(grocerylist.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := gliuo.mutation.GroceryListIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   grocerylistitem.GroceryListTable,
-			Columns: grocerylistitem.GroceryListPrimaryKey,
+			Columns: []string{grocerylistitem.GroceryListColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(grocerylist.FieldID, field.TypeInt),

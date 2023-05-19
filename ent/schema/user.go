@@ -25,6 +25,8 @@ func (User) Fields() []ent.Field {
 			Default(false),
 		field.Bool("locked").
 			Default(false),
+		//TODO: consider defaulting to zero time but check how js sees that
+		field.Time("last_login"),
 		field.Time("created_at").
 			Default(time.Now),
 	}

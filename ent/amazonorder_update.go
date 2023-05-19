@@ -135,19 +135,23 @@ func (aou *AmazonOrderUpdate) SetNillableCreatedAt(t *time.Time) *AmazonOrderUpd
 	return aou
 }
 
-// AddAmazonListIDs adds the "amazon_list" edge to the AmazonList entity by IDs.
-func (aou *AmazonOrderUpdate) AddAmazonListIDs(ids ...int) *AmazonOrderUpdate {
-	aou.mutation.AddAmazonListIDs(ids...)
+// SetAmazonListID sets the "amazon_list" edge to the AmazonList entity by ID.
+func (aou *AmazonOrderUpdate) SetAmazonListID(id int) *AmazonOrderUpdate {
+	aou.mutation.SetAmazonListID(id)
 	return aou
 }
 
-// AddAmazonList adds the "amazon_list" edges to the AmazonList entity.
-func (aou *AmazonOrderUpdate) AddAmazonList(a ...*AmazonList) *AmazonOrderUpdate {
-	ids := make([]int, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
+// SetNillableAmazonListID sets the "amazon_list" edge to the AmazonList entity by ID if the given value is not nil.
+func (aou *AmazonOrderUpdate) SetNillableAmazonListID(id *int) *AmazonOrderUpdate {
+	if id != nil {
+		aou = aou.SetAmazonListID(*id)
 	}
-	return aou.AddAmazonListIDs(ids...)
+	return aou
+}
+
+// SetAmazonList sets the "amazon_list" edge to the AmazonList entity.
+func (aou *AmazonOrderUpdate) SetAmazonList(a *AmazonList) *AmazonOrderUpdate {
+	return aou.SetAmazonListID(a.ID)
 }
 
 // Mutation returns the AmazonOrderMutation object of the builder.
@@ -155,25 +159,10 @@ func (aou *AmazonOrderUpdate) Mutation() *AmazonOrderMutation {
 	return aou.mutation
 }
 
-// ClearAmazonList clears all "amazon_list" edges to the AmazonList entity.
+// ClearAmazonList clears the "amazon_list" edge to the AmazonList entity.
 func (aou *AmazonOrderUpdate) ClearAmazonList() *AmazonOrderUpdate {
 	aou.mutation.ClearAmazonList()
 	return aou
-}
-
-// RemoveAmazonListIDs removes the "amazon_list" edge to AmazonList entities by IDs.
-func (aou *AmazonOrderUpdate) RemoveAmazonListIDs(ids ...int) *AmazonOrderUpdate {
-	aou.mutation.RemoveAmazonListIDs(ids...)
-	return aou
-}
-
-// RemoveAmazonList removes "amazon_list" edges to AmazonList entities.
-func (aou *AmazonOrderUpdate) RemoveAmazonList(a ...*AmazonList) *AmazonOrderUpdate {
-	ids := make([]int, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
-	}
-	return aou.RemoveAmazonListIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -262,39 +251,23 @@ func (aou *AmazonOrderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if aou.mutation.AmazonListCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   amazonorder.AmazonListTable,
-			Columns: amazonorder.AmazonListPrimaryKey,
+			Columns: []string{amazonorder.AmazonListColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(amazonlist.FieldID, field.TypeInt),
 			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := aou.mutation.RemovedAmazonListIDs(); len(nodes) > 0 && !aou.mutation.AmazonListCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   amazonorder.AmazonListTable,
-			Columns: amazonorder.AmazonListPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(amazonlist.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := aou.mutation.AmazonListIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   amazonorder.AmazonListTable,
-			Columns: amazonorder.AmazonListPrimaryKey,
+			Columns: []string{amazonorder.AmazonListColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(amazonlist.FieldID, field.TypeInt),
@@ -431,19 +404,23 @@ func (aouo *AmazonOrderUpdateOne) SetNillableCreatedAt(t *time.Time) *AmazonOrde
 	return aouo
 }
 
-// AddAmazonListIDs adds the "amazon_list" edge to the AmazonList entity by IDs.
-func (aouo *AmazonOrderUpdateOne) AddAmazonListIDs(ids ...int) *AmazonOrderUpdateOne {
-	aouo.mutation.AddAmazonListIDs(ids...)
+// SetAmazonListID sets the "amazon_list" edge to the AmazonList entity by ID.
+func (aouo *AmazonOrderUpdateOne) SetAmazonListID(id int) *AmazonOrderUpdateOne {
+	aouo.mutation.SetAmazonListID(id)
 	return aouo
 }
 
-// AddAmazonList adds the "amazon_list" edges to the AmazonList entity.
-func (aouo *AmazonOrderUpdateOne) AddAmazonList(a ...*AmazonList) *AmazonOrderUpdateOne {
-	ids := make([]int, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
+// SetNillableAmazonListID sets the "amazon_list" edge to the AmazonList entity by ID if the given value is not nil.
+func (aouo *AmazonOrderUpdateOne) SetNillableAmazonListID(id *int) *AmazonOrderUpdateOne {
+	if id != nil {
+		aouo = aouo.SetAmazonListID(*id)
 	}
-	return aouo.AddAmazonListIDs(ids...)
+	return aouo
+}
+
+// SetAmazonList sets the "amazon_list" edge to the AmazonList entity.
+func (aouo *AmazonOrderUpdateOne) SetAmazonList(a *AmazonList) *AmazonOrderUpdateOne {
+	return aouo.SetAmazonListID(a.ID)
 }
 
 // Mutation returns the AmazonOrderMutation object of the builder.
@@ -451,25 +428,10 @@ func (aouo *AmazonOrderUpdateOne) Mutation() *AmazonOrderMutation {
 	return aouo.mutation
 }
 
-// ClearAmazonList clears all "amazon_list" edges to the AmazonList entity.
+// ClearAmazonList clears the "amazon_list" edge to the AmazonList entity.
 func (aouo *AmazonOrderUpdateOne) ClearAmazonList() *AmazonOrderUpdateOne {
 	aouo.mutation.ClearAmazonList()
 	return aouo
-}
-
-// RemoveAmazonListIDs removes the "amazon_list" edge to AmazonList entities by IDs.
-func (aouo *AmazonOrderUpdateOne) RemoveAmazonListIDs(ids ...int) *AmazonOrderUpdateOne {
-	aouo.mutation.RemoveAmazonListIDs(ids...)
-	return aouo
-}
-
-// RemoveAmazonList removes "amazon_list" edges to AmazonList entities.
-func (aouo *AmazonOrderUpdateOne) RemoveAmazonList(a ...*AmazonList) *AmazonOrderUpdateOne {
-	ids := make([]int, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
-	}
-	return aouo.RemoveAmazonListIDs(ids...)
 }
 
 // Where appends a list predicates to the AmazonOrderUpdate builder.
@@ -588,39 +550,23 @@ func (aouo *AmazonOrderUpdateOne) sqlSave(ctx context.Context) (_node *AmazonOrd
 	}
 	if aouo.mutation.AmazonListCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   amazonorder.AmazonListTable,
-			Columns: amazonorder.AmazonListPrimaryKey,
+			Columns: []string{amazonorder.AmazonListColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(amazonlist.FieldID, field.TypeInt),
 			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := aouo.mutation.RemovedAmazonListIDs(); len(nodes) > 0 && !aouo.mutation.AmazonListCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   amazonorder.AmazonListTable,
-			Columns: amazonorder.AmazonListPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(amazonlist.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := aouo.mutation.AmazonListIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   amazonorder.AmazonListTable,
-			Columns: amazonorder.AmazonListPrimaryKey,
+			Columns: []string{amazonorder.AmazonListColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(amazonlist.FieldID, field.TypeInt),

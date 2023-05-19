@@ -9,6 +9,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/PaluMacil/dan2/ent/grocerylist"
 	"github.com/PaluMacil/dan2/ent/grocerylistitem"
 )
 
@@ -27,23 +28,28 @@ type GroceryListItem struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the GroceryListItemQuery when eager-loading is set.
-	Edges        GroceryListItemEdges `json:"edges"`
-	selectValues sql.SelectValues
+	Edges                           GroceryListItemEdges `json:"edges"`
+	grocery_list_grocery_list_items *int
+	selectValues                    sql.SelectValues
 }
 
 // GroceryListItemEdges holds the relations/edges for other nodes in the graph.
 type GroceryListItemEdges struct {
 	// GroceryList holds the value of the grocery_list edge.
-	GroceryList []*GroceryList `json:"grocery_list,omitempty"`
+	GroceryList *GroceryList `json:"grocery_list,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [1]bool
 }
 
 // GroceryListOrErr returns the GroceryList value or an error if the edge
-// was not loaded in eager-loading.
-func (e GroceryListItemEdges) GroceryListOrErr() ([]*GroceryList, error) {
+// was not loaded in eager-loading, or loaded but was not found.
+func (e GroceryListItemEdges) GroceryListOrErr() (*GroceryList, error) {
 	if e.loadedTypes[0] {
+		if e.GroceryList == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: grocerylist.Label}
+		}
 		return e.GroceryList, nil
 	}
 	return nil, &NotLoadedError{edge: "grocery_list"}
@@ -60,6 +66,8 @@ func (*GroceryListItem) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullString)
 		case grocerylistitem.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
+		case grocerylistitem.ForeignKeys[0]: // grocery_list_grocery_list_items
+			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -104,6 +112,13 @@ func (gli *GroceryListItem) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
 				gli.CreatedAt = value.Time
+			}
+		case grocerylistitem.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for edge-field grocery_list_grocery_list_items", value)
+			} else if value.Valid {
+				gli.grocery_list_grocery_list_items = new(int)
+				*gli.grocery_list_grocery_list_items = int(value.Int64)
 			}
 		default:
 			gli.selectValues.Set(columns[i], values[i])

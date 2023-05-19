@@ -81,6 +81,12 @@ func (uc *UserCreate) SetNillableLocked(b *bool) *UserCreate {
 	return uc
 }
 
+// SetLastLogin sets the "last_login" field.
+func (uc *UserCreate) SetLastLogin(t time.Time) *UserCreate {
+	uc.mutation.SetLastLogin(t)
+	return uc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (uc *UserCreate) SetCreatedAt(t time.Time) *UserCreate {
 	uc.mutation.SetCreatedAt(t)
@@ -270,6 +276,9 @@ func (uc *UserCreate) check() error {
 	if _, ok := uc.mutation.Locked(); !ok {
 		return &ValidationError{Name: "locked", err: errors.New(`ent: missing required field "User.locked"`)}
 	}
+	if _, ok := uc.mutation.LastLogin(); !ok {
+		return &ValidationError{Name: "last_login", err: errors.New(`ent: missing required field "User.last_login"`)}
+	}
 	if _, ok := uc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "User.created_at"`)}
 	}
@@ -319,16 +328,20 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		_spec.SetField(user.FieldLocked, field.TypeBool, value)
 		_node.Locked = value
 	}
+	if value, ok := uc.mutation.LastLogin(); ok {
+		_spec.SetField(user.FieldLastLogin, field.TypeTime, value)
+		_node.LastLogin = value
+	}
 	if value, ok := uc.mutation.CreatedAt(); ok {
 		_spec.SetField(user.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if nodes := uc.mutation.AmazonSharesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   user.AmazonSharesTable,
-			Columns: user.AmazonSharesPrimaryKey,
+			Columns: []string{user.AmazonSharesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(amazonshare.FieldID, field.TypeInt),
@@ -357,10 +370,10 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	}
 	if nodes := uc.mutation.DrinksIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   user.DrinksTable,
-			Columns: user.DrinksPrimaryKey,
+			Columns: []string{user.DrinksColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(drink.FieldID, field.TypeInt),
@@ -373,10 +386,10 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	}
 	if nodes := uc.mutation.GroceryListsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   user.GroceryListsTable,
-			Columns: user.GroceryListsPrimaryKey,
+			Columns: []string{user.GroceryListsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(grocerylist.FieldID, field.TypeInt),
@@ -389,10 +402,10 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	}
 	if nodes := uc.mutation.GroceryListSharesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   user.GroceryListSharesTable,
-			Columns: user.GroceryListSharesPrimaryKey,
+			Columns: []string{user.GroceryListSharesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(grocerylistshare.FieldID, field.TypeInt),
@@ -405,10 +418,10 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	}
 	if nodes := uc.mutation.MovieListsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   user.MovieListsTable,
-			Columns: user.MovieListsPrimaryKey,
+			Columns: []string{user.MovieListsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(movielist.FieldID, field.TypeInt),
@@ -421,10 +434,10 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	}
 	if nodes := uc.mutation.MovieListSharesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   user.MovieListSharesTable,
-			Columns: user.MovieListSharesPrimaryKey,
+			Columns: []string{user.MovieListSharesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(movielistshare.FieldID, field.TypeInt),

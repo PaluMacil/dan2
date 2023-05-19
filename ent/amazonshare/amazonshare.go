@@ -22,16 +22,20 @@ const (
 	EdgeAmazonList = "amazon_list"
 	// Table holds the table name of the amazonshare in the database.
 	Table = "amazon_shares"
-	// UserTable is the table that holds the user relation/edge. The primary key declared below.
-	UserTable = "user_amazon_shares"
+	// UserTable is the table that holds the user relation/edge.
+	UserTable = "amazon_shares"
 	// UserInverseTable is the table name for the User entity.
 	// It exists in this package in order to avoid circular dependency with the "user" package.
 	UserInverseTable = "users"
-	// AmazonListTable is the table that holds the amazon_list relation/edge. The primary key declared below.
-	AmazonListTable = "amazon_list_amazon_shares"
+	// UserColumn is the table column denoting the user relation/edge.
+	UserColumn = "user_amazon_shares"
+	// AmazonListTable is the table that holds the amazon_list relation/edge.
+	AmazonListTable = "amazon_shares"
 	// AmazonListInverseTable is the table name for the AmazonList entity.
 	// It exists in this package in order to avoid circular dependency with the "amazonlist" package.
 	AmazonListInverseTable = "amazon_lists"
+	// AmazonListColumn is the table column denoting the amazon_list relation/edge.
+	AmazonListColumn = "amazon_list_amazon_shares"
 )
 
 // Columns holds all SQL columns for amazonshare fields.
@@ -41,19 +45,22 @@ var Columns = []string{
 	FieldCreatedAt,
 }
 
-var (
-	// UserPrimaryKey and UserColumn2 are the table columns denoting the
-	// primary key for the user relation (M2M).
-	UserPrimaryKey = []string{"user_id", "amazon_share_id"}
-	// AmazonListPrimaryKey and AmazonListColumn2 are the table columns denoting the
-	// primary key for the amazon_list relation (M2M).
-	AmazonListPrimaryKey = []string{"amazon_list_id", "amazon_share_id"}
-)
+// ForeignKeys holds the SQL foreign-keys that are owned by the "amazon_shares"
+// table and are not defined as standalone fields in the schema.
+var ForeignKeys = []string{
+	"amazon_list_amazon_shares",
+	"user_amazon_shares",
+}
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
+			return true
+		}
+	}
+	for i := range ForeignKeys {
+		if column == ForeignKeys[i] {
 			return true
 		}
 	}
@@ -83,44 +90,30 @@ func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
 }
 
-// ByUserCount orders the results by user count.
-func ByUserCount(opts ...sql.OrderTermOption) OrderOption {
+// ByUserField orders the results by user field.
+func ByUserField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newUserStep(), opts...)
+		sqlgraph.OrderByNeighborTerms(s, newUserStep(), sql.OrderByField(field, opts...))
 	}
 }
 
-// ByUser orders the results by user terms.
-func ByUser(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+// ByAmazonListField orders the results by amazon_list field.
+func ByAmazonListField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newUserStep(), append([]sql.OrderTerm{term}, terms...)...)
-	}
-}
-
-// ByAmazonListCount orders the results by amazon_list count.
-func ByAmazonListCount(opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newAmazonListStep(), opts...)
-	}
-}
-
-// ByAmazonList orders the results by amazon_list terms.
-func ByAmazonList(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newAmazonListStep(), append([]sql.OrderTerm{term}, terms...)...)
+		sqlgraph.OrderByNeighborTerms(s, newAmazonListStep(), sql.OrderByField(field, opts...))
 	}
 }
 func newUserStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(UserInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2M, true, UserTable, UserPrimaryKey...),
+		sqlgraph.Edge(sqlgraph.M2O, true, UserTable, UserColumn),
 	)
 }
 func newAmazonListStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(AmazonListInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2M, true, AmazonListTable, AmazonListPrimaryKey...),
+		sqlgraph.Edge(sqlgraph.M2O, true, AmazonListTable, AmazonListColumn),
 	)
 }

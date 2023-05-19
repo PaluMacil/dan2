@@ -96,6 +96,12 @@ func (uu *UserUpdate) SetNillableLocked(b *bool) *UserUpdate {
 	return uu
 }
 
+// SetLastLogin sets the "last_login" field.
+func (uu *UserUpdate) SetLastLogin(t time.Time) *UserUpdate {
+	uu.mutation.SetLastLogin(t)
+	return uu
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (uu *UserUpdate) SetCreatedAt(t time.Time) *UserUpdate {
 	uu.mutation.SetCreatedAt(t)
@@ -421,15 +427,18 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := uu.mutation.Locked(); ok {
 		_spec.SetField(user.FieldLocked, field.TypeBool, value)
 	}
+	if value, ok := uu.mutation.LastLogin(); ok {
+		_spec.SetField(user.FieldLastLogin, field.TypeTime, value)
+	}
 	if value, ok := uu.mutation.CreatedAt(); ok {
 		_spec.SetField(user.FieldCreatedAt, field.TypeTime, value)
 	}
 	if uu.mutation.AmazonSharesCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   user.AmazonSharesTable,
-			Columns: user.AmazonSharesPrimaryKey,
+			Columns: []string{user.AmazonSharesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(amazonshare.FieldID, field.TypeInt),
@@ -439,10 +448,10 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if nodes := uu.mutation.RemovedAmazonSharesIDs(); len(nodes) > 0 && !uu.mutation.AmazonSharesCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   user.AmazonSharesTable,
-			Columns: user.AmazonSharesPrimaryKey,
+			Columns: []string{user.AmazonSharesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(amazonshare.FieldID, field.TypeInt),
@@ -455,10 +464,10 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if nodes := uu.mutation.AmazonSharesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   user.AmazonSharesTable,
-			Columns: user.AmazonSharesPrimaryKey,
+			Columns: []string{user.AmazonSharesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(amazonshare.FieldID, field.TypeInt),
@@ -516,10 +525,10 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if uu.mutation.DrinksCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   user.DrinksTable,
-			Columns: user.DrinksPrimaryKey,
+			Columns: []string{user.DrinksColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(drink.FieldID, field.TypeInt),
@@ -529,10 +538,10 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if nodes := uu.mutation.RemovedDrinksIDs(); len(nodes) > 0 && !uu.mutation.DrinksCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   user.DrinksTable,
-			Columns: user.DrinksPrimaryKey,
+			Columns: []string{user.DrinksColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(drink.FieldID, field.TypeInt),
@@ -545,10 +554,10 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if nodes := uu.mutation.DrinksIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   user.DrinksTable,
-			Columns: user.DrinksPrimaryKey,
+			Columns: []string{user.DrinksColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(drink.FieldID, field.TypeInt),
@@ -561,10 +570,10 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if uu.mutation.GroceryListsCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   user.GroceryListsTable,
-			Columns: user.GroceryListsPrimaryKey,
+			Columns: []string{user.GroceryListsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(grocerylist.FieldID, field.TypeInt),
@@ -574,10 +583,10 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if nodes := uu.mutation.RemovedGroceryListsIDs(); len(nodes) > 0 && !uu.mutation.GroceryListsCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   user.GroceryListsTable,
-			Columns: user.GroceryListsPrimaryKey,
+			Columns: []string{user.GroceryListsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(grocerylist.FieldID, field.TypeInt),
@@ -590,10 +599,10 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if nodes := uu.mutation.GroceryListsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   user.GroceryListsTable,
-			Columns: user.GroceryListsPrimaryKey,
+			Columns: []string{user.GroceryListsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(grocerylist.FieldID, field.TypeInt),
@@ -606,10 +615,10 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if uu.mutation.GroceryListSharesCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   user.GroceryListSharesTable,
-			Columns: user.GroceryListSharesPrimaryKey,
+			Columns: []string{user.GroceryListSharesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(grocerylistshare.FieldID, field.TypeInt),
@@ -619,10 +628,10 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if nodes := uu.mutation.RemovedGroceryListSharesIDs(); len(nodes) > 0 && !uu.mutation.GroceryListSharesCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   user.GroceryListSharesTable,
-			Columns: user.GroceryListSharesPrimaryKey,
+			Columns: []string{user.GroceryListSharesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(grocerylistshare.FieldID, field.TypeInt),
@@ -635,10 +644,10 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if nodes := uu.mutation.GroceryListSharesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   user.GroceryListSharesTable,
-			Columns: user.GroceryListSharesPrimaryKey,
+			Columns: []string{user.GroceryListSharesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(grocerylistshare.FieldID, field.TypeInt),
@@ -651,10 +660,10 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if uu.mutation.MovieListsCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   user.MovieListsTable,
-			Columns: user.MovieListsPrimaryKey,
+			Columns: []string{user.MovieListsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(movielist.FieldID, field.TypeInt),
@@ -664,10 +673,10 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if nodes := uu.mutation.RemovedMovieListsIDs(); len(nodes) > 0 && !uu.mutation.MovieListsCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   user.MovieListsTable,
-			Columns: user.MovieListsPrimaryKey,
+			Columns: []string{user.MovieListsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(movielist.FieldID, field.TypeInt),
@@ -680,10 +689,10 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if nodes := uu.mutation.MovieListsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   user.MovieListsTable,
-			Columns: user.MovieListsPrimaryKey,
+			Columns: []string{user.MovieListsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(movielist.FieldID, field.TypeInt),
@@ -696,10 +705,10 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if uu.mutation.MovieListSharesCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   user.MovieListSharesTable,
-			Columns: user.MovieListSharesPrimaryKey,
+			Columns: []string{user.MovieListSharesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(movielistshare.FieldID, field.TypeInt),
@@ -709,10 +718,10 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if nodes := uu.mutation.RemovedMovieListSharesIDs(); len(nodes) > 0 && !uu.mutation.MovieListSharesCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   user.MovieListSharesTable,
-			Columns: user.MovieListSharesPrimaryKey,
+			Columns: []string{user.MovieListSharesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(movielistshare.FieldID, field.TypeInt),
@@ -725,10 +734,10 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if nodes := uu.mutation.MovieListSharesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   user.MovieListSharesTable,
-			Columns: user.MovieListSharesPrimaryKey,
+			Columns: []string{user.MovieListSharesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(movielistshare.FieldID, field.TypeInt),
@@ -817,6 +826,12 @@ func (uuo *UserUpdateOne) SetNillableLocked(b *bool) *UserUpdateOne {
 	if b != nil {
 		uuo.SetLocked(*b)
 	}
+	return uuo
+}
+
+// SetLastLogin sets the "last_login" field.
+func (uuo *UserUpdateOne) SetLastLogin(t time.Time) *UserUpdateOne {
+	uuo.mutation.SetLastLogin(t)
 	return uuo
 }
 
@@ -1175,15 +1190,18 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	if value, ok := uuo.mutation.Locked(); ok {
 		_spec.SetField(user.FieldLocked, field.TypeBool, value)
 	}
+	if value, ok := uuo.mutation.LastLogin(); ok {
+		_spec.SetField(user.FieldLastLogin, field.TypeTime, value)
+	}
 	if value, ok := uuo.mutation.CreatedAt(); ok {
 		_spec.SetField(user.FieldCreatedAt, field.TypeTime, value)
 	}
 	if uuo.mutation.AmazonSharesCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   user.AmazonSharesTable,
-			Columns: user.AmazonSharesPrimaryKey,
+			Columns: []string{user.AmazonSharesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(amazonshare.FieldID, field.TypeInt),
@@ -1193,10 +1211,10 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if nodes := uuo.mutation.RemovedAmazonSharesIDs(); len(nodes) > 0 && !uuo.mutation.AmazonSharesCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   user.AmazonSharesTable,
-			Columns: user.AmazonSharesPrimaryKey,
+			Columns: []string{user.AmazonSharesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(amazonshare.FieldID, field.TypeInt),
@@ -1209,10 +1227,10 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if nodes := uuo.mutation.AmazonSharesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   user.AmazonSharesTable,
-			Columns: user.AmazonSharesPrimaryKey,
+			Columns: []string{user.AmazonSharesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(amazonshare.FieldID, field.TypeInt),
@@ -1270,10 +1288,10 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if uuo.mutation.DrinksCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   user.DrinksTable,
-			Columns: user.DrinksPrimaryKey,
+			Columns: []string{user.DrinksColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(drink.FieldID, field.TypeInt),
@@ -1283,10 +1301,10 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if nodes := uuo.mutation.RemovedDrinksIDs(); len(nodes) > 0 && !uuo.mutation.DrinksCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   user.DrinksTable,
-			Columns: user.DrinksPrimaryKey,
+			Columns: []string{user.DrinksColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(drink.FieldID, field.TypeInt),
@@ -1299,10 +1317,10 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if nodes := uuo.mutation.DrinksIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   user.DrinksTable,
-			Columns: user.DrinksPrimaryKey,
+			Columns: []string{user.DrinksColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(drink.FieldID, field.TypeInt),
@@ -1315,10 +1333,10 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if uuo.mutation.GroceryListsCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   user.GroceryListsTable,
-			Columns: user.GroceryListsPrimaryKey,
+			Columns: []string{user.GroceryListsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(grocerylist.FieldID, field.TypeInt),
@@ -1328,10 +1346,10 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if nodes := uuo.mutation.RemovedGroceryListsIDs(); len(nodes) > 0 && !uuo.mutation.GroceryListsCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   user.GroceryListsTable,
-			Columns: user.GroceryListsPrimaryKey,
+			Columns: []string{user.GroceryListsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(grocerylist.FieldID, field.TypeInt),
@@ -1344,10 +1362,10 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if nodes := uuo.mutation.GroceryListsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   user.GroceryListsTable,
-			Columns: user.GroceryListsPrimaryKey,
+			Columns: []string{user.GroceryListsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(grocerylist.FieldID, field.TypeInt),
@@ -1360,10 +1378,10 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if uuo.mutation.GroceryListSharesCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   user.GroceryListSharesTable,
-			Columns: user.GroceryListSharesPrimaryKey,
+			Columns: []string{user.GroceryListSharesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(grocerylistshare.FieldID, field.TypeInt),
@@ -1373,10 +1391,10 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if nodes := uuo.mutation.RemovedGroceryListSharesIDs(); len(nodes) > 0 && !uuo.mutation.GroceryListSharesCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   user.GroceryListSharesTable,
-			Columns: user.GroceryListSharesPrimaryKey,
+			Columns: []string{user.GroceryListSharesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(grocerylistshare.FieldID, field.TypeInt),
@@ -1389,10 +1407,10 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if nodes := uuo.mutation.GroceryListSharesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   user.GroceryListSharesTable,
-			Columns: user.GroceryListSharesPrimaryKey,
+			Columns: []string{user.GroceryListSharesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(grocerylistshare.FieldID, field.TypeInt),
@@ -1405,10 +1423,10 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if uuo.mutation.MovieListsCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   user.MovieListsTable,
-			Columns: user.MovieListsPrimaryKey,
+			Columns: []string{user.MovieListsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(movielist.FieldID, field.TypeInt),
@@ -1418,10 +1436,10 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if nodes := uuo.mutation.RemovedMovieListsIDs(); len(nodes) > 0 && !uuo.mutation.MovieListsCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   user.MovieListsTable,
-			Columns: user.MovieListsPrimaryKey,
+			Columns: []string{user.MovieListsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(movielist.FieldID, field.TypeInt),
@@ -1434,10 +1452,10 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if nodes := uuo.mutation.MovieListsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   user.MovieListsTable,
-			Columns: user.MovieListsPrimaryKey,
+			Columns: []string{user.MovieListsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(movielist.FieldID, field.TypeInt),
@@ -1450,10 +1468,10 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if uuo.mutation.MovieListSharesCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   user.MovieListSharesTable,
-			Columns: user.MovieListSharesPrimaryKey,
+			Columns: []string{user.MovieListSharesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(movielistshare.FieldID, field.TypeInt),
@@ -1463,10 +1481,10 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if nodes := uuo.mutation.RemovedMovieListSharesIDs(); len(nodes) > 0 && !uuo.mutation.MovieListSharesCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   user.MovieListSharesTable,
-			Columns: user.MovieListSharesPrimaryKey,
+			Columns: []string{user.MovieListSharesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(movielistshare.FieldID, field.TypeInt),
@@ -1479,10 +1497,10 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if nodes := uuo.mutation.MovieListSharesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   user.MovieListSharesTable,
-			Columns: user.MovieListSharesPrimaryKey,
+			Columns: []string{user.MovieListSharesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(movielistshare.FieldID, field.TypeInt),

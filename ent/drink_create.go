@@ -133,19 +133,23 @@ func (dc *DrinkCreate) SetNillableCreatedAt(t *time.Time) *DrinkCreate {
 	return dc
 }
 
-// AddOwnerIDs adds the "owner" edge to the User entity by IDs.
-func (dc *DrinkCreate) AddOwnerIDs(ids ...int) *DrinkCreate {
-	dc.mutation.AddOwnerIDs(ids...)
+// SetOwnerID sets the "owner" edge to the User entity by ID.
+func (dc *DrinkCreate) SetOwnerID(id int) *DrinkCreate {
+	dc.mutation.SetOwnerID(id)
 	return dc
 }
 
-// AddOwner adds the "owner" edges to the User entity.
-func (dc *DrinkCreate) AddOwner(u ...*User) *DrinkCreate {
-	ids := make([]int, len(u))
-	for i := range u {
-		ids[i] = u[i].ID
+// SetNillableOwnerID sets the "owner" edge to the User entity by ID if the given value is not nil.
+func (dc *DrinkCreate) SetNillableOwnerID(id *int) *DrinkCreate {
+	if id != nil {
+		dc = dc.SetOwnerID(*id)
 	}
-	return dc.AddOwnerIDs(ids...)
+	return dc
+}
+
+// SetOwner sets the "owner" edge to the User entity.
+func (dc *DrinkCreate) SetOwner(u *User) *DrinkCreate {
+	return dc.SetOwnerID(u.ID)
 }
 
 // Mutation returns the DrinkMutation object of the builder.
@@ -308,10 +312,10 @@ func (dc *DrinkCreate) createSpec() (*Drink, *sqlgraph.CreateSpec) {
 	}
 	if nodes := dc.mutation.OwnerIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   drink.OwnerTable,
-			Columns: drink.OwnerPrimaryKey,
+			Columns: []string{drink.OwnerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
@@ -320,6 +324,7 @@ func (dc *DrinkCreate) createSpec() (*Drink, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
+		_node.user_drinks = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

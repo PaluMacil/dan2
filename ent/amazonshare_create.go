@@ -42,34 +42,42 @@ func (asc *AmazonShareCreate) SetCreatedAt(t time.Time) *AmazonShareCreate {
 	return asc
 }
 
-// AddUserIDs adds the "user" edge to the User entity by IDs.
-func (asc *AmazonShareCreate) AddUserIDs(ids ...int) *AmazonShareCreate {
-	asc.mutation.AddUserIDs(ids...)
+// SetUserID sets the "user" edge to the User entity by ID.
+func (asc *AmazonShareCreate) SetUserID(id int) *AmazonShareCreate {
+	asc.mutation.SetUserID(id)
 	return asc
 }
 
-// AddUser adds the "user" edges to the User entity.
-func (asc *AmazonShareCreate) AddUser(u ...*User) *AmazonShareCreate {
-	ids := make([]int, len(u))
-	for i := range u {
-		ids[i] = u[i].ID
+// SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
+func (asc *AmazonShareCreate) SetNillableUserID(id *int) *AmazonShareCreate {
+	if id != nil {
+		asc = asc.SetUserID(*id)
 	}
-	return asc.AddUserIDs(ids...)
-}
-
-// AddAmazonListIDs adds the "amazon_list" edge to the AmazonList entity by IDs.
-func (asc *AmazonShareCreate) AddAmazonListIDs(ids ...int) *AmazonShareCreate {
-	asc.mutation.AddAmazonListIDs(ids...)
 	return asc
 }
 
-// AddAmazonList adds the "amazon_list" edges to the AmazonList entity.
-func (asc *AmazonShareCreate) AddAmazonList(a ...*AmazonList) *AmazonShareCreate {
-	ids := make([]int, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
+// SetUser sets the "user" edge to the User entity.
+func (asc *AmazonShareCreate) SetUser(u *User) *AmazonShareCreate {
+	return asc.SetUserID(u.ID)
+}
+
+// SetAmazonListID sets the "amazon_list" edge to the AmazonList entity by ID.
+func (asc *AmazonShareCreate) SetAmazonListID(id int) *AmazonShareCreate {
+	asc.mutation.SetAmazonListID(id)
+	return asc
+}
+
+// SetNillableAmazonListID sets the "amazon_list" edge to the AmazonList entity by ID if the given value is not nil.
+func (asc *AmazonShareCreate) SetNillableAmazonListID(id *int) *AmazonShareCreate {
+	if id != nil {
+		asc = asc.SetAmazonListID(*id)
 	}
-	return asc.AddAmazonListIDs(ids...)
+	return asc
+}
+
+// SetAmazonList sets the "amazon_list" edge to the AmazonList entity.
+func (asc *AmazonShareCreate) SetAmazonList(a *AmazonList) *AmazonShareCreate {
+	return asc.SetAmazonListID(a.ID)
 }
 
 // Mutation returns the AmazonShareMutation object of the builder.
@@ -157,10 +165,10 @@ func (asc *AmazonShareCreate) createSpec() (*AmazonShare, *sqlgraph.CreateSpec) 
 	}
 	if nodes := asc.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   amazonshare.UserTable,
-			Columns: amazonshare.UserPrimaryKey,
+			Columns: []string{amazonshare.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
@@ -169,14 +177,15 @@ func (asc *AmazonShareCreate) createSpec() (*AmazonShare, *sqlgraph.CreateSpec) 
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
+		_node.user_amazon_shares = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := asc.mutation.AmazonListIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   amazonshare.AmazonListTable,
-			Columns: amazonshare.AmazonListPrimaryKey,
+			Columns: []string{amazonshare.AmazonListColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(amazonlist.FieldID, field.TypeInt),
@@ -185,6 +194,7 @@ func (asc *AmazonShareCreate) createSpec() (*AmazonShare, *sqlgraph.CreateSpec) 
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
+		_node.amazon_list_amazon_shares = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

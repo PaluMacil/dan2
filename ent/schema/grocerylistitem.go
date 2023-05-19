@@ -29,6 +29,7 @@ func (GroceryListItem) Fields() []ent.Field {
 func (GroceryListItem) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("grocery_list", GroceryList.Type).
-			Ref("grocery_list_items"),
+			Ref("grocery_list_items").
+			Unique(),
 	}
 }

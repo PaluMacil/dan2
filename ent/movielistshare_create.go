@@ -50,34 +50,42 @@ func (mlsc *MovieListShareCreate) SetNillableCreatedAt(t *time.Time) *MovieListS
 	return mlsc
 }
 
-// AddUserIDs adds the "user" edge to the User entity by IDs.
-func (mlsc *MovieListShareCreate) AddUserIDs(ids ...int) *MovieListShareCreate {
-	mlsc.mutation.AddUserIDs(ids...)
+// SetUserID sets the "user" edge to the User entity by ID.
+func (mlsc *MovieListShareCreate) SetUserID(id int) *MovieListShareCreate {
+	mlsc.mutation.SetUserID(id)
 	return mlsc
 }
 
-// AddUser adds the "user" edges to the User entity.
-func (mlsc *MovieListShareCreate) AddUser(u ...*User) *MovieListShareCreate {
-	ids := make([]int, len(u))
-	for i := range u {
-		ids[i] = u[i].ID
+// SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
+func (mlsc *MovieListShareCreate) SetNillableUserID(id *int) *MovieListShareCreate {
+	if id != nil {
+		mlsc = mlsc.SetUserID(*id)
 	}
-	return mlsc.AddUserIDs(ids...)
-}
-
-// AddMovieListIDs adds the "movie_list" edge to the MovieList entity by IDs.
-func (mlsc *MovieListShareCreate) AddMovieListIDs(ids ...int) *MovieListShareCreate {
-	mlsc.mutation.AddMovieListIDs(ids...)
 	return mlsc
 }
 
-// AddMovieList adds the "movie_list" edges to the MovieList entity.
-func (mlsc *MovieListShareCreate) AddMovieList(m ...*MovieList) *MovieListShareCreate {
-	ids := make([]int, len(m))
-	for i := range m {
-		ids[i] = m[i].ID
+// SetUser sets the "user" edge to the User entity.
+func (mlsc *MovieListShareCreate) SetUser(u *User) *MovieListShareCreate {
+	return mlsc.SetUserID(u.ID)
+}
+
+// SetMovieListID sets the "movie_list" edge to the MovieList entity by ID.
+func (mlsc *MovieListShareCreate) SetMovieListID(id int) *MovieListShareCreate {
+	mlsc.mutation.SetMovieListID(id)
+	return mlsc
+}
+
+// SetNillableMovieListID sets the "movie_list" edge to the MovieList entity by ID if the given value is not nil.
+func (mlsc *MovieListShareCreate) SetNillableMovieListID(id *int) *MovieListShareCreate {
+	if id != nil {
+		mlsc = mlsc.SetMovieListID(*id)
 	}
-	return mlsc.AddMovieListIDs(ids...)
+	return mlsc
+}
+
+// SetMovieList sets the "movie_list" edge to the MovieList entity.
+func (mlsc *MovieListShareCreate) SetMovieList(m *MovieList) *MovieListShareCreate {
+	return mlsc.SetMovieListID(m.ID)
 }
 
 // Mutation returns the MovieListShareMutation object of the builder.
@@ -169,10 +177,10 @@ func (mlsc *MovieListShareCreate) createSpec() (*MovieListShare, *sqlgraph.Creat
 	}
 	if nodes := mlsc.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   movielistshare.UserTable,
-			Columns: movielistshare.UserPrimaryKey,
+			Columns: []string{movielistshare.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
@@ -181,14 +189,15 @@ func (mlsc *MovieListShareCreate) createSpec() (*MovieListShare, *sqlgraph.Creat
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
+		_node.user_movie_list_shares = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := mlsc.mutation.MovieListIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   movielistshare.MovieListTable,
-			Columns: movielistshare.MovieListPrimaryKey,
+			Columns: []string{movielistshare.MovieListColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(movielist.FieldID, field.TypeInt),
@@ -197,6 +206,7 @@ func (mlsc *MovieListShareCreate) createSpec() (*MovieListShare, *sqlgraph.Creat
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
+		_node.movie_list_movie_list_shares = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

@@ -50,34 +50,42 @@ func (asu *AmazonShareUpdate) SetCreatedAt(t time.Time) *AmazonShareUpdate {
 	return asu
 }
 
-// AddUserIDs adds the "user" edge to the User entity by IDs.
-func (asu *AmazonShareUpdate) AddUserIDs(ids ...int) *AmazonShareUpdate {
-	asu.mutation.AddUserIDs(ids...)
+// SetUserID sets the "user" edge to the User entity by ID.
+func (asu *AmazonShareUpdate) SetUserID(id int) *AmazonShareUpdate {
+	asu.mutation.SetUserID(id)
 	return asu
 }
 
-// AddUser adds the "user" edges to the User entity.
-func (asu *AmazonShareUpdate) AddUser(u ...*User) *AmazonShareUpdate {
-	ids := make([]int, len(u))
-	for i := range u {
-		ids[i] = u[i].ID
+// SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
+func (asu *AmazonShareUpdate) SetNillableUserID(id *int) *AmazonShareUpdate {
+	if id != nil {
+		asu = asu.SetUserID(*id)
 	}
-	return asu.AddUserIDs(ids...)
-}
-
-// AddAmazonListIDs adds the "amazon_list" edge to the AmazonList entity by IDs.
-func (asu *AmazonShareUpdate) AddAmazonListIDs(ids ...int) *AmazonShareUpdate {
-	asu.mutation.AddAmazonListIDs(ids...)
 	return asu
 }
 
-// AddAmazonList adds the "amazon_list" edges to the AmazonList entity.
-func (asu *AmazonShareUpdate) AddAmazonList(a ...*AmazonList) *AmazonShareUpdate {
-	ids := make([]int, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
+// SetUser sets the "user" edge to the User entity.
+func (asu *AmazonShareUpdate) SetUser(u *User) *AmazonShareUpdate {
+	return asu.SetUserID(u.ID)
+}
+
+// SetAmazonListID sets the "amazon_list" edge to the AmazonList entity by ID.
+func (asu *AmazonShareUpdate) SetAmazonListID(id int) *AmazonShareUpdate {
+	asu.mutation.SetAmazonListID(id)
+	return asu
+}
+
+// SetNillableAmazonListID sets the "amazon_list" edge to the AmazonList entity by ID if the given value is not nil.
+func (asu *AmazonShareUpdate) SetNillableAmazonListID(id *int) *AmazonShareUpdate {
+	if id != nil {
+		asu = asu.SetAmazonListID(*id)
 	}
-	return asu.AddAmazonListIDs(ids...)
+	return asu
+}
+
+// SetAmazonList sets the "amazon_list" edge to the AmazonList entity.
+func (asu *AmazonShareUpdate) SetAmazonList(a *AmazonList) *AmazonShareUpdate {
+	return asu.SetAmazonListID(a.ID)
 }
 
 // Mutation returns the AmazonShareMutation object of the builder.
@@ -85,46 +93,16 @@ func (asu *AmazonShareUpdate) Mutation() *AmazonShareMutation {
 	return asu.mutation
 }
 
-// ClearUser clears all "user" edges to the User entity.
+// ClearUser clears the "user" edge to the User entity.
 func (asu *AmazonShareUpdate) ClearUser() *AmazonShareUpdate {
 	asu.mutation.ClearUser()
 	return asu
 }
 
-// RemoveUserIDs removes the "user" edge to User entities by IDs.
-func (asu *AmazonShareUpdate) RemoveUserIDs(ids ...int) *AmazonShareUpdate {
-	asu.mutation.RemoveUserIDs(ids...)
-	return asu
-}
-
-// RemoveUser removes "user" edges to User entities.
-func (asu *AmazonShareUpdate) RemoveUser(u ...*User) *AmazonShareUpdate {
-	ids := make([]int, len(u))
-	for i := range u {
-		ids[i] = u[i].ID
-	}
-	return asu.RemoveUserIDs(ids...)
-}
-
-// ClearAmazonList clears all "amazon_list" edges to the AmazonList entity.
+// ClearAmazonList clears the "amazon_list" edge to the AmazonList entity.
 func (asu *AmazonShareUpdate) ClearAmazonList() *AmazonShareUpdate {
 	asu.mutation.ClearAmazonList()
 	return asu
-}
-
-// RemoveAmazonListIDs removes the "amazon_list" edge to AmazonList entities by IDs.
-func (asu *AmazonShareUpdate) RemoveAmazonListIDs(ids ...int) *AmazonShareUpdate {
-	asu.mutation.RemoveAmazonListIDs(ids...)
-	return asu
-}
-
-// RemoveAmazonList removes "amazon_list" edges to AmazonList entities.
-func (asu *AmazonShareUpdate) RemoveAmazonList(a ...*AmazonList) *AmazonShareUpdate {
-	ids := make([]int, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
-	}
-	return asu.RemoveAmazonListIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -171,39 +149,23 @@ func (asu *AmazonShareUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if asu.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   amazonshare.UserTable,
-			Columns: amazonshare.UserPrimaryKey,
+			Columns: []string{amazonshare.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
 			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := asu.mutation.RemovedUserIDs(); len(nodes) > 0 && !asu.mutation.UserCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   amazonshare.UserTable,
-			Columns: amazonshare.UserPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := asu.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   amazonshare.UserTable,
-			Columns: amazonshare.UserPrimaryKey,
+			Columns: []string{amazonshare.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
@@ -216,39 +178,23 @@ func (asu *AmazonShareUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if asu.mutation.AmazonListCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   amazonshare.AmazonListTable,
-			Columns: amazonshare.AmazonListPrimaryKey,
+			Columns: []string{amazonshare.AmazonListColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(amazonlist.FieldID, field.TypeInt),
 			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := asu.mutation.RemovedAmazonListIDs(); len(nodes) > 0 && !asu.mutation.AmazonListCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   amazonshare.AmazonListTable,
-			Columns: amazonshare.AmazonListPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(amazonlist.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := asu.mutation.AmazonListIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   amazonshare.AmazonListTable,
-			Columns: amazonshare.AmazonListPrimaryKey,
+			Columns: []string{amazonshare.AmazonListColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(amazonlist.FieldID, field.TypeInt),
@@ -299,34 +245,42 @@ func (asuo *AmazonShareUpdateOne) SetCreatedAt(t time.Time) *AmazonShareUpdateOn
 	return asuo
 }
 
-// AddUserIDs adds the "user" edge to the User entity by IDs.
-func (asuo *AmazonShareUpdateOne) AddUserIDs(ids ...int) *AmazonShareUpdateOne {
-	asuo.mutation.AddUserIDs(ids...)
+// SetUserID sets the "user" edge to the User entity by ID.
+func (asuo *AmazonShareUpdateOne) SetUserID(id int) *AmazonShareUpdateOne {
+	asuo.mutation.SetUserID(id)
 	return asuo
 }
 
-// AddUser adds the "user" edges to the User entity.
-func (asuo *AmazonShareUpdateOne) AddUser(u ...*User) *AmazonShareUpdateOne {
-	ids := make([]int, len(u))
-	for i := range u {
-		ids[i] = u[i].ID
+// SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
+func (asuo *AmazonShareUpdateOne) SetNillableUserID(id *int) *AmazonShareUpdateOne {
+	if id != nil {
+		asuo = asuo.SetUserID(*id)
 	}
-	return asuo.AddUserIDs(ids...)
-}
-
-// AddAmazonListIDs adds the "amazon_list" edge to the AmazonList entity by IDs.
-func (asuo *AmazonShareUpdateOne) AddAmazonListIDs(ids ...int) *AmazonShareUpdateOne {
-	asuo.mutation.AddAmazonListIDs(ids...)
 	return asuo
 }
 
-// AddAmazonList adds the "amazon_list" edges to the AmazonList entity.
-func (asuo *AmazonShareUpdateOne) AddAmazonList(a ...*AmazonList) *AmazonShareUpdateOne {
-	ids := make([]int, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
+// SetUser sets the "user" edge to the User entity.
+func (asuo *AmazonShareUpdateOne) SetUser(u *User) *AmazonShareUpdateOne {
+	return asuo.SetUserID(u.ID)
+}
+
+// SetAmazonListID sets the "amazon_list" edge to the AmazonList entity by ID.
+func (asuo *AmazonShareUpdateOne) SetAmazonListID(id int) *AmazonShareUpdateOne {
+	asuo.mutation.SetAmazonListID(id)
+	return asuo
+}
+
+// SetNillableAmazonListID sets the "amazon_list" edge to the AmazonList entity by ID if the given value is not nil.
+func (asuo *AmazonShareUpdateOne) SetNillableAmazonListID(id *int) *AmazonShareUpdateOne {
+	if id != nil {
+		asuo = asuo.SetAmazonListID(*id)
 	}
-	return asuo.AddAmazonListIDs(ids...)
+	return asuo
+}
+
+// SetAmazonList sets the "amazon_list" edge to the AmazonList entity.
+func (asuo *AmazonShareUpdateOne) SetAmazonList(a *AmazonList) *AmazonShareUpdateOne {
+	return asuo.SetAmazonListID(a.ID)
 }
 
 // Mutation returns the AmazonShareMutation object of the builder.
@@ -334,46 +288,16 @@ func (asuo *AmazonShareUpdateOne) Mutation() *AmazonShareMutation {
 	return asuo.mutation
 }
 
-// ClearUser clears all "user" edges to the User entity.
+// ClearUser clears the "user" edge to the User entity.
 func (asuo *AmazonShareUpdateOne) ClearUser() *AmazonShareUpdateOne {
 	asuo.mutation.ClearUser()
 	return asuo
 }
 
-// RemoveUserIDs removes the "user" edge to User entities by IDs.
-func (asuo *AmazonShareUpdateOne) RemoveUserIDs(ids ...int) *AmazonShareUpdateOne {
-	asuo.mutation.RemoveUserIDs(ids...)
-	return asuo
-}
-
-// RemoveUser removes "user" edges to User entities.
-func (asuo *AmazonShareUpdateOne) RemoveUser(u ...*User) *AmazonShareUpdateOne {
-	ids := make([]int, len(u))
-	for i := range u {
-		ids[i] = u[i].ID
-	}
-	return asuo.RemoveUserIDs(ids...)
-}
-
-// ClearAmazonList clears all "amazon_list" edges to the AmazonList entity.
+// ClearAmazonList clears the "amazon_list" edge to the AmazonList entity.
 func (asuo *AmazonShareUpdateOne) ClearAmazonList() *AmazonShareUpdateOne {
 	asuo.mutation.ClearAmazonList()
 	return asuo
-}
-
-// RemoveAmazonListIDs removes the "amazon_list" edge to AmazonList entities by IDs.
-func (asuo *AmazonShareUpdateOne) RemoveAmazonListIDs(ids ...int) *AmazonShareUpdateOne {
-	asuo.mutation.RemoveAmazonListIDs(ids...)
-	return asuo
-}
-
-// RemoveAmazonList removes "amazon_list" edges to AmazonList entities.
-func (asuo *AmazonShareUpdateOne) RemoveAmazonList(a ...*AmazonList) *AmazonShareUpdateOne {
-	ids := make([]int, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
-	}
-	return asuo.RemoveAmazonListIDs(ids...)
 }
 
 // Where appends a list predicates to the AmazonShareUpdate builder.
@@ -450,39 +374,23 @@ func (asuo *AmazonShareUpdateOne) sqlSave(ctx context.Context) (_node *AmazonSha
 	}
 	if asuo.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   amazonshare.UserTable,
-			Columns: amazonshare.UserPrimaryKey,
+			Columns: []string{amazonshare.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
 			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := asuo.mutation.RemovedUserIDs(); len(nodes) > 0 && !asuo.mutation.UserCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   amazonshare.UserTable,
-			Columns: amazonshare.UserPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := asuo.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   amazonshare.UserTable,
-			Columns: amazonshare.UserPrimaryKey,
+			Columns: []string{amazonshare.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
@@ -495,39 +403,23 @@ func (asuo *AmazonShareUpdateOne) sqlSave(ctx context.Context) (_node *AmazonSha
 	}
 	if asuo.mutation.AmazonListCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   amazonshare.AmazonListTable,
-			Columns: amazonshare.AmazonListPrimaryKey,
+			Columns: []string{amazonshare.AmazonListColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(amazonlist.FieldID, field.TypeInt),
 			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := asuo.mutation.RemovedAmazonListIDs(); len(nodes) > 0 && !asuo.mutation.AmazonListCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   amazonshare.AmazonListTable,
-			Columns: amazonshare.AmazonListPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(amazonlist.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := asuo.mutation.AmazonListIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   amazonshare.AmazonListTable,
-			Columns: amazonshare.AmazonListPrimaryKey,
+			Columns: []string{amazonshare.AmazonListColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(amazonlist.FieldID, field.TypeInt),

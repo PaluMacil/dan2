@@ -31,7 +31,8 @@ func (GroceryList) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("grocery_list_items", GroceryListItem.Type),
 		edge.From("owner", User.Type).
-			Ref("grocery_lists"),
+			Ref("grocery_lists").
+			Unique(),
 		edge.To("grocery_list_shares", GroceryListShare.Type),
 	}
 }

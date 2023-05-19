@@ -78,7 +78,7 @@ func (alq *AmazonListQuery) QueryAmazonOrders() *AmazonOrderQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(amazonlist.Table, amazonlist.FieldID, selector),
 			sqlgraph.To(amazonorder.Table, amazonorder.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, amazonlist.AmazonOrdersTable, amazonlist.AmazonOrdersPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.O2M, false, amazonlist.AmazonOrdersTable, amazonlist.AmazonOrdersColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(alq.driver.Dialect(), step)
 		return fromU, nil
@@ -122,7 +122,7 @@ func (alq *AmazonListQuery) QueryAmazonShares() *AmazonShareQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(amazonlist.Table, amazonlist.FieldID, selector),
 			sqlgraph.To(amazonshare.Table, amazonshare.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, amazonlist.AmazonSharesTable, amazonlist.AmazonSharesPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.O2M, false, amazonlist.AmazonSharesTable, amazonlist.AmazonSharesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(alq.driver.Dialect(), step)
 		return fromU, nil
@@ -491,63 +491,33 @@ func (alq *AmazonListQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*
 }
 
 func (alq *AmazonListQuery) loadAmazonOrders(ctx context.Context, query *AmazonOrderQuery, nodes []*AmazonList, init func(*AmazonList), assign func(*AmazonList, *AmazonOrder)) error {
-	edgeIDs := make([]driver.Value, len(nodes))
-	byID := make(map[int]*AmazonList)
-	nids := make(map[int]map[*AmazonList]struct{})
-	for i, node := range nodes {
-		edgeIDs[i] = node.ID
-		byID[node.ID] = node
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*AmazonList)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
 		if init != nil {
-			init(node)
+			init(nodes[i])
 		}
 	}
-	query.Where(func(s *sql.Selector) {
-		joinT := sql.Table(amazonlist.AmazonOrdersTable)
-		s.Join(joinT).On(s.C(amazonorder.FieldID), joinT.C(amazonlist.AmazonOrdersPrimaryKey[1]))
-		s.Where(sql.InValues(joinT.C(amazonlist.AmazonOrdersPrimaryKey[0]), edgeIDs...))
-		columns := s.SelectedColumns()
-		s.Select(joinT.C(amazonlist.AmazonOrdersPrimaryKey[0]))
-		s.AppendSelect(columns...)
-		s.SetDistinct(false)
-	})
-	if err := query.prepareQuery(ctx); err != nil {
-		return err
-	}
-	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
-		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
-			assign := spec.Assign
-			values := spec.ScanValues
-			spec.ScanValues = func(columns []string) ([]any, error) {
-				values, err := values(columns[1:])
-				if err != nil {
-					return nil, err
-				}
-				return append([]any{new(sql.NullInt64)}, values...), nil
-			}
-			spec.Assign = func(columns []string, values []any) error {
-				outValue := int(values[0].(*sql.NullInt64).Int64)
-				inValue := int(values[1].(*sql.NullInt64).Int64)
-				if nids[inValue] == nil {
-					nids[inValue] = map[*AmazonList]struct{}{byID[outValue]: {}}
-					return assign(columns[1:], values[1:])
-				}
-				nids[inValue][byID[outValue]] = struct{}{}
-				return nil
-			}
-		})
-	})
-	neighbors, err := withInterceptors[[]*AmazonOrder](ctx, query, qr, query.inters)
+	query.withFKs = true
+	query.Where(predicate.AmazonOrder(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(amazonlist.AmazonOrdersColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
 	if err != nil {
 		return err
 	}
 	for _, n := range neighbors {
-		nodes, ok := nids[n.ID]
+		fk := n.amazon_list_amazon_orders
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "amazon_list_amazon_orders" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected "amazon_orders" node returned %v`, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "amazon_list_amazon_orders" returned %v for node %v`, *fk, n.ID)
 		}
-		for kn := range nodes {
-			assign(kn, n)
-		}
+		assign(node, n)
 	}
 	return nil
 }
@@ -613,63 +583,33 @@ func (alq *AmazonListQuery) loadOwner(ctx context.Context, query *UserQuery, nod
 	return nil
 }
 func (alq *AmazonListQuery) loadAmazonShares(ctx context.Context, query *AmazonShareQuery, nodes []*AmazonList, init func(*AmazonList), assign func(*AmazonList, *AmazonShare)) error {
-	edgeIDs := make([]driver.Value, len(nodes))
-	byID := make(map[int]*AmazonList)
-	nids := make(map[int]map[*AmazonList]struct{})
-	for i, node := range nodes {
-		edgeIDs[i] = node.ID
-		byID[node.ID] = node
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*AmazonList)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
 		if init != nil {
-			init(node)
+			init(nodes[i])
 		}
 	}
-	query.Where(func(s *sql.Selector) {
-		joinT := sql.Table(amazonlist.AmazonSharesTable)
-		s.Join(joinT).On(s.C(amazonshare.FieldID), joinT.C(amazonlist.AmazonSharesPrimaryKey[1]))
-		s.Where(sql.InValues(joinT.C(amazonlist.AmazonSharesPrimaryKey[0]), edgeIDs...))
-		columns := s.SelectedColumns()
-		s.Select(joinT.C(amazonlist.AmazonSharesPrimaryKey[0]))
-		s.AppendSelect(columns...)
-		s.SetDistinct(false)
-	})
-	if err := query.prepareQuery(ctx); err != nil {
-		return err
-	}
-	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
-		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
-			assign := spec.Assign
-			values := spec.ScanValues
-			spec.ScanValues = func(columns []string) ([]any, error) {
-				values, err := values(columns[1:])
-				if err != nil {
-					return nil, err
-				}
-				return append([]any{new(sql.NullInt64)}, values...), nil
-			}
-			spec.Assign = func(columns []string, values []any) error {
-				outValue := int(values[0].(*sql.NullInt64).Int64)
-				inValue := int(values[1].(*sql.NullInt64).Int64)
-				if nids[inValue] == nil {
-					nids[inValue] = map[*AmazonList]struct{}{byID[outValue]: {}}
-					return assign(columns[1:], values[1:])
-				}
-				nids[inValue][byID[outValue]] = struct{}{}
-				return nil
-			}
-		})
-	})
-	neighbors, err := withInterceptors[[]*AmazonShare](ctx, query, qr, query.inters)
+	query.withFKs = true
+	query.Where(predicate.AmazonShare(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(amazonlist.AmazonSharesColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
 	if err != nil {
 		return err
 	}
 	for _, n := range neighbors {
-		nodes, ok := nids[n.ID]
+		fk := n.amazon_list_amazon_shares
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "amazon_list_amazon_shares" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected "amazon_shares" node returned %v`, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "amazon_list_amazon_shares" returned %v for node %v`, *fk, n.ID)
 		}
-		for kn := range nodes {
-			assign(kn, n)
-		}
+		assign(node, n)
 	}
 	return nil
 }

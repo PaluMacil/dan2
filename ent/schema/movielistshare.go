@@ -26,8 +26,10 @@ func (MovieListShare) Fields() []ent.Field {
 func (MovieListShare) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("user", User.Type).
-			Ref("movie_list_shares"),
+			Ref("movie_list_shares").
+			Unique(),
 		edge.From("movie_list", MovieList.Type).
-			Ref("movie_list_shares"),
+			Ref("movie_list_shares").
+			Unique(),
 	}
 }

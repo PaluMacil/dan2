@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/PaluMacil/dan2/ent/movie"
+	"github.com/PaluMacil/dan2/ent/movielist"
 )
 
 // Movie is the model entity for the Movie schema.
@@ -27,23 +28,28 @@ type Movie struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the MovieQuery when eager-loading is set.
-	Edges        MovieEdges `json:"edges"`
-	selectValues sql.SelectValues
+	Edges             MovieEdges `json:"edges"`
+	movie_list_movies *int
+	selectValues      sql.SelectValues
 }
 
 // MovieEdges holds the relations/edges for other nodes in the graph.
 type MovieEdges struct {
 	// MovieList holds the value of the movie_list edge.
-	MovieList []*MovieList `json:"movie_list,omitempty"`
+	MovieList *MovieList `json:"movie_list,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [1]bool
 }
 
 // MovieListOrErr returns the MovieList value or an error if the edge
-// was not loaded in eager-loading.
-func (e MovieEdges) MovieListOrErr() ([]*MovieList, error) {
+// was not loaded in eager-loading, or loaded but was not found.
+func (e MovieEdges) MovieListOrErr() (*MovieList, error) {
 	if e.loadedTypes[0] {
+		if e.MovieList == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: movielist.Label}
+		}
 		return e.MovieList, nil
 	}
 	return nil, &NotLoadedError{edge: "movie_list"}
@@ -62,6 +68,8 @@ func (*Movie) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullString)
 		case movie.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
+		case movie.ForeignKeys[0]: // movie_list_movies
+			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -106,6 +114,13 @@ func (m *Movie) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
 				m.CreatedAt = value.Time
+			}
+		case movie.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for edge-field movie_list_movies", value)
+			} else if value.Valid {
+				m.movie_list_movies = new(int)
+				*m.movie_list_movies = int(value.Int64)
 			}
 		default:
 			m.selectValues.Set(columns[i], values[i])

@@ -24,16 +24,20 @@ const (
 	EdgeMovieList = "movie_list"
 	// Table holds the table name of the movielistshare in the database.
 	Table = "movie_list_shares"
-	// UserTable is the table that holds the user relation/edge. The primary key declared below.
-	UserTable = "user_movie_list_shares"
+	// UserTable is the table that holds the user relation/edge.
+	UserTable = "movie_list_shares"
 	// UserInverseTable is the table name for the User entity.
 	// It exists in this package in order to avoid circular dependency with the "user" package.
 	UserInverseTable = "users"
-	// MovieListTable is the table that holds the movie_list relation/edge. The primary key declared below.
-	MovieListTable = "movie_list_movie_list_shares"
+	// UserColumn is the table column denoting the user relation/edge.
+	UserColumn = "user_movie_list_shares"
+	// MovieListTable is the table that holds the movie_list relation/edge.
+	MovieListTable = "movie_list_shares"
 	// MovieListInverseTable is the table name for the MovieList entity.
 	// It exists in this package in order to avoid circular dependency with the "movielist" package.
 	MovieListInverseTable = "movie_lists"
+	// MovieListColumn is the table column denoting the movie_list relation/edge.
+	MovieListColumn = "movie_list_movie_list_shares"
 )
 
 // Columns holds all SQL columns for movielistshare fields.
@@ -43,19 +47,22 @@ var Columns = []string{
 	FieldCreatedAt,
 }
 
-var (
-	// UserPrimaryKey and UserColumn2 are the table columns denoting the
-	// primary key for the user relation (M2M).
-	UserPrimaryKey = []string{"user_id", "movie_list_share_id"}
-	// MovieListPrimaryKey and MovieListColumn2 are the table columns denoting the
-	// primary key for the movie_list relation (M2M).
-	MovieListPrimaryKey = []string{"movie_list_id", "movie_list_share_id"}
-)
+// ForeignKeys holds the SQL foreign-keys that are owned by the "movie_list_shares"
+// table and are not defined as standalone fields in the schema.
+var ForeignKeys = []string{
+	"movie_list_movie_list_shares",
+	"user_movie_list_shares",
+}
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
+			return true
+		}
+	}
+	for i := range ForeignKeys {
+		if column == ForeignKeys[i] {
 			return true
 		}
 	}
@@ -87,44 +94,30 @@ func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
 }
 
-// ByUserCount orders the results by user count.
-func ByUserCount(opts ...sql.OrderTermOption) OrderOption {
+// ByUserField orders the results by user field.
+func ByUserField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newUserStep(), opts...)
+		sqlgraph.OrderByNeighborTerms(s, newUserStep(), sql.OrderByField(field, opts...))
 	}
 }
 
-// ByUser orders the results by user terms.
-func ByUser(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+// ByMovieListField orders the results by movie_list field.
+func ByMovieListField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newUserStep(), append([]sql.OrderTerm{term}, terms...)...)
-	}
-}
-
-// ByMovieListCount orders the results by movie_list count.
-func ByMovieListCount(opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newMovieListStep(), opts...)
-	}
-}
-
-// ByMovieList orders the results by movie_list terms.
-func ByMovieList(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newMovieListStep(), append([]sql.OrderTerm{term}, terms...)...)
+		sqlgraph.OrderByNeighborTerms(s, newMovieListStep(), sql.OrderByField(field, opts...))
 	}
 }
 func newUserStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(UserInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2M, true, UserTable, UserPrimaryKey...),
+		sqlgraph.Edge(sqlgraph.M2O, true, UserTable, UserColumn),
 	)
 }
 func newMovieListStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(MovieListInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2M, true, MovieListTable, MovieListPrimaryKey...),
+		sqlgraph.Edge(sqlgraph.M2O, true, MovieListTable, MovieListColumn),
 	)
 }

@@ -199,10 +199,10 @@ func (alu *AmazonListUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if alu.mutation.AmazonOrdersCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   amazonlist.AmazonOrdersTable,
-			Columns: amazonlist.AmazonOrdersPrimaryKey,
+			Columns: []string{amazonlist.AmazonOrdersColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(amazonorder.FieldID, field.TypeInt),
@@ -212,10 +212,10 @@ func (alu *AmazonListUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if nodes := alu.mutation.RemovedAmazonOrdersIDs(); len(nodes) > 0 && !alu.mutation.AmazonOrdersCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   amazonlist.AmazonOrdersTable,
-			Columns: amazonlist.AmazonOrdersPrimaryKey,
+			Columns: []string{amazonlist.AmazonOrdersColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(amazonorder.FieldID, field.TypeInt),
@@ -228,10 +228,10 @@ func (alu *AmazonListUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if nodes := alu.mutation.AmazonOrdersIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   amazonlist.AmazonOrdersTable,
-			Columns: amazonlist.AmazonOrdersPrimaryKey,
+			Columns: []string{amazonlist.AmazonOrdersColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(amazonorder.FieldID, field.TypeInt),
@@ -289,10 +289,10 @@ func (alu *AmazonListUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if alu.mutation.AmazonSharesCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   amazonlist.AmazonSharesTable,
-			Columns: amazonlist.AmazonSharesPrimaryKey,
+			Columns: []string{amazonlist.AmazonSharesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(amazonshare.FieldID, field.TypeInt),
@@ -302,10 +302,10 @@ func (alu *AmazonListUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if nodes := alu.mutation.RemovedAmazonSharesIDs(); len(nodes) > 0 && !alu.mutation.AmazonSharesCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   amazonlist.AmazonSharesTable,
-			Columns: amazonlist.AmazonSharesPrimaryKey,
+			Columns: []string{amazonlist.AmazonSharesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(amazonshare.FieldID, field.TypeInt),
@@ -318,10 +318,10 @@ func (alu *AmazonListUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if nodes := alu.mutation.AmazonSharesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   amazonlist.AmazonSharesTable,
-			Columns: amazonlist.AmazonSharesPrimaryKey,
+			Columns: []string{amazonlist.AmazonSharesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(amazonshare.FieldID, field.TypeInt),
@@ -550,10 +550,10 @@ func (aluo *AmazonListUpdateOne) sqlSave(ctx context.Context) (_node *AmazonList
 	}
 	if aluo.mutation.AmazonOrdersCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   amazonlist.AmazonOrdersTable,
-			Columns: amazonlist.AmazonOrdersPrimaryKey,
+			Columns: []string{amazonlist.AmazonOrdersColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(amazonorder.FieldID, field.TypeInt),
@@ -563,10 +563,10 @@ func (aluo *AmazonListUpdateOne) sqlSave(ctx context.Context) (_node *AmazonList
 	}
 	if nodes := aluo.mutation.RemovedAmazonOrdersIDs(); len(nodes) > 0 && !aluo.mutation.AmazonOrdersCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   amazonlist.AmazonOrdersTable,
-			Columns: amazonlist.AmazonOrdersPrimaryKey,
+			Columns: []string{amazonlist.AmazonOrdersColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(amazonorder.FieldID, field.TypeInt),
@@ -579,10 +579,10 @@ func (aluo *AmazonListUpdateOne) sqlSave(ctx context.Context) (_node *AmazonList
 	}
 	if nodes := aluo.mutation.AmazonOrdersIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   amazonlist.AmazonOrdersTable,
-			Columns: amazonlist.AmazonOrdersPrimaryKey,
+			Columns: []string{amazonlist.AmazonOrdersColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(amazonorder.FieldID, field.TypeInt),
@@ -640,10 +640,10 @@ func (aluo *AmazonListUpdateOne) sqlSave(ctx context.Context) (_node *AmazonList
 	}
 	if aluo.mutation.AmazonSharesCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   amazonlist.AmazonSharesTable,
-			Columns: amazonlist.AmazonSharesPrimaryKey,
+			Columns: []string{amazonlist.AmazonSharesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(amazonshare.FieldID, field.TypeInt),
@@ -653,10 +653,10 @@ func (aluo *AmazonListUpdateOne) sqlSave(ctx context.Context) (_node *AmazonList
 	}
 	if nodes := aluo.mutation.RemovedAmazonSharesIDs(); len(nodes) > 0 && !aluo.mutation.AmazonSharesCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   amazonlist.AmazonSharesTable,
-			Columns: amazonlist.AmazonSharesPrimaryKey,
+			Columns: []string{amazonlist.AmazonSharesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(amazonshare.FieldID, field.TypeInt),
@@ -669,10 +669,10 @@ func (aluo *AmazonListUpdateOne) sqlSave(ctx context.Context) (_node *AmazonList
 	}
 	if nodes := aluo.mutation.AmazonSharesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   amazonlist.AmazonSharesTable,
-			Columns: amazonlist.AmazonSharesPrimaryKey,
+			Columns: []string{amazonlist.AmazonSharesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(amazonshare.FieldID, field.TypeInt),

@@ -120,7 +120,7 @@ func HasUser() predicate.MovieListShare {
 	return predicate.MovieListShare(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, UserTable, UserPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2O, true, UserTable, UserColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -143,7 +143,7 @@ func HasMovieList() predicate.MovieListShare {
 	return predicate.MovieListShare(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, MovieListTable, MovieListPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2O, true, MovieListTable, MovieListColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})

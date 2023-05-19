@@ -176,19 +176,23 @@ func (du *DrinkUpdate) SetNillableCreatedAt(t *time.Time) *DrinkUpdate {
 	return du
 }
 
-// AddOwnerIDs adds the "owner" edge to the User entity by IDs.
-func (du *DrinkUpdate) AddOwnerIDs(ids ...int) *DrinkUpdate {
-	du.mutation.AddOwnerIDs(ids...)
+// SetOwnerID sets the "owner" edge to the User entity by ID.
+func (du *DrinkUpdate) SetOwnerID(id int) *DrinkUpdate {
+	du.mutation.SetOwnerID(id)
 	return du
 }
 
-// AddOwner adds the "owner" edges to the User entity.
-func (du *DrinkUpdate) AddOwner(u ...*User) *DrinkUpdate {
-	ids := make([]int, len(u))
-	for i := range u {
-		ids[i] = u[i].ID
+// SetNillableOwnerID sets the "owner" edge to the User entity by ID if the given value is not nil.
+func (du *DrinkUpdate) SetNillableOwnerID(id *int) *DrinkUpdate {
+	if id != nil {
+		du = du.SetOwnerID(*id)
 	}
-	return du.AddOwnerIDs(ids...)
+	return du
+}
+
+// SetOwner sets the "owner" edge to the User entity.
+func (du *DrinkUpdate) SetOwner(u *User) *DrinkUpdate {
+	return du.SetOwnerID(u.ID)
 }
 
 // Mutation returns the DrinkMutation object of the builder.
@@ -196,25 +200,10 @@ func (du *DrinkUpdate) Mutation() *DrinkMutation {
 	return du.mutation
 }
 
-// ClearOwner clears all "owner" edges to the User entity.
+// ClearOwner clears the "owner" edge to the User entity.
 func (du *DrinkUpdate) ClearOwner() *DrinkUpdate {
 	du.mutation.ClearOwner()
 	return du
-}
-
-// RemoveOwnerIDs removes the "owner" edge to User entities by IDs.
-func (du *DrinkUpdate) RemoveOwnerIDs(ids ...int) *DrinkUpdate {
-	du.mutation.RemoveOwnerIDs(ids...)
-	return du
-}
-
-// RemoveOwner removes "owner" edges to User entities.
-func (du *DrinkUpdate) RemoveOwner(u ...*User) *DrinkUpdate {
-	ids := make([]int, len(u))
-	for i := range u {
-		ids[i] = u[i].ID
-	}
-	return du.RemoveOwnerIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -307,39 +296,23 @@ func (du *DrinkUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if du.mutation.OwnerCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   drink.OwnerTable,
-			Columns: drink.OwnerPrimaryKey,
+			Columns: []string{drink.OwnerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
 			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := du.mutation.RemovedOwnerIDs(); len(nodes) > 0 && !du.mutation.OwnerCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   drink.OwnerTable,
-			Columns: drink.OwnerPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := du.mutation.OwnerIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   drink.OwnerTable,
-			Columns: drink.OwnerPrimaryKey,
+			Columns: []string{drink.OwnerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
@@ -517,19 +490,23 @@ func (duo *DrinkUpdateOne) SetNillableCreatedAt(t *time.Time) *DrinkUpdateOne {
 	return duo
 }
 
-// AddOwnerIDs adds the "owner" edge to the User entity by IDs.
-func (duo *DrinkUpdateOne) AddOwnerIDs(ids ...int) *DrinkUpdateOne {
-	duo.mutation.AddOwnerIDs(ids...)
+// SetOwnerID sets the "owner" edge to the User entity by ID.
+func (duo *DrinkUpdateOne) SetOwnerID(id int) *DrinkUpdateOne {
+	duo.mutation.SetOwnerID(id)
 	return duo
 }
 
-// AddOwner adds the "owner" edges to the User entity.
-func (duo *DrinkUpdateOne) AddOwner(u ...*User) *DrinkUpdateOne {
-	ids := make([]int, len(u))
-	for i := range u {
-		ids[i] = u[i].ID
+// SetNillableOwnerID sets the "owner" edge to the User entity by ID if the given value is not nil.
+func (duo *DrinkUpdateOne) SetNillableOwnerID(id *int) *DrinkUpdateOne {
+	if id != nil {
+		duo = duo.SetOwnerID(*id)
 	}
-	return duo.AddOwnerIDs(ids...)
+	return duo
+}
+
+// SetOwner sets the "owner" edge to the User entity.
+func (duo *DrinkUpdateOne) SetOwner(u *User) *DrinkUpdateOne {
+	return duo.SetOwnerID(u.ID)
 }
 
 // Mutation returns the DrinkMutation object of the builder.
@@ -537,25 +514,10 @@ func (duo *DrinkUpdateOne) Mutation() *DrinkMutation {
 	return duo.mutation
 }
 
-// ClearOwner clears all "owner" edges to the User entity.
+// ClearOwner clears the "owner" edge to the User entity.
 func (duo *DrinkUpdateOne) ClearOwner() *DrinkUpdateOne {
 	duo.mutation.ClearOwner()
 	return duo
-}
-
-// RemoveOwnerIDs removes the "owner" edge to User entities by IDs.
-func (duo *DrinkUpdateOne) RemoveOwnerIDs(ids ...int) *DrinkUpdateOne {
-	duo.mutation.RemoveOwnerIDs(ids...)
-	return duo
-}
-
-// RemoveOwner removes "owner" edges to User entities.
-func (duo *DrinkUpdateOne) RemoveOwner(u ...*User) *DrinkUpdateOne {
-	ids := make([]int, len(u))
-	for i := range u {
-		ids[i] = u[i].ID
-	}
-	return duo.RemoveOwnerIDs(ids...)
 }
 
 // Where appends a list predicates to the DrinkUpdate builder.
@@ -678,39 +640,23 @@ func (duo *DrinkUpdateOne) sqlSave(ctx context.Context) (_node *Drink, err error
 	}
 	if duo.mutation.OwnerCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   drink.OwnerTable,
-			Columns: drink.OwnerPrimaryKey,
+			Columns: []string{drink.OwnerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
 			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := duo.mutation.RemovedOwnerIDs(); len(nodes) > 0 && !duo.mutation.OwnerCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   drink.OwnerTable,
-			Columns: drink.OwnerPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := duo.mutation.OwnerIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   drink.OwnerTable,
-			Columns: drink.OwnerPrimaryKey,
+			Columns: []string{drink.OwnerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),

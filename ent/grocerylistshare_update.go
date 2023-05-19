@@ -58,34 +58,42 @@ func (glsu *GroceryListShareUpdate) SetNillableCreatedAt(t *time.Time) *GroceryL
 	return glsu
 }
 
-// AddUserIDs adds the "user" edge to the User entity by IDs.
-func (glsu *GroceryListShareUpdate) AddUserIDs(ids ...int) *GroceryListShareUpdate {
-	glsu.mutation.AddUserIDs(ids...)
+// SetUserID sets the "user" edge to the User entity by ID.
+func (glsu *GroceryListShareUpdate) SetUserID(id int) *GroceryListShareUpdate {
+	glsu.mutation.SetUserID(id)
 	return glsu
 }
 
-// AddUser adds the "user" edges to the User entity.
-func (glsu *GroceryListShareUpdate) AddUser(u ...*User) *GroceryListShareUpdate {
-	ids := make([]int, len(u))
-	for i := range u {
-		ids[i] = u[i].ID
+// SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
+func (glsu *GroceryListShareUpdate) SetNillableUserID(id *int) *GroceryListShareUpdate {
+	if id != nil {
+		glsu = glsu.SetUserID(*id)
 	}
-	return glsu.AddUserIDs(ids...)
-}
-
-// AddGroceryListIDs adds the "grocery_list" edge to the GroceryList entity by IDs.
-func (glsu *GroceryListShareUpdate) AddGroceryListIDs(ids ...int) *GroceryListShareUpdate {
-	glsu.mutation.AddGroceryListIDs(ids...)
 	return glsu
 }
 
-// AddGroceryList adds the "grocery_list" edges to the GroceryList entity.
-func (glsu *GroceryListShareUpdate) AddGroceryList(g ...*GroceryList) *GroceryListShareUpdate {
-	ids := make([]int, len(g))
-	for i := range g {
-		ids[i] = g[i].ID
+// SetUser sets the "user" edge to the User entity.
+func (glsu *GroceryListShareUpdate) SetUser(u *User) *GroceryListShareUpdate {
+	return glsu.SetUserID(u.ID)
+}
+
+// SetGroceryListID sets the "grocery_list" edge to the GroceryList entity by ID.
+func (glsu *GroceryListShareUpdate) SetGroceryListID(id int) *GroceryListShareUpdate {
+	glsu.mutation.SetGroceryListID(id)
+	return glsu
+}
+
+// SetNillableGroceryListID sets the "grocery_list" edge to the GroceryList entity by ID if the given value is not nil.
+func (glsu *GroceryListShareUpdate) SetNillableGroceryListID(id *int) *GroceryListShareUpdate {
+	if id != nil {
+		glsu = glsu.SetGroceryListID(*id)
 	}
-	return glsu.AddGroceryListIDs(ids...)
+	return glsu
+}
+
+// SetGroceryList sets the "grocery_list" edge to the GroceryList entity.
+func (glsu *GroceryListShareUpdate) SetGroceryList(g *GroceryList) *GroceryListShareUpdate {
+	return glsu.SetGroceryListID(g.ID)
 }
 
 // Mutation returns the GroceryListShareMutation object of the builder.
@@ -93,46 +101,16 @@ func (glsu *GroceryListShareUpdate) Mutation() *GroceryListShareMutation {
 	return glsu.mutation
 }
 
-// ClearUser clears all "user" edges to the User entity.
+// ClearUser clears the "user" edge to the User entity.
 func (glsu *GroceryListShareUpdate) ClearUser() *GroceryListShareUpdate {
 	glsu.mutation.ClearUser()
 	return glsu
 }
 
-// RemoveUserIDs removes the "user" edge to User entities by IDs.
-func (glsu *GroceryListShareUpdate) RemoveUserIDs(ids ...int) *GroceryListShareUpdate {
-	glsu.mutation.RemoveUserIDs(ids...)
-	return glsu
-}
-
-// RemoveUser removes "user" edges to User entities.
-func (glsu *GroceryListShareUpdate) RemoveUser(u ...*User) *GroceryListShareUpdate {
-	ids := make([]int, len(u))
-	for i := range u {
-		ids[i] = u[i].ID
-	}
-	return glsu.RemoveUserIDs(ids...)
-}
-
-// ClearGroceryList clears all "grocery_list" edges to the GroceryList entity.
+// ClearGroceryList clears the "grocery_list" edge to the GroceryList entity.
 func (glsu *GroceryListShareUpdate) ClearGroceryList() *GroceryListShareUpdate {
 	glsu.mutation.ClearGroceryList()
 	return glsu
-}
-
-// RemoveGroceryListIDs removes the "grocery_list" edge to GroceryList entities by IDs.
-func (glsu *GroceryListShareUpdate) RemoveGroceryListIDs(ids ...int) *GroceryListShareUpdate {
-	glsu.mutation.RemoveGroceryListIDs(ids...)
-	return glsu
-}
-
-// RemoveGroceryList removes "grocery_list" edges to GroceryList entities.
-func (glsu *GroceryListShareUpdate) RemoveGroceryList(g ...*GroceryList) *GroceryListShareUpdate {
-	ids := make([]int, len(g))
-	for i := range g {
-		ids[i] = g[i].ID
-	}
-	return glsu.RemoveGroceryListIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -179,39 +157,23 @@ func (glsu *GroceryListShareUpdate) sqlSave(ctx context.Context) (n int, err err
 	}
 	if glsu.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   grocerylistshare.UserTable,
-			Columns: grocerylistshare.UserPrimaryKey,
+			Columns: []string{grocerylistshare.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
 			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := glsu.mutation.RemovedUserIDs(); len(nodes) > 0 && !glsu.mutation.UserCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   grocerylistshare.UserTable,
-			Columns: grocerylistshare.UserPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := glsu.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   grocerylistshare.UserTable,
-			Columns: grocerylistshare.UserPrimaryKey,
+			Columns: []string{grocerylistshare.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
@@ -224,39 +186,23 @@ func (glsu *GroceryListShareUpdate) sqlSave(ctx context.Context) (n int, err err
 	}
 	if glsu.mutation.GroceryListCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   grocerylistshare.GroceryListTable,
-			Columns: grocerylistshare.GroceryListPrimaryKey,
+			Columns: []string{grocerylistshare.GroceryListColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(grocerylist.FieldID, field.TypeInt),
 			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := glsu.mutation.RemovedGroceryListIDs(); len(nodes) > 0 && !glsu.mutation.GroceryListCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   grocerylistshare.GroceryListTable,
-			Columns: grocerylistshare.GroceryListPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(grocerylist.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := glsu.mutation.GroceryListIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   grocerylistshare.GroceryListTable,
-			Columns: grocerylistshare.GroceryListPrimaryKey,
+			Columns: []string{grocerylistshare.GroceryListColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(grocerylist.FieldID, field.TypeInt),
@@ -315,34 +261,42 @@ func (glsuo *GroceryListShareUpdateOne) SetNillableCreatedAt(t *time.Time) *Groc
 	return glsuo
 }
 
-// AddUserIDs adds the "user" edge to the User entity by IDs.
-func (glsuo *GroceryListShareUpdateOne) AddUserIDs(ids ...int) *GroceryListShareUpdateOne {
-	glsuo.mutation.AddUserIDs(ids...)
+// SetUserID sets the "user" edge to the User entity by ID.
+func (glsuo *GroceryListShareUpdateOne) SetUserID(id int) *GroceryListShareUpdateOne {
+	glsuo.mutation.SetUserID(id)
 	return glsuo
 }
 
-// AddUser adds the "user" edges to the User entity.
-func (glsuo *GroceryListShareUpdateOne) AddUser(u ...*User) *GroceryListShareUpdateOne {
-	ids := make([]int, len(u))
-	for i := range u {
-		ids[i] = u[i].ID
+// SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
+func (glsuo *GroceryListShareUpdateOne) SetNillableUserID(id *int) *GroceryListShareUpdateOne {
+	if id != nil {
+		glsuo = glsuo.SetUserID(*id)
 	}
-	return glsuo.AddUserIDs(ids...)
-}
-
-// AddGroceryListIDs adds the "grocery_list" edge to the GroceryList entity by IDs.
-func (glsuo *GroceryListShareUpdateOne) AddGroceryListIDs(ids ...int) *GroceryListShareUpdateOne {
-	glsuo.mutation.AddGroceryListIDs(ids...)
 	return glsuo
 }
 
-// AddGroceryList adds the "grocery_list" edges to the GroceryList entity.
-func (glsuo *GroceryListShareUpdateOne) AddGroceryList(g ...*GroceryList) *GroceryListShareUpdateOne {
-	ids := make([]int, len(g))
-	for i := range g {
-		ids[i] = g[i].ID
+// SetUser sets the "user" edge to the User entity.
+func (glsuo *GroceryListShareUpdateOne) SetUser(u *User) *GroceryListShareUpdateOne {
+	return glsuo.SetUserID(u.ID)
+}
+
+// SetGroceryListID sets the "grocery_list" edge to the GroceryList entity by ID.
+func (glsuo *GroceryListShareUpdateOne) SetGroceryListID(id int) *GroceryListShareUpdateOne {
+	glsuo.mutation.SetGroceryListID(id)
+	return glsuo
+}
+
+// SetNillableGroceryListID sets the "grocery_list" edge to the GroceryList entity by ID if the given value is not nil.
+func (glsuo *GroceryListShareUpdateOne) SetNillableGroceryListID(id *int) *GroceryListShareUpdateOne {
+	if id != nil {
+		glsuo = glsuo.SetGroceryListID(*id)
 	}
-	return glsuo.AddGroceryListIDs(ids...)
+	return glsuo
+}
+
+// SetGroceryList sets the "grocery_list" edge to the GroceryList entity.
+func (glsuo *GroceryListShareUpdateOne) SetGroceryList(g *GroceryList) *GroceryListShareUpdateOne {
+	return glsuo.SetGroceryListID(g.ID)
 }
 
 // Mutation returns the GroceryListShareMutation object of the builder.
@@ -350,46 +304,16 @@ func (glsuo *GroceryListShareUpdateOne) Mutation() *GroceryListShareMutation {
 	return glsuo.mutation
 }
 
-// ClearUser clears all "user" edges to the User entity.
+// ClearUser clears the "user" edge to the User entity.
 func (glsuo *GroceryListShareUpdateOne) ClearUser() *GroceryListShareUpdateOne {
 	glsuo.mutation.ClearUser()
 	return glsuo
 }
 
-// RemoveUserIDs removes the "user" edge to User entities by IDs.
-func (glsuo *GroceryListShareUpdateOne) RemoveUserIDs(ids ...int) *GroceryListShareUpdateOne {
-	glsuo.mutation.RemoveUserIDs(ids...)
-	return glsuo
-}
-
-// RemoveUser removes "user" edges to User entities.
-func (glsuo *GroceryListShareUpdateOne) RemoveUser(u ...*User) *GroceryListShareUpdateOne {
-	ids := make([]int, len(u))
-	for i := range u {
-		ids[i] = u[i].ID
-	}
-	return glsuo.RemoveUserIDs(ids...)
-}
-
-// ClearGroceryList clears all "grocery_list" edges to the GroceryList entity.
+// ClearGroceryList clears the "grocery_list" edge to the GroceryList entity.
 func (glsuo *GroceryListShareUpdateOne) ClearGroceryList() *GroceryListShareUpdateOne {
 	glsuo.mutation.ClearGroceryList()
 	return glsuo
-}
-
-// RemoveGroceryListIDs removes the "grocery_list" edge to GroceryList entities by IDs.
-func (glsuo *GroceryListShareUpdateOne) RemoveGroceryListIDs(ids ...int) *GroceryListShareUpdateOne {
-	glsuo.mutation.RemoveGroceryListIDs(ids...)
-	return glsuo
-}
-
-// RemoveGroceryList removes "grocery_list" edges to GroceryList entities.
-func (glsuo *GroceryListShareUpdateOne) RemoveGroceryList(g ...*GroceryList) *GroceryListShareUpdateOne {
-	ids := make([]int, len(g))
-	for i := range g {
-		ids[i] = g[i].ID
-	}
-	return glsuo.RemoveGroceryListIDs(ids...)
 }
 
 // Where appends a list predicates to the GroceryListShareUpdate builder.
@@ -466,39 +390,23 @@ func (glsuo *GroceryListShareUpdateOne) sqlSave(ctx context.Context) (_node *Gro
 	}
 	if glsuo.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   grocerylistshare.UserTable,
-			Columns: grocerylistshare.UserPrimaryKey,
+			Columns: []string{grocerylistshare.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
 			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := glsuo.mutation.RemovedUserIDs(); len(nodes) > 0 && !glsuo.mutation.UserCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   grocerylistshare.UserTable,
-			Columns: grocerylistshare.UserPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := glsuo.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   grocerylistshare.UserTable,
-			Columns: grocerylistshare.UserPrimaryKey,
+			Columns: []string{grocerylistshare.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
@@ -511,39 +419,23 @@ func (glsuo *GroceryListShareUpdateOne) sqlSave(ctx context.Context) (_node *Gro
 	}
 	if glsuo.mutation.GroceryListCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   grocerylistshare.GroceryListTable,
-			Columns: grocerylistshare.GroceryListPrimaryKey,
+			Columns: []string{grocerylistshare.GroceryListColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(grocerylist.FieldID, field.TypeInt),
 			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := glsuo.mutation.RemovedGroceryListIDs(); len(nodes) > 0 && !glsuo.mutation.GroceryListCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   grocerylistshare.GroceryListTable,
-			Columns: grocerylistshare.GroceryListPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(grocerylist.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := glsuo.mutation.GroceryListIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   grocerylistshare.GroceryListTable,
-			Columns: grocerylistshare.GroceryListPrimaryKey,
+			Columns: []string{grocerylistshare.GroceryListColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(grocerylist.FieldID, field.TypeInt),

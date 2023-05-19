@@ -9,7 +9,9 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/PaluMacil/dan2/ent/movielist"
 	"github.com/PaluMacil/dan2/ent/movielistshare"
+	"github.com/PaluMacil/dan2/ent/user"
 )
 
 // MovieListShare is the model entity for the MovieListShare schema.
@@ -23,34 +25,44 @@ type MovieListShare struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the MovieListShareQuery when eager-loading is set.
-	Edges        MovieListShareEdges `json:"edges"`
-	selectValues sql.SelectValues
+	Edges                        MovieListShareEdges `json:"edges"`
+	movie_list_movie_list_shares *int
+	user_movie_list_shares       *int
+	selectValues                 sql.SelectValues
 }
 
 // MovieListShareEdges holds the relations/edges for other nodes in the graph.
 type MovieListShareEdges struct {
 	// User holds the value of the user edge.
-	User []*User `json:"user,omitempty"`
+	User *User `json:"user,omitempty"`
 	// MovieList holds the value of the movie_list edge.
-	MovieList []*MovieList `json:"movie_list,omitempty"`
+	MovieList *MovieList `json:"movie_list,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [2]bool
 }
 
 // UserOrErr returns the User value or an error if the edge
-// was not loaded in eager-loading.
-func (e MovieListShareEdges) UserOrErr() ([]*User, error) {
+// was not loaded in eager-loading, or loaded but was not found.
+func (e MovieListShareEdges) UserOrErr() (*User, error) {
 	if e.loadedTypes[0] {
+		if e.User == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: user.Label}
+		}
 		return e.User, nil
 	}
 	return nil, &NotLoadedError{edge: "user"}
 }
 
 // MovieListOrErr returns the MovieList value or an error if the edge
-// was not loaded in eager-loading.
-func (e MovieListShareEdges) MovieListOrErr() ([]*MovieList, error) {
+// was not loaded in eager-loading, or loaded but was not found.
+func (e MovieListShareEdges) MovieListOrErr() (*MovieList, error) {
 	if e.loadedTypes[1] {
+		if e.MovieList == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: movielist.Label}
+		}
 		return e.MovieList, nil
 	}
 	return nil, &NotLoadedError{edge: "movie_list"}
@@ -67,6 +79,10 @@ func (*MovieListShare) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case movielistshare.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
+		case movielistshare.ForeignKeys[0]: // movie_list_movie_list_shares
+			values[i] = new(sql.NullInt64)
+		case movielistshare.ForeignKeys[1]: // user_movie_list_shares
+			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -99,6 +115,20 @@ func (mls *MovieListShare) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
 				mls.CreatedAt = value.Time
+			}
+		case movielistshare.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for edge-field movie_list_movie_list_shares", value)
+			} else if value.Valid {
+				mls.movie_list_movie_list_shares = new(int)
+				*mls.movie_list_movie_list_shares = int(value.Int64)
+			}
+		case movielistshare.ForeignKeys[1]:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for edge-field user_movie_list_shares", value)
+			} else if value.Valid {
+				mls.user_movie_list_shares = new(int)
+				*mls.user_movie_list_shares = int(value.Int64)
 			}
 		default:
 			mls.selectValues.Set(columns[i], values[i])

@@ -26,8 +26,10 @@ func (GroceryListShare) Fields() []ent.Field {
 func (GroceryListShare) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("user", User.Type).
-			Ref("grocery_list_shares"),
+			Ref("grocery_list_shares").
+			Unique(),
 		edge.From("grocery_list", GroceryList.Type).
-			Ref("grocery_list_shares"),
+			Ref("grocery_list_shares").
+			Unique(),
 	}
 }

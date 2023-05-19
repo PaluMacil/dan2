@@ -27,6 +27,8 @@ type User struct {
 	Verified bool `json:"verified,omitempty"`
 	// Locked holds the value of the "locked" field.
 	Locked bool `json:"locked,omitempty"`
+	// LastLogin holds the value of the "last_login" field.
+	LastLogin time.Time `json:"last_login,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -130,7 +132,7 @@ func (*User) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case user.FieldDisplayName, user.FieldEmail:
 			values[i] = new(sql.NullString)
-		case user.FieldCreatedAt:
+		case user.FieldLastLogin, user.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -182,6 +184,12 @@ func (u *User) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field locked", values[i])
 			} else if value.Valid {
 				u.Locked = value.Bool
+			}
+		case user.FieldLastLogin:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field last_login", values[i])
+			} else if value.Valid {
+				u.LastLogin = value.Time
 			}
 		case user.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -274,6 +282,9 @@ func (u *User) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("locked=")
 	builder.WriteString(fmt.Sprintf("%v", u.Locked))
+	builder.WriteString(", ")
+	builder.WriteString("last_login=")
+	builder.WriteString(u.LastLogin.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(u.CreatedAt.Format(time.ANSIC))

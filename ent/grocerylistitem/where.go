@@ -290,7 +290,7 @@ func HasGroceryList() predicate.GroceryListItem {
 	return predicate.GroceryListItem(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, GroceryListTable, GroceryListPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2O, true, GroceryListTable, GroceryListColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})

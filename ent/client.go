@@ -381,7 +381,7 @@ func (c *AmazonListClient) QueryAmazonOrders(al *AmazonList) *AmazonOrderQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(amazonlist.Table, amazonlist.FieldID, id),
 			sqlgraph.To(amazonorder.Table, amazonorder.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, amazonlist.AmazonOrdersTable, amazonlist.AmazonOrdersPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.O2M, false, amazonlist.AmazonOrdersTable, amazonlist.AmazonOrdersColumn),
 		)
 		fromV = sqlgraph.Neighbors(al.driver.Dialect(), step)
 		return fromV, nil
@@ -413,7 +413,7 @@ func (c *AmazonListClient) QueryAmazonShares(al *AmazonList) *AmazonShareQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(amazonlist.Table, amazonlist.FieldID, id),
 			sqlgraph.To(amazonshare.Table, amazonshare.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, amazonlist.AmazonSharesTable, amazonlist.AmazonSharesPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.O2M, false, amazonlist.AmazonSharesTable, amazonlist.AmazonSharesColumn),
 		)
 		fromV = sqlgraph.Neighbors(al.driver.Dialect(), step)
 		return fromV, nil
@@ -547,7 +547,7 @@ func (c *AmazonOrderClient) QueryAmazonList(ao *AmazonOrder) *AmazonListQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(amazonorder.Table, amazonorder.FieldID, id),
 			sqlgraph.To(amazonlist.Table, amazonlist.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, amazonorder.AmazonListTable, amazonorder.AmazonListPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2O, true, amazonorder.AmazonListTable, amazonorder.AmazonListColumn),
 		)
 		fromV = sqlgraph.Neighbors(ao.driver.Dialect(), step)
 		return fromV, nil
@@ -681,7 +681,7 @@ func (c *AmazonShareClient) QueryUser(as *AmazonShare) *UserQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(amazonshare.Table, amazonshare.FieldID, id),
 			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, amazonshare.UserTable, amazonshare.UserPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2O, true, amazonshare.UserTable, amazonshare.UserColumn),
 		)
 		fromV = sqlgraph.Neighbors(as.driver.Dialect(), step)
 		return fromV, nil
@@ -697,7 +697,7 @@ func (c *AmazonShareClient) QueryAmazonList(as *AmazonShare) *AmazonListQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(amazonshare.Table, amazonshare.FieldID, id),
 			sqlgraph.To(amazonlist.Table, amazonlist.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, amazonshare.AmazonListTable, amazonshare.AmazonListPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2O, true, amazonshare.AmazonListTable, amazonshare.AmazonListColumn),
 		)
 		fromV = sqlgraph.Neighbors(as.driver.Dialect(), step)
 		return fromV, nil
@@ -831,7 +831,7 @@ func (c *DrinkClient) QueryOwner(d *Drink) *UserQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(drink.Table, drink.FieldID, id),
 			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, drink.OwnerTable, drink.OwnerPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2O, true, drink.OwnerTable, drink.OwnerColumn),
 		)
 		fromV = sqlgraph.Neighbors(d.driver.Dialect(), step)
 		return fromV, nil
@@ -965,7 +965,7 @@ func (c *GroceryListClient) QueryGroceryListItems(gl *GroceryList) *GroceryListI
 		step := sqlgraph.NewStep(
 			sqlgraph.From(grocerylist.Table, grocerylist.FieldID, id),
 			sqlgraph.To(grocerylistitem.Table, grocerylistitem.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, grocerylist.GroceryListItemsTable, grocerylist.GroceryListItemsPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.O2M, false, grocerylist.GroceryListItemsTable, grocerylist.GroceryListItemsColumn),
 		)
 		fromV = sqlgraph.Neighbors(gl.driver.Dialect(), step)
 		return fromV, nil
@@ -981,7 +981,7 @@ func (c *GroceryListClient) QueryOwner(gl *GroceryList) *UserQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(grocerylist.Table, grocerylist.FieldID, id),
 			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, grocerylist.OwnerTable, grocerylist.OwnerPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2O, true, grocerylist.OwnerTable, grocerylist.OwnerColumn),
 		)
 		fromV = sqlgraph.Neighbors(gl.driver.Dialect(), step)
 		return fromV, nil
@@ -997,7 +997,7 @@ func (c *GroceryListClient) QueryGroceryListShares(gl *GroceryList) *GroceryList
 		step := sqlgraph.NewStep(
 			sqlgraph.From(grocerylist.Table, grocerylist.FieldID, id),
 			sqlgraph.To(grocerylistshare.Table, grocerylistshare.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, grocerylist.GroceryListSharesTable, grocerylist.GroceryListSharesPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.O2M, false, grocerylist.GroceryListSharesTable, grocerylist.GroceryListSharesColumn),
 		)
 		fromV = sqlgraph.Neighbors(gl.driver.Dialect(), step)
 		return fromV, nil
@@ -1131,7 +1131,7 @@ func (c *GroceryListItemClient) QueryGroceryList(gli *GroceryListItem) *GroceryL
 		step := sqlgraph.NewStep(
 			sqlgraph.From(grocerylistitem.Table, grocerylistitem.FieldID, id),
 			sqlgraph.To(grocerylist.Table, grocerylist.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, grocerylistitem.GroceryListTable, grocerylistitem.GroceryListPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2O, true, grocerylistitem.GroceryListTable, grocerylistitem.GroceryListColumn),
 		)
 		fromV = sqlgraph.Neighbors(gli.driver.Dialect(), step)
 		return fromV, nil
@@ -1265,7 +1265,7 @@ func (c *GroceryListShareClient) QueryUser(gls *GroceryListShare) *UserQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(grocerylistshare.Table, grocerylistshare.FieldID, id),
 			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, grocerylistshare.UserTable, grocerylistshare.UserPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2O, true, grocerylistshare.UserTable, grocerylistshare.UserColumn),
 		)
 		fromV = sqlgraph.Neighbors(gls.driver.Dialect(), step)
 		return fromV, nil
@@ -1281,7 +1281,7 @@ func (c *GroceryListShareClient) QueryGroceryList(gls *GroceryListShare) *Grocer
 		step := sqlgraph.NewStep(
 			sqlgraph.From(grocerylistshare.Table, grocerylistshare.FieldID, id),
 			sqlgraph.To(grocerylist.Table, grocerylist.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, grocerylistshare.GroceryListTable, grocerylistshare.GroceryListPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2O, true, grocerylistshare.GroceryListTable, grocerylistshare.GroceryListColumn),
 		)
 		fromV = sqlgraph.Neighbors(gls.driver.Dialect(), step)
 		return fromV, nil
@@ -1415,7 +1415,7 @@ func (c *MovieClient) QueryMovieList(m *Movie) *MovieListQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(movie.Table, movie.FieldID, id),
 			sqlgraph.To(movielist.Table, movielist.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, movie.MovieListTable, movie.MovieListPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2O, true, movie.MovieListTable, movie.MovieListColumn),
 		)
 		fromV = sqlgraph.Neighbors(m.driver.Dialect(), step)
 		return fromV, nil
@@ -1549,7 +1549,7 @@ func (c *MovieListClient) QueryMovies(ml *MovieList) *MovieQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(movielist.Table, movielist.FieldID, id),
 			sqlgraph.To(movie.Table, movie.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, movielist.MoviesTable, movielist.MoviesPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.O2M, false, movielist.MoviesTable, movielist.MoviesColumn),
 		)
 		fromV = sqlgraph.Neighbors(ml.driver.Dialect(), step)
 		return fromV, nil
@@ -1565,7 +1565,7 @@ func (c *MovieListClient) QueryOwner(ml *MovieList) *UserQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(movielist.Table, movielist.FieldID, id),
 			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, movielist.OwnerTable, movielist.OwnerPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2O, true, movielist.OwnerTable, movielist.OwnerColumn),
 		)
 		fromV = sqlgraph.Neighbors(ml.driver.Dialect(), step)
 		return fromV, nil
@@ -1581,7 +1581,7 @@ func (c *MovieListClient) QueryMovieListShares(ml *MovieList) *MovieListShareQue
 		step := sqlgraph.NewStep(
 			sqlgraph.From(movielist.Table, movielist.FieldID, id),
 			sqlgraph.To(movielistshare.Table, movielistshare.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, movielist.MovieListSharesTable, movielist.MovieListSharesPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.O2M, false, movielist.MovieListSharesTable, movielist.MovieListSharesColumn),
 		)
 		fromV = sqlgraph.Neighbors(ml.driver.Dialect(), step)
 		return fromV, nil
@@ -1715,7 +1715,7 @@ func (c *MovieListShareClient) QueryUser(mls *MovieListShare) *UserQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(movielistshare.Table, movielistshare.FieldID, id),
 			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, movielistshare.UserTable, movielistshare.UserPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2O, true, movielistshare.UserTable, movielistshare.UserColumn),
 		)
 		fromV = sqlgraph.Neighbors(mls.driver.Dialect(), step)
 		return fromV, nil
@@ -1731,7 +1731,7 @@ func (c *MovieListShareClient) QueryMovieList(mls *MovieListShare) *MovieListQue
 		step := sqlgraph.NewStep(
 			sqlgraph.From(movielistshare.Table, movielistshare.FieldID, id),
 			sqlgraph.To(movielist.Table, movielist.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, movielistshare.MovieListTable, movielistshare.MovieListPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2O, true, movielistshare.MovieListTable, movielistshare.MovieListColumn),
 		)
 		fromV = sqlgraph.Neighbors(mls.driver.Dialect(), step)
 		return fromV, nil
@@ -1865,7 +1865,7 @@ func (c *UserClient) QueryAmazonShares(u *User) *AmazonShareQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(amazonshare.Table, amazonshare.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, user.AmazonSharesTable, user.AmazonSharesPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.AmazonSharesTable, user.AmazonSharesColumn),
 		)
 		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
 		return fromV, nil
@@ -1897,7 +1897,7 @@ func (c *UserClient) QueryDrinks(u *User) *DrinkQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(drink.Table, drink.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, user.DrinksTable, user.DrinksPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.DrinksTable, user.DrinksColumn),
 		)
 		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
 		return fromV, nil
@@ -1913,7 +1913,7 @@ func (c *UserClient) QueryGroceryLists(u *User) *GroceryListQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(grocerylist.Table, grocerylist.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, user.GroceryListsTable, user.GroceryListsPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.GroceryListsTable, user.GroceryListsColumn),
 		)
 		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
 		return fromV, nil
@@ -1929,7 +1929,7 @@ func (c *UserClient) QueryGroceryListShares(u *User) *GroceryListShareQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(grocerylistshare.Table, grocerylistshare.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, user.GroceryListSharesTable, user.GroceryListSharesPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.GroceryListSharesTable, user.GroceryListSharesColumn),
 		)
 		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
 		return fromV, nil
@@ -1945,7 +1945,7 @@ func (c *UserClient) QueryMovieLists(u *User) *MovieListQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(movielist.Table, movielist.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, user.MovieListsTable, user.MovieListsPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.MovieListsTable, user.MovieListsColumn),
 		)
 		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
 		return fromV, nil
@@ -1961,7 +1961,7 @@ func (c *UserClient) QueryMovieListShares(u *User) *MovieListShareQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(movielistshare.Table, movielistshare.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, user.MovieListSharesTable, user.MovieListSharesPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.MovieListSharesTable, user.MovieListSharesColumn),
 		)
 		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
 		return fromV, nil

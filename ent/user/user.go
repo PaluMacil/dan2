@@ -24,6 +24,8 @@ const (
 	FieldVerified = "verified"
 	// FieldLocked holds the string denoting the locked field in the database.
 	FieldLocked = "locked"
+	// FieldLastLogin holds the string denoting the last_login field in the database.
+	FieldLastLogin = "last_login"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// EdgeAmazonShares holds the string denoting the amazon_shares edge name in mutations.
@@ -42,41 +44,53 @@ const (
 	EdgeMovieListShares = "movie_list_shares"
 	// Table holds the table name of the user in the database.
 	Table = "users"
-	// AmazonSharesTable is the table that holds the amazon_shares relation/edge. The primary key declared below.
-	AmazonSharesTable = "user_amazon_shares"
+	// AmazonSharesTable is the table that holds the amazon_shares relation/edge.
+	AmazonSharesTable = "amazon_shares"
 	// AmazonSharesInverseTable is the table name for the AmazonShare entity.
 	// It exists in this package in order to avoid circular dependency with the "amazonshare" package.
 	AmazonSharesInverseTable = "amazon_shares"
+	// AmazonSharesColumn is the table column denoting the amazon_shares relation/edge.
+	AmazonSharesColumn = "user_amazon_shares"
 	// AmazonListsTable is the table that holds the amazon_lists relation/edge. The primary key declared below.
 	AmazonListsTable = "user_amazon_lists"
 	// AmazonListsInverseTable is the table name for the AmazonList entity.
 	// It exists in this package in order to avoid circular dependency with the "amazonlist" package.
 	AmazonListsInverseTable = "amazon_lists"
-	// DrinksTable is the table that holds the drinks relation/edge. The primary key declared below.
-	DrinksTable = "user_drinks"
+	// DrinksTable is the table that holds the drinks relation/edge.
+	DrinksTable = "drinks"
 	// DrinksInverseTable is the table name for the Drink entity.
 	// It exists in this package in order to avoid circular dependency with the "drink" package.
 	DrinksInverseTable = "drinks"
-	// GroceryListsTable is the table that holds the grocery_lists relation/edge. The primary key declared below.
-	GroceryListsTable = "user_grocery_lists"
+	// DrinksColumn is the table column denoting the drinks relation/edge.
+	DrinksColumn = "user_drinks"
+	// GroceryListsTable is the table that holds the grocery_lists relation/edge.
+	GroceryListsTable = "grocery_lists"
 	// GroceryListsInverseTable is the table name for the GroceryList entity.
 	// It exists in this package in order to avoid circular dependency with the "grocerylist" package.
 	GroceryListsInverseTable = "grocery_lists"
-	// GroceryListSharesTable is the table that holds the grocery_list_shares relation/edge. The primary key declared below.
-	GroceryListSharesTable = "user_grocery_list_shares"
+	// GroceryListsColumn is the table column denoting the grocery_lists relation/edge.
+	GroceryListsColumn = "user_grocery_lists"
+	// GroceryListSharesTable is the table that holds the grocery_list_shares relation/edge.
+	GroceryListSharesTable = "grocery_list_shares"
 	// GroceryListSharesInverseTable is the table name for the GroceryListShare entity.
 	// It exists in this package in order to avoid circular dependency with the "grocerylistshare" package.
 	GroceryListSharesInverseTable = "grocery_list_shares"
-	// MovieListsTable is the table that holds the movie_lists relation/edge. The primary key declared below.
-	MovieListsTable = "user_movie_lists"
+	// GroceryListSharesColumn is the table column denoting the grocery_list_shares relation/edge.
+	GroceryListSharesColumn = "user_grocery_list_shares"
+	// MovieListsTable is the table that holds the movie_lists relation/edge.
+	MovieListsTable = "movie_lists"
 	// MovieListsInverseTable is the table name for the MovieList entity.
 	// It exists in this package in order to avoid circular dependency with the "movielist" package.
 	MovieListsInverseTable = "movie_lists"
-	// MovieListSharesTable is the table that holds the movie_list_shares relation/edge. The primary key declared below.
-	MovieListSharesTable = "user_movie_list_shares"
+	// MovieListsColumn is the table column denoting the movie_lists relation/edge.
+	MovieListsColumn = "user_movie_lists"
+	// MovieListSharesTable is the table that holds the movie_list_shares relation/edge.
+	MovieListSharesTable = "movie_list_shares"
 	// MovieListSharesInverseTable is the table name for the MovieListShare entity.
 	// It exists in this package in order to avoid circular dependency with the "movielistshare" package.
 	MovieListSharesInverseTable = "movie_list_shares"
+	// MovieListSharesColumn is the table column denoting the movie_list_shares relation/edge.
+	MovieListSharesColumn = "user_movie_list_shares"
 )
 
 // Columns holds all SQL columns for user fields.
@@ -87,31 +101,14 @@ var Columns = []string{
 	FieldEmail,
 	FieldVerified,
 	FieldLocked,
+	FieldLastLogin,
 	FieldCreatedAt,
 }
 
 var (
-	// AmazonSharesPrimaryKey and AmazonSharesColumn2 are the table columns denoting the
-	// primary key for the amazon_shares relation (M2M).
-	AmazonSharesPrimaryKey = []string{"user_id", "amazon_share_id"}
 	// AmazonListsPrimaryKey and AmazonListsColumn2 are the table columns denoting the
 	// primary key for the amazon_lists relation (M2M).
 	AmazonListsPrimaryKey = []string{"user_id", "amazon_list_id"}
-	// DrinksPrimaryKey and DrinksColumn2 are the table columns denoting the
-	// primary key for the drinks relation (M2M).
-	DrinksPrimaryKey = []string{"user_id", "drink_id"}
-	// GroceryListsPrimaryKey and GroceryListsColumn2 are the table columns denoting the
-	// primary key for the grocery_lists relation (M2M).
-	GroceryListsPrimaryKey = []string{"user_id", "grocery_list_id"}
-	// GroceryListSharesPrimaryKey and GroceryListSharesColumn2 are the table columns denoting the
-	// primary key for the grocery_list_shares relation (M2M).
-	GroceryListSharesPrimaryKey = []string{"user_id", "grocery_list_share_id"}
-	// MovieListsPrimaryKey and MovieListsColumn2 are the table columns denoting the
-	// primary key for the movie_lists relation (M2M).
-	MovieListsPrimaryKey = []string{"user_id", "movie_list_id"}
-	// MovieListSharesPrimaryKey and MovieListSharesColumn2 are the table columns denoting the
-	// primary key for the movie_list_shares relation (M2M).
-	MovieListSharesPrimaryKey = []string{"user_id", "movie_list_share_id"}
 )
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -166,6 +163,11 @@ func ByVerified(opts ...sql.OrderTermOption) OrderOption {
 // ByLocked orders the results by the locked field.
 func ByLocked(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldLocked, opts...).ToFunc()
+}
+
+// ByLastLogin orders the results by the last_login field.
+func ByLastLogin(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLastLogin, opts...).ToFunc()
 }
 
 // ByCreatedAt orders the results by the created_at field.
@@ -274,7 +276,7 @@ func newAmazonSharesStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(AmazonSharesInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2M, false, AmazonSharesTable, AmazonSharesPrimaryKey...),
+		sqlgraph.Edge(sqlgraph.O2M, false, AmazonSharesTable, AmazonSharesColumn),
 	)
 }
 func newAmazonListsStep() *sqlgraph.Step {
@@ -288,34 +290,34 @@ func newDrinksStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(DrinksInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2M, false, DrinksTable, DrinksPrimaryKey...),
+		sqlgraph.Edge(sqlgraph.O2M, false, DrinksTable, DrinksColumn),
 	)
 }
 func newGroceryListsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(GroceryListsInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2M, false, GroceryListsTable, GroceryListsPrimaryKey...),
+		sqlgraph.Edge(sqlgraph.O2M, false, GroceryListsTable, GroceryListsColumn),
 	)
 }
 func newGroceryListSharesStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(GroceryListSharesInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2M, false, GroceryListSharesTable, GroceryListSharesPrimaryKey...),
+		sqlgraph.Edge(sqlgraph.O2M, false, GroceryListSharesTable, GroceryListSharesColumn),
 	)
 }
 func newMovieListsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(MovieListsInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2M, false, MovieListsTable, MovieListsPrimaryKey...),
+		sqlgraph.Edge(sqlgraph.O2M, false, MovieListsTable, MovieListsColumn),
 	)
 }
 func newMovieListSharesStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(MovieListSharesInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2M, false, MovieListSharesTable, MovieListSharesPrimaryKey...),
+		sqlgraph.Edge(sqlgraph.O2M, false, MovieListSharesTable, MovieListSharesColumn),
 	)
 }

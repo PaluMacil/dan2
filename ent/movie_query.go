@@ -4,7 +4,6 @@ package ent
 
 import (
 	"context"
-	"database/sql/driver"
 	"fmt"
 	"math"
 
@@ -24,6 +23,7 @@ type MovieQuery struct {
 	inters        []Interceptor
 	predicates    []predicate.Movie
 	withMovieList *MovieListQuery
+	withFKs       bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -74,7 +74,7 @@ func (mq *MovieQuery) QueryMovieList() *MovieListQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(movie.Table, movie.FieldID, selector),
 			sqlgraph.To(movielist.Table, movielist.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, movie.MovieListTable, movie.MovieListPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.M2O, true, movie.MovieListTable, movie.MovieListColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(mq.driver.Dialect(), step)
 		return fromU, nil
@@ -369,11 +369,18 @@ func (mq *MovieQuery) prepareQuery(ctx context.Context) error {
 func (mq *MovieQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Movie, error) {
 	var (
 		nodes       = []*Movie{}
+		withFKs     = mq.withFKs
 		_spec       = mq.querySpec()
 		loadedTypes = [1]bool{
 			mq.withMovieList != nil,
 		}
 	)
+	if mq.withMovieList != nil {
+		withFKs = true
+	}
+	if withFKs {
+		_spec.Node.Columns = append(_spec.Node.Columns, movie.ForeignKeys...)
+	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Movie).scanValues(nil, columns)
 	}
@@ -393,9 +400,8 @@ func (mq *MovieQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Movie,
 		return nodes, nil
 	}
 	if query := mq.withMovieList; query != nil {
-		if err := mq.loadMovieList(ctx, query, nodes,
-			func(n *Movie) { n.Edges.MovieList = []*MovieList{} },
-			func(n *Movie, e *MovieList) { n.Edges.MovieList = append(n.Edges.MovieList, e) }); err != nil {
+		if err := mq.loadMovieList(ctx, query, nodes, nil,
+			func(n *Movie, e *MovieList) { n.Edges.MovieList = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -403,62 +409,33 @@ func (mq *MovieQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Movie,
 }
 
 func (mq *MovieQuery) loadMovieList(ctx context.Context, query *MovieListQuery, nodes []*Movie, init func(*Movie), assign func(*Movie, *MovieList)) error {
-	edgeIDs := make([]driver.Value, len(nodes))
-	byID := make(map[int]*Movie)
-	nids := make(map[int]map[*Movie]struct{})
-	for i, node := range nodes {
-		edgeIDs[i] = node.ID
-		byID[node.ID] = node
-		if init != nil {
-			init(node)
+	ids := make([]int, 0, len(nodes))
+	nodeids := make(map[int][]*Movie)
+	for i := range nodes {
+		if nodes[i].movie_list_movies == nil {
+			continue
 		}
+		fk := *nodes[i].movie_list_movies
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
-	query.Where(func(s *sql.Selector) {
-		joinT := sql.Table(movie.MovieListTable)
-		s.Join(joinT).On(s.C(movielist.FieldID), joinT.C(movie.MovieListPrimaryKey[0]))
-		s.Where(sql.InValues(joinT.C(movie.MovieListPrimaryKey[1]), edgeIDs...))
-		columns := s.SelectedColumns()
-		s.Select(joinT.C(movie.MovieListPrimaryKey[1]))
-		s.AppendSelect(columns...)
-		s.SetDistinct(false)
-	})
-	if err := query.prepareQuery(ctx); err != nil {
-		return err
+	if len(ids) == 0 {
+		return nil
 	}
-	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
-		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
-			assign := spec.Assign
-			values := spec.ScanValues
-			spec.ScanValues = func(columns []string) ([]any, error) {
-				values, err := values(columns[1:])
-				if err != nil {
-					return nil, err
-				}
-				return append([]any{new(sql.NullInt64)}, values...), nil
-			}
-			spec.Assign = func(columns []string, values []any) error {
-				outValue := int(values[0].(*sql.NullInt64).Int64)
-				inValue := int(values[1].(*sql.NullInt64).Int64)
-				if nids[inValue] == nil {
-					nids[inValue] = map[*Movie]struct{}{byID[outValue]: {}}
-					return assign(columns[1:], values[1:])
-				}
-				nids[inValue][byID[outValue]] = struct{}{}
-				return nil
-			}
-		})
-	})
-	neighbors, err := withInterceptors[[]*MovieList](ctx, query, qr, query.inters)
+	query.Where(movielist.IDIn(ids...))
+	neighbors, err := query.All(ctx)
 	if err != nil {
 		return err
 	}
 	for _, n := range neighbors {
-		nodes, ok := nids[n.ID]
+		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected "movie_list" node returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "movie_list_movies" returned %v`, n.ID)
 		}
-		for kn := range nodes {
-			assign(kn, n)
+		for i := range nodes {
+			assign(nodes[i], n)
 		}
 	}
 	return nil

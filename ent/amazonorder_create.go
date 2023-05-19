@@ -113,19 +113,23 @@ func (aoc *AmazonOrderCreate) SetNillableCreatedAt(t *time.Time) *AmazonOrderCre
 	return aoc
 }
 
-// AddAmazonListIDs adds the "amazon_list" edge to the AmazonList entity by IDs.
-func (aoc *AmazonOrderCreate) AddAmazonListIDs(ids ...int) *AmazonOrderCreate {
-	aoc.mutation.AddAmazonListIDs(ids...)
+// SetAmazonListID sets the "amazon_list" edge to the AmazonList entity by ID.
+func (aoc *AmazonOrderCreate) SetAmazonListID(id int) *AmazonOrderCreate {
+	aoc.mutation.SetAmazonListID(id)
 	return aoc
 }
 
-// AddAmazonList adds the "amazon_list" edges to the AmazonList entity.
-func (aoc *AmazonOrderCreate) AddAmazonList(a ...*AmazonList) *AmazonOrderCreate {
-	ids := make([]int, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
+// SetNillableAmazonListID sets the "amazon_list" edge to the AmazonList entity by ID if the given value is not nil.
+func (aoc *AmazonOrderCreate) SetNillableAmazonListID(id *int) *AmazonOrderCreate {
+	if id != nil {
+		aoc = aoc.SetAmazonListID(*id)
 	}
-	return aoc.AddAmazonListIDs(ids...)
+	return aoc
+}
+
+// SetAmazonList sets the "amazon_list" edge to the AmazonList entity.
+func (aoc *AmazonOrderCreate) SetAmazonList(a *AmazonList) *AmazonOrderCreate {
+	return aoc.SetAmazonListID(a.ID)
 }
 
 // Mutation returns the AmazonOrderMutation object of the builder.
@@ -297,10 +301,10 @@ func (aoc *AmazonOrderCreate) createSpec() (*AmazonOrder, *sqlgraph.CreateSpec) 
 	}
 	if nodes := aoc.mutation.AmazonListIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   amazonorder.AmazonListTable,
-			Columns: amazonorder.AmazonListPrimaryKey,
+			Columns: []string{amazonorder.AmazonListColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(amazonlist.FieldID, field.TypeInt),
@@ -309,6 +313,7 @@ func (aoc *AmazonOrderCreate) createSpec() (*AmazonOrder, *sqlgraph.CreateSpec) 
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
+		_node.amazon_list_amazon_orders = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

@@ -655,8 +655,7 @@ type AmazonOrderMutation struct {
 	ordered_at         *time.Time
 	created_at         *time.Time
 	clearedFields      map[string]struct{}
-	amazon_list        map[int]struct{}
-	removedamazon_list map[int]struct{}
+	amazon_list        *int
 	clearedamazon_list bool
 	done               bool
 	oldValue           func(context.Context) (*AmazonOrder, error)
@@ -1305,14 +1304,9 @@ func (m *AmazonOrderMutation) ResetCreatedAt() {
 	m.created_at = nil
 }
 
-// AddAmazonListIDs adds the "amazon_list" edge to the AmazonList entity by ids.
-func (m *AmazonOrderMutation) AddAmazonListIDs(ids ...int) {
-	if m.amazon_list == nil {
-		m.amazon_list = make(map[int]struct{})
-	}
-	for i := range ids {
-		m.amazon_list[ids[i]] = struct{}{}
-	}
+// SetAmazonListID sets the "amazon_list" edge to the AmazonList entity by id.
+func (m *AmazonOrderMutation) SetAmazonListID(id int) {
+	m.amazon_list = &id
 }
 
 // ClearAmazonList clears the "amazon_list" edge to the AmazonList entity.
@@ -1325,29 +1319,20 @@ func (m *AmazonOrderMutation) AmazonListCleared() bool {
 	return m.clearedamazon_list
 }
 
-// RemoveAmazonListIDs removes the "amazon_list" edge to the AmazonList entity by IDs.
-func (m *AmazonOrderMutation) RemoveAmazonListIDs(ids ...int) {
-	if m.removedamazon_list == nil {
-		m.removedamazon_list = make(map[int]struct{})
-	}
-	for i := range ids {
-		delete(m.amazon_list, ids[i])
-		m.removedamazon_list[ids[i]] = struct{}{}
-	}
-}
-
-// RemovedAmazonList returns the removed IDs of the "amazon_list" edge to the AmazonList entity.
-func (m *AmazonOrderMutation) RemovedAmazonListIDs() (ids []int) {
-	for id := range m.removedamazon_list {
-		ids = append(ids, id)
+// AmazonListID returns the "amazon_list" edge ID in the mutation.
+func (m *AmazonOrderMutation) AmazonListID() (id int, exists bool) {
+	if m.amazon_list != nil {
+		return *m.amazon_list, true
 	}
 	return
 }
 
 // AmazonListIDs returns the "amazon_list" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// AmazonListID instead. It exists only for internal usage by the builders.
 func (m *AmazonOrderMutation) AmazonListIDs() (ids []int) {
-	for id := range m.amazon_list {
-		ids = append(ids, id)
+	if id := m.amazon_list; id != nil {
+		ids = append(ids, *id)
 	}
 	return
 }
@@ -1356,7 +1341,6 @@ func (m *AmazonOrderMutation) AmazonListIDs() (ids []int) {
 func (m *AmazonOrderMutation) ResetAmazonList() {
 	m.amazon_list = nil
 	m.clearedamazon_list = false
-	m.removedamazon_list = nil
 }
 
 // Where appends a list predicates to the AmazonOrderMutation builder.
@@ -1752,11 +1736,9 @@ func (m *AmazonOrderMutation) AddedEdges() []string {
 func (m *AmazonOrderMutation) AddedIDs(name string) []ent.Value {
 	switch name {
 	case amazonorder.EdgeAmazonList:
-		ids := make([]ent.Value, 0, len(m.amazon_list))
-		for id := range m.amazon_list {
-			ids = append(ids, id)
+		if id := m.amazon_list; id != nil {
+			return []ent.Value{*id}
 		}
-		return ids
 	}
 	return nil
 }
@@ -1764,23 +1746,12 @@ func (m *AmazonOrderMutation) AddedIDs(name string) []ent.Value {
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *AmazonOrderMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 1)
-	if m.removedamazon_list != nil {
-		edges = append(edges, amazonorder.EdgeAmazonList)
-	}
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *AmazonOrderMutation) RemovedIDs(name string) []ent.Value {
-	switch name {
-	case amazonorder.EdgeAmazonList:
-		ids := make([]ent.Value, 0, len(m.removedamazon_list))
-		for id := range m.removedamazon_list {
-			ids = append(ids, id)
-		}
-		return ids
-	}
 	return nil
 }
 
@@ -1807,6 +1778,9 @@ func (m *AmazonOrderMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *AmazonOrderMutation) ClearEdge(name string) error {
 	switch name {
+	case amazonorder.EdgeAmazonList:
+		m.ClearAmazonList()
+		return nil
 	}
 	return fmt.Errorf("unknown AmazonOrder unique edge %s", name)
 }
@@ -1831,11 +1805,9 @@ type AmazonShareMutation struct {
 	can_edit           *bool
 	created_at         *time.Time
 	clearedFields      map[string]struct{}
-	user               map[int]struct{}
-	removeduser        map[int]struct{}
+	user               *int
 	cleareduser        bool
-	amazon_list        map[int]struct{}
-	removedamazon_list map[int]struct{}
+	amazon_list        *int
 	clearedamazon_list bool
 	done               bool
 	oldValue           func(context.Context) (*AmazonShare, error)
@@ -2012,14 +1984,9 @@ func (m *AmazonShareMutation) ResetCreatedAt() {
 	m.created_at = nil
 }
 
-// AddUserIDs adds the "user" edge to the User entity by ids.
-func (m *AmazonShareMutation) AddUserIDs(ids ...int) {
-	if m.user == nil {
-		m.user = make(map[int]struct{})
-	}
-	for i := range ids {
-		m.user[ids[i]] = struct{}{}
-	}
+// SetUserID sets the "user" edge to the User entity by id.
+func (m *AmazonShareMutation) SetUserID(id int) {
+	m.user = &id
 }
 
 // ClearUser clears the "user" edge to the User entity.
@@ -2032,29 +1999,20 @@ func (m *AmazonShareMutation) UserCleared() bool {
 	return m.cleareduser
 }
 
-// RemoveUserIDs removes the "user" edge to the User entity by IDs.
-func (m *AmazonShareMutation) RemoveUserIDs(ids ...int) {
-	if m.removeduser == nil {
-		m.removeduser = make(map[int]struct{})
-	}
-	for i := range ids {
-		delete(m.user, ids[i])
-		m.removeduser[ids[i]] = struct{}{}
-	}
-}
-
-// RemovedUser returns the removed IDs of the "user" edge to the User entity.
-func (m *AmazonShareMutation) RemovedUserIDs() (ids []int) {
-	for id := range m.removeduser {
-		ids = append(ids, id)
+// UserID returns the "user" edge ID in the mutation.
+func (m *AmazonShareMutation) UserID() (id int, exists bool) {
+	if m.user != nil {
+		return *m.user, true
 	}
 	return
 }
 
 // UserIDs returns the "user" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// UserID instead. It exists only for internal usage by the builders.
 func (m *AmazonShareMutation) UserIDs() (ids []int) {
-	for id := range m.user {
-		ids = append(ids, id)
+	if id := m.user; id != nil {
+		ids = append(ids, *id)
 	}
 	return
 }
@@ -2063,17 +2021,11 @@ func (m *AmazonShareMutation) UserIDs() (ids []int) {
 func (m *AmazonShareMutation) ResetUser() {
 	m.user = nil
 	m.cleareduser = false
-	m.removeduser = nil
 }
 
-// AddAmazonListIDs adds the "amazon_list" edge to the AmazonList entity by ids.
-func (m *AmazonShareMutation) AddAmazonListIDs(ids ...int) {
-	if m.amazon_list == nil {
-		m.amazon_list = make(map[int]struct{})
-	}
-	for i := range ids {
-		m.amazon_list[ids[i]] = struct{}{}
-	}
+// SetAmazonListID sets the "amazon_list" edge to the AmazonList entity by id.
+func (m *AmazonShareMutation) SetAmazonListID(id int) {
+	m.amazon_list = &id
 }
 
 // ClearAmazonList clears the "amazon_list" edge to the AmazonList entity.
@@ -2086,29 +2038,20 @@ func (m *AmazonShareMutation) AmazonListCleared() bool {
 	return m.clearedamazon_list
 }
 
-// RemoveAmazonListIDs removes the "amazon_list" edge to the AmazonList entity by IDs.
-func (m *AmazonShareMutation) RemoveAmazonListIDs(ids ...int) {
-	if m.removedamazon_list == nil {
-		m.removedamazon_list = make(map[int]struct{})
-	}
-	for i := range ids {
-		delete(m.amazon_list, ids[i])
-		m.removedamazon_list[ids[i]] = struct{}{}
-	}
-}
-
-// RemovedAmazonList returns the removed IDs of the "amazon_list" edge to the AmazonList entity.
-func (m *AmazonShareMutation) RemovedAmazonListIDs() (ids []int) {
-	for id := range m.removedamazon_list {
-		ids = append(ids, id)
+// AmazonListID returns the "amazon_list" edge ID in the mutation.
+func (m *AmazonShareMutation) AmazonListID() (id int, exists bool) {
+	if m.amazon_list != nil {
+		return *m.amazon_list, true
 	}
 	return
 }
 
 // AmazonListIDs returns the "amazon_list" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// AmazonListID instead. It exists only for internal usage by the builders.
 func (m *AmazonShareMutation) AmazonListIDs() (ids []int) {
-	for id := range m.amazon_list {
-		ids = append(ids, id)
+	if id := m.amazon_list; id != nil {
+		ids = append(ids, *id)
 	}
 	return
 }
@@ -2117,7 +2060,6 @@ func (m *AmazonShareMutation) AmazonListIDs() (ids []int) {
 func (m *AmazonShareMutation) ResetAmazonList() {
 	m.amazon_list = nil
 	m.clearedamazon_list = false
-	m.removedamazon_list = nil
 }
 
 // Where appends a list predicates to the AmazonShareMutation builder.
@@ -2285,17 +2227,13 @@ func (m *AmazonShareMutation) AddedEdges() []string {
 func (m *AmazonShareMutation) AddedIDs(name string) []ent.Value {
 	switch name {
 	case amazonshare.EdgeUser:
-		ids := make([]ent.Value, 0, len(m.user))
-		for id := range m.user {
-			ids = append(ids, id)
+		if id := m.user; id != nil {
+			return []ent.Value{*id}
 		}
-		return ids
 	case amazonshare.EdgeAmazonList:
-		ids := make([]ent.Value, 0, len(m.amazon_list))
-		for id := range m.amazon_list {
-			ids = append(ids, id)
+		if id := m.amazon_list; id != nil {
+			return []ent.Value{*id}
 		}
-		return ids
 	}
 	return nil
 }
@@ -2303,32 +2241,12 @@ func (m *AmazonShareMutation) AddedIDs(name string) []ent.Value {
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *AmazonShareMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 2)
-	if m.removeduser != nil {
-		edges = append(edges, amazonshare.EdgeUser)
-	}
-	if m.removedamazon_list != nil {
-		edges = append(edges, amazonshare.EdgeAmazonList)
-	}
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *AmazonShareMutation) RemovedIDs(name string) []ent.Value {
-	switch name {
-	case amazonshare.EdgeUser:
-		ids := make([]ent.Value, 0, len(m.removeduser))
-		for id := range m.removeduser {
-			ids = append(ids, id)
-		}
-		return ids
-	case amazonshare.EdgeAmazonList:
-		ids := make([]ent.Value, 0, len(m.removedamazon_list))
-		for id := range m.removedamazon_list {
-			ids = append(ids, id)
-		}
-		return ids
-	}
 	return nil
 }
 
@@ -2360,6 +2278,12 @@ func (m *AmazonShareMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *AmazonShareMutation) ClearEdge(name string) error {
 	switch name {
+	case amazonshare.EdgeUser:
+		m.ClearUser()
+		return nil
+	case amazonshare.EdgeAmazonList:
+		m.ClearAmazonList()
+		return nil
 	}
 	return fmt.Errorf("unknown AmazonShare unique edge %s", name)
 }
@@ -2398,8 +2322,7 @@ type DrinkMutation struct {
 	note          *string
 	created_at    *time.Time
 	clearedFields map[string]struct{}
-	owner         map[int]struct{}
-	removedowner  map[int]struct{}
+	owner         *int
 	clearedowner  bool
 	done          bool
 	oldValue      func(context.Context) (*Drink, error)
@@ -2892,14 +2815,9 @@ func (m *DrinkMutation) ResetCreatedAt() {
 	m.created_at = nil
 }
 
-// AddOwnerIDs adds the "owner" edge to the User entity by ids.
-func (m *DrinkMutation) AddOwnerIDs(ids ...int) {
-	if m.owner == nil {
-		m.owner = make(map[int]struct{})
-	}
-	for i := range ids {
-		m.owner[ids[i]] = struct{}{}
-	}
+// SetOwnerID sets the "owner" edge to the User entity by id.
+func (m *DrinkMutation) SetOwnerID(id int) {
+	m.owner = &id
 }
 
 // ClearOwner clears the "owner" edge to the User entity.
@@ -2912,29 +2830,20 @@ func (m *DrinkMutation) OwnerCleared() bool {
 	return m.clearedowner
 }
 
-// RemoveOwnerIDs removes the "owner" edge to the User entity by IDs.
-func (m *DrinkMutation) RemoveOwnerIDs(ids ...int) {
-	if m.removedowner == nil {
-		m.removedowner = make(map[int]struct{})
-	}
-	for i := range ids {
-		delete(m.owner, ids[i])
-		m.removedowner[ids[i]] = struct{}{}
-	}
-}
-
-// RemovedOwner returns the removed IDs of the "owner" edge to the User entity.
-func (m *DrinkMutation) RemovedOwnerIDs() (ids []int) {
-	for id := range m.removedowner {
-		ids = append(ids, id)
+// OwnerID returns the "owner" edge ID in the mutation.
+func (m *DrinkMutation) OwnerID() (id int, exists bool) {
+	if m.owner != nil {
+		return *m.owner, true
 	}
 	return
 }
 
 // OwnerIDs returns the "owner" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// OwnerID instead. It exists only for internal usage by the builders.
 func (m *DrinkMutation) OwnerIDs() (ids []int) {
-	for id := range m.owner {
-		ids = append(ids, id)
+	if id := m.owner; id != nil {
+		ids = append(ids, *id)
 	}
 	return
 }
@@ -2943,7 +2852,6 @@ func (m *DrinkMutation) OwnerIDs() (ids []int) {
 func (m *DrinkMutation) ResetOwner() {
 	m.owner = nil
 	m.clearedowner = false
-	m.removedowner = nil
 }
 
 // Where appends a list predicates to the DrinkMutation builder.
@@ -3273,11 +3181,9 @@ func (m *DrinkMutation) AddedEdges() []string {
 func (m *DrinkMutation) AddedIDs(name string) []ent.Value {
 	switch name {
 	case drink.EdgeOwner:
-		ids := make([]ent.Value, 0, len(m.owner))
-		for id := range m.owner {
-			ids = append(ids, id)
+		if id := m.owner; id != nil {
+			return []ent.Value{*id}
 		}
-		return ids
 	}
 	return nil
 }
@@ -3285,23 +3191,12 @@ func (m *DrinkMutation) AddedIDs(name string) []ent.Value {
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *DrinkMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 1)
-	if m.removedowner != nil {
-		edges = append(edges, drink.EdgeOwner)
-	}
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *DrinkMutation) RemovedIDs(name string) []ent.Value {
-	switch name {
-	case drink.EdgeOwner:
-		ids := make([]ent.Value, 0, len(m.removedowner))
-		for id := range m.removedowner {
-			ids = append(ids, id)
-		}
-		return ids
-	}
 	return nil
 }
 
@@ -3328,6 +3223,9 @@ func (m *DrinkMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *DrinkMutation) ClearEdge(name string) error {
 	switch name {
+	case drink.EdgeOwner:
+		m.ClearOwner()
+		return nil
 	}
 	return fmt.Errorf("unknown Drink unique edge %s", name)
 }
@@ -3357,8 +3255,7 @@ type GroceryListMutation struct {
 	grocery_list_items         map[int]struct{}
 	removedgrocery_list_items  map[int]struct{}
 	clearedgrocery_list_items  bool
-	owner                      map[int]struct{}
-	removedowner               map[int]struct{}
+	owner                      *int
 	clearedowner               bool
 	grocery_list_shares        map[int]struct{}
 	removedgrocery_list_shares map[int]struct{}
@@ -3664,14 +3561,9 @@ func (m *GroceryListMutation) ResetGroceryListItems() {
 	m.removedgrocery_list_items = nil
 }
 
-// AddOwnerIDs adds the "owner" edge to the User entity by ids.
-func (m *GroceryListMutation) AddOwnerIDs(ids ...int) {
-	if m.owner == nil {
-		m.owner = make(map[int]struct{})
-	}
-	for i := range ids {
-		m.owner[ids[i]] = struct{}{}
-	}
+// SetOwnerID sets the "owner" edge to the User entity by id.
+func (m *GroceryListMutation) SetOwnerID(id int) {
+	m.owner = &id
 }
 
 // ClearOwner clears the "owner" edge to the User entity.
@@ -3684,29 +3576,20 @@ func (m *GroceryListMutation) OwnerCleared() bool {
 	return m.clearedowner
 }
 
-// RemoveOwnerIDs removes the "owner" edge to the User entity by IDs.
-func (m *GroceryListMutation) RemoveOwnerIDs(ids ...int) {
-	if m.removedowner == nil {
-		m.removedowner = make(map[int]struct{})
-	}
-	for i := range ids {
-		delete(m.owner, ids[i])
-		m.removedowner[ids[i]] = struct{}{}
-	}
-}
-
-// RemovedOwner returns the removed IDs of the "owner" edge to the User entity.
-func (m *GroceryListMutation) RemovedOwnerIDs() (ids []int) {
-	for id := range m.removedowner {
-		ids = append(ids, id)
+// OwnerID returns the "owner" edge ID in the mutation.
+func (m *GroceryListMutation) OwnerID() (id int, exists bool) {
+	if m.owner != nil {
+		return *m.owner, true
 	}
 	return
 }
 
 // OwnerIDs returns the "owner" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// OwnerID instead. It exists only for internal usage by the builders.
 func (m *GroceryListMutation) OwnerIDs() (ids []int) {
-	for id := range m.owner {
-		ids = append(ids, id)
+	if id := m.owner; id != nil {
+		ids = append(ids, *id)
 	}
 	return
 }
@@ -3715,7 +3598,6 @@ func (m *GroceryListMutation) OwnerIDs() (ids []int) {
 func (m *GroceryListMutation) ResetOwner() {
 	m.owner = nil
 	m.clearedowner = false
-	m.removedowner = nil
 }
 
 // AddGroceryListShareIDs adds the "grocery_list_shares" edge to the GroceryListShare entity by ids.
@@ -3980,11 +3862,9 @@ func (m *GroceryListMutation) AddedIDs(name string) []ent.Value {
 		}
 		return ids
 	case grocerylist.EdgeOwner:
-		ids := make([]ent.Value, 0, len(m.owner))
-		for id := range m.owner {
-			ids = append(ids, id)
+		if id := m.owner; id != nil {
+			return []ent.Value{*id}
 		}
-		return ids
 	case grocerylist.EdgeGroceryListShares:
 		ids := make([]ent.Value, 0, len(m.grocery_list_shares))
 		for id := range m.grocery_list_shares {
@@ -4001,9 +3881,6 @@ func (m *GroceryListMutation) RemovedEdges() []string {
 	if m.removedgrocery_list_items != nil {
 		edges = append(edges, grocerylist.EdgeGroceryListItems)
 	}
-	if m.removedowner != nil {
-		edges = append(edges, grocerylist.EdgeOwner)
-	}
 	if m.removedgrocery_list_shares != nil {
 		edges = append(edges, grocerylist.EdgeGroceryListShares)
 	}
@@ -4017,12 +3894,6 @@ func (m *GroceryListMutation) RemovedIDs(name string) []ent.Value {
 	case grocerylist.EdgeGroceryListItems:
 		ids := make([]ent.Value, 0, len(m.removedgrocery_list_items))
 		for id := range m.removedgrocery_list_items {
-			ids = append(ids, id)
-		}
-		return ids
-	case grocerylist.EdgeOwner:
-		ids := make([]ent.Value, 0, len(m.removedowner))
-		for id := range m.removedowner {
 			ids = append(ids, id)
 		}
 		return ids
@@ -4069,6 +3940,9 @@ func (m *GroceryListMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *GroceryListMutation) ClearEdge(name string) error {
 	switch name {
+	case grocerylist.EdgeOwner:
+		m.ClearOwner()
+		return nil
 	}
 	return fmt.Errorf("unknown GroceryList unique edge %s", name)
 }
@@ -4102,8 +3976,7 @@ type GroceryListItemMutation struct {
 	note                *string
 	created_at          *time.Time
 	clearedFields       map[string]struct{}
-	grocery_list        map[int]struct{}
-	removedgrocery_list map[int]struct{}
+	grocery_list        *int
 	clearedgrocery_list bool
 	done                bool
 	oldValue            func(context.Context) (*GroceryListItem, error)
@@ -4372,14 +4245,9 @@ func (m *GroceryListItemMutation) ResetCreatedAt() {
 	m.created_at = nil
 }
 
-// AddGroceryListIDs adds the "grocery_list" edge to the GroceryList entity by ids.
-func (m *GroceryListItemMutation) AddGroceryListIDs(ids ...int) {
-	if m.grocery_list == nil {
-		m.grocery_list = make(map[int]struct{})
-	}
-	for i := range ids {
-		m.grocery_list[ids[i]] = struct{}{}
-	}
+// SetGroceryListID sets the "grocery_list" edge to the GroceryList entity by id.
+func (m *GroceryListItemMutation) SetGroceryListID(id int) {
+	m.grocery_list = &id
 }
 
 // ClearGroceryList clears the "grocery_list" edge to the GroceryList entity.
@@ -4392,29 +4260,20 @@ func (m *GroceryListItemMutation) GroceryListCleared() bool {
 	return m.clearedgrocery_list
 }
 
-// RemoveGroceryListIDs removes the "grocery_list" edge to the GroceryList entity by IDs.
-func (m *GroceryListItemMutation) RemoveGroceryListIDs(ids ...int) {
-	if m.removedgrocery_list == nil {
-		m.removedgrocery_list = make(map[int]struct{})
-	}
-	for i := range ids {
-		delete(m.grocery_list, ids[i])
-		m.removedgrocery_list[ids[i]] = struct{}{}
-	}
-}
-
-// RemovedGroceryList returns the removed IDs of the "grocery_list" edge to the GroceryList entity.
-func (m *GroceryListItemMutation) RemovedGroceryListIDs() (ids []int) {
-	for id := range m.removedgrocery_list {
-		ids = append(ids, id)
+// GroceryListID returns the "grocery_list" edge ID in the mutation.
+func (m *GroceryListItemMutation) GroceryListID() (id int, exists bool) {
+	if m.grocery_list != nil {
+		return *m.grocery_list, true
 	}
 	return
 }
 
 // GroceryListIDs returns the "grocery_list" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// GroceryListID instead. It exists only for internal usage by the builders.
 func (m *GroceryListItemMutation) GroceryListIDs() (ids []int) {
-	for id := range m.grocery_list {
-		ids = append(ids, id)
+	if id := m.grocery_list; id != nil {
+		ids = append(ids, *id)
 	}
 	return
 }
@@ -4423,7 +4282,6 @@ func (m *GroceryListItemMutation) GroceryListIDs() (ids []int) {
 func (m *GroceryListItemMutation) ResetGroceryList() {
 	m.grocery_list = nil
 	m.clearedgrocery_list = false
-	m.removedgrocery_list = nil
 }
 
 // Where appends a list predicates to the GroceryListItemMutation builder.
@@ -4637,11 +4495,9 @@ func (m *GroceryListItemMutation) AddedEdges() []string {
 func (m *GroceryListItemMutation) AddedIDs(name string) []ent.Value {
 	switch name {
 	case grocerylistitem.EdgeGroceryList:
-		ids := make([]ent.Value, 0, len(m.grocery_list))
-		for id := range m.grocery_list {
-			ids = append(ids, id)
+		if id := m.grocery_list; id != nil {
+			return []ent.Value{*id}
 		}
-		return ids
 	}
 	return nil
 }
@@ -4649,23 +4505,12 @@ func (m *GroceryListItemMutation) AddedIDs(name string) []ent.Value {
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *GroceryListItemMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 1)
-	if m.removedgrocery_list != nil {
-		edges = append(edges, grocerylistitem.EdgeGroceryList)
-	}
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *GroceryListItemMutation) RemovedIDs(name string) []ent.Value {
-	switch name {
-	case grocerylistitem.EdgeGroceryList:
-		ids := make([]ent.Value, 0, len(m.removedgrocery_list))
-		for id := range m.removedgrocery_list {
-			ids = append(ids, id)
-		}
-		return ids
-	}
 	return nil
 }
 
@@ -4692,6 +4537,9 @@ func (m *GroceryListItemMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *GroceryListItemMutation) ClearEdge(name string) error {
 	switch name {
+	case grocerylistitem.EdgeGroceryList:
+		m.ClearGroceryList()
+		return nil
 	}
 	return fmt.Errorf("unknown GroceryListItem unique edge %s", name)
 }
@@ -4716,11 +4564,9 @@ type GroceryListShareMutation struct {
 	can_edit            *bool
 	created_at          *time.Time
 	clearedFields       map[string]struct{}
-	user                map[int]struct{}
-	removeduser         map[int]struct{}
+	user                *int
 	cleareduser         bool
-	grocery_list        map[int]struct{}
-	removedgrocery_list map[int]struct{}
+	grocery_list        *int
 	clearedgrocery_list bool
 	done                bool
 	oldValue            func(context.Context) (*GroceryListShare, error)
@@ -4897,14 +4743,9 @@ func (m *GroceryListShareMutation) ResetCreatedAt() {
 	m.created_at = nil
 }
 
-// AddUserIDs adds the "user" edge to the User entity by ids.
-func (m *GroceryListShareMutation) AddUserIDs(ids ...int) {
-	if m.user == nil {
-		m.user = make(map[int]struct{})
-	}
-	for i := range ids {
-		m.user[ids[i]] = struct{}{}
-	}
+// SetUserID sets the "user" edge to the User entity by id.
+func (m *GroceryListShareMutation) SetUserID(id int) {
+	m.user = &id
 }
 
 // ClearUser clears the "user" edge to the User entity.
@@ -4917,29 +4758,20 @@ func (m *GroceryListShareMutation) UserCleared() bool {
 	return m.cleareduser
 }
 
-// RemoveUserIDs removes the "user" edge to the User entity by IDs.
-func (m *GroceryListShareMutation) RemoveUserIDs(ids ...int) {
-	if m.removeduser == nil {
-		m.removeduser = make(map[int]struct{})
-	}
-	for i := range ids {
-		delete(m.user, ids[i])
-		m.removeduser[ids[i]] = struct{}{}
-	}
-}
-
-// RemovedUser returns the removed IDs of the "user" edge to the User entity.
-func (m *GroceryListShareMutation) RemovedUserIDs() (ids []int) {
-	for id := range m.removeduser {
-		ids = append(ids, id)
+// UserID returns the "user" edge ID in the mutation.
+func (m *GroceryListShareMutation) UserID() (id int, exists bool) {
+	if m.user != nil {
+		return *m.user, true
 	}
 	return
 }
 
 // UserIDs returns the "user" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// UserID instead. It exists only for internal usage by the builders.
 func (m *GroceryListShareMutation) UserIDs() (ids []int) {
-	for id := range m.user {
-		ids = append(ids, id)
+	if id := m.user; id != nil {
+		ids = append(ids, *id)
 	}
 	return
 }
@@ -4948,17 +4780,11 @@ func (m *GroceryListShareMutation) UserIDs() (ids []int) {
 func (m *GroceryListShareMutation) ResetUser() {
 	m.user = nil
 	m.cleareduser = false
-	m.removeduser = nil
 }
 
-// AddGroceryListIDs adds the "grocery_list" edge to the GroceryList entity by ids.
-func (m *GroceryListShareMutation) AddGroceryListIDs(ids ...int) {
-	if m.grocery_list == nil {
-		m.grocery_list = make(map[int]struct{})
-	}
-	for i := range ids {
-		m.grocery_list[ids[i]] = struct{}{}
-	}
+// SetGroceryListID sets the "grocery_list" edge to the GroceryList entity by id.
+func (m *GroceryListShareMutation) SetGroceryListID(id int) {
+	m.grocery_list = &id
 }
 
 // ClearGroceryList clears the "grocery_list" edge to the GroceryList entity.
@@ -4971,29 +4797,20 @@ func (m *GroceryListShareMutation) GroceryListCleared() bool {
 	return m.clearedgrocery_list
 }
 
-// RemoveGroceryListIDs removes the "grocery_list" edge to the GroceryList entity by IDs.
-func (m *GroceryListShareMutation) RemoveGroceryListIDs(ids ...int) {
-	if m.removedgrocery_list == nil {
-		m.removedgrocery_list = make(map[int]struct{})
-	}
-	for i := range ids {
-		delete(m.grocery_list, ids[i])
-		m.removedgrocery_list[ids[i]] = struct{}{}
-	}
-}
-
-// RemovedGroceryList returns the removed IDs of the "grocery_list" edge to the GroceryList entity.
-func (m *GroceryListShareMutation) RemovedGroceryListIDs() (ids []int) {
-	for id := range m.removedgrocery_list {
-		ids = append(ids, id)
+// GroceryListID returns the "grocery_list" edge ID in the mutation.
+func (m *GroceryListShareMutation) GroceryListID() (id int, exists bool) {
+	if m.grocery_list != nil {
+		return *m.grocery_list, true
 	}
 	return
 }
 
 // GroceryListIDs returns the "grocery_list" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// GroceryListID instead. It exists only for internal usage by the builders.
 func (m *GroceryListShareMutation) GroceryListIDs() (ids []int) {
-	for id := range m.grocery_list {
-		ids = append(ids, id)
+	if id := m.grocery_list; id != nil {
+		ids = append(ids, *id)
 	}
 	return
 }
@@ -5002,7 +4819,6 @@ func (m *GroceryListShareMutation) GroceryListIDs() (ids []int) {
 func (m *GroceryListShareMutation) ResetGroceryList() {
 	m.grocery_list = nil
 	m.clearedgrocery_list = false
-	m.removedgrocery_list = nil
 }
 
 // Where appends a list predicates to the GroceryListShareMutation builder.
@@ -5170,17 +4986,13 @@ func (m *GroceryListShareMutation) AddedEdges() []string {
 func (m *GroceryListShareMutation) AddedIDs(name string) []ent.Value {
 	switch name {
 	case grocerylistshare.EdgeUser:
-		ids := make([]ent.Value, 0, len(m.user))
-		for id := range m.user {
-			ids = append(ids, id)
+		if id := m.user; id != nil {
+			return []ent.Value{*id}
 		}
-		return ids
 	case grocerylistshare.EdgeGroceryList:
-		ids := make([]ent.Value, 0, len(m.grocery_list))
-		for id := range m.grocery_list {
-			ids = append(ids, id)
+		if id := m.grocery_list; id != nil {
+			return []ent.Value{*id}
 		}
-		return ids
 	}
 	return nil
 }
@@ -5188,32 +5000,12 @@ func (m *GroceryListShareMutation) AddedIDs(name string) []ent.Value {
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *GroceryListShareMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 2)
-	if m.removeduser != nil {
-		edges = append(edges, grocerylistshare.EdgeUser)
-	}
-	if m.removedgrocery_list != nil {
-		edges = append(edges, grocerylistshare.EdgeGroceryList)
-	}
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *GroceryListShareMutation) RemovedIDs(name string) []ent.Value {
-	switch name {
-	case grocerylistshare.EdgeUser:
-		ids := make([]ent.Value, 0, len(m.removeduser))
-		for id := range m.removeduser {
-			ids = append(ids, id)
-		}
-		return ids
-	case grocerylistshare.EdgeGroceryList:
-		ids := make([]ent.Value, 0, len(m.removedgrocery_list))
-		for id := range m.removedgrocery_list {
-			ids = append(ids, id)
-		}
-		return ids
-	}
 	return nil
 }
 
@@ -5245,6 +5037,12 @@ func (m *GroceryListShareMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *GroceryListShareMutation) ClearEdge(name string) error {
 	switch name {
+	case grocerylistshare.EdgeUser:
+		m.ClearUser()
+		return nil
+	case grocerylistshare.EdgeGroceryList:
+		m.ClearGroceryList()
+		return nil
 	}
 	return fmt.Errorf("unknown GroceryListShare unique edge %s", name)
 }
@@ -5274,8 +5072,7 @@ type MovieMutation struct {
 	watched           *bool
 	created_at        *time.Time
 	clearedFields     map[string]struct{}
-	movie_list        map[int]struct{}
-	removedmovie_list map[int]struct{}
+	movie_list        *int
 	clearedmovie_list bool
 	done              bool
 	oldValue          func(context.Context) (*Movie, error)
@@ -5524,14 +5321,9 @@ func (m *MovieMutation) ResetCreatedAt() {
 	m.created_at = nil
 }
 
-// AddMovieListIDs adds the "movie_list" edge to the MovieList entity by ids.
-func (m *MovieMutation) AddMovieListIDs(ids ...int) {
-	if m.movie_list == nil {
-		m.movie_list = make(map[int]struct{})
-	}
-	for i := range ids {
-		m.movie_list[ids[i]] = struct{}{}
-	}
+// SetMovieListID sets the "movie_list" edge to the MovieList entity by id.
+func (m *MovieMutation) SetMovieListID(id int) {
+	m.movie_list = &id
 }
 
 // ClearMovieList clears the "movie_list" edge to the MovieList entity.
@@ -5544,29 +5336,20 @@ func (m *MovieMutation) MovieListCleared() bool {
 	return m.clearedmovie_list
 }
 
-// RemoveMovieListIDs removes the "movie_list" edge to the MovieList entity by IDs.
-func (m *MovieMutation) RemoveMovieListIDs(ids ...int) {
-	if m.removedmovie_list == nil {
-		m.removedmovie_list = make(map[int]struct{})
-	}
-	for i := range ids {
-		delete(m.movie_list, ids[i])
-		m.removedmovie_list[ids[i]] = struct{}{}
-	}
-}
-
-// RemovedMovieList returns the removed IDs of the "movie_list" edge to the MovieList entity.
-func (m *MovieMutation) RemovedMovieListIDs() (ids []int) {
-	for id := range m.removedmovie_list {
-		ids = append(ids, id)
+// MovieListID returns the "movie_list" edge ID in the mutation.
+func (m *MovieMutation) MovieListID() (id int, exists bool) {
+	if m.movie_list != nil {
+		return *m.movie_list, true
 	}
 	return
 }
 
 // MovieListIDs returns the "movie_list" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// MovieListID instead. It exists only for internal usage by the builders.
 func (m *MovieMutation) MovieListIDs() (ids []int) {
-	for id := range m.movie_list {
-		ids = append(ids, id)
+	if id := m.movie_list; id != nil {
+		ids = append(ids, *id)
 	}
 	return
 }
@@ -5575,7 +5358,6 @@ func (m *MovieMutation) MovieListIDs() (ids []int) {
 func (m *MovieMutation) ResetMovieList() {
 	m.movie_list = nil
 	m.clearedmovie_list = false
-	m.removedmovie_list = nil
 }
 
 // Where appends a list predicates to the MovieMutation builder.
@@ -5774,11 +5556,9 @@ func (m *MovieMutation) AddedEdges() []string {
 func (m *MovieMutation) AddedIDs(name string) []ent.Value {
 	switch name {
 	case movie.EdgeMovieList:
-		ids := make([]ent.Value, 0, len(m.movie_list))
-		for id := range m.movie_list {
-			ids = append(ids, id)
+		if id := m.movie_list; id != nil {
+			return []ent.Value{*id}
 		}
-		return ids
 	}
 	return nil
 }
@@ -5786,23 +5566,12 @@ func (m *MovieMutation) AddedIDs(name string) []ent.Value {
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *MovieMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 1)
-	if m.removedmovie_list != nil {
-		edges = append(edges, movie.EdgeMovieList)
-	}
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *MovieMutation) RemovedIDs(name string) []ent.Value {
-	switch name {
-	case movie.EdgeMovieList:
-		ids := make([]ent.Value, 0, len(m.removedmovie_list))
-		for id := range m.removedmovie_list {
-			ids = append(ids, id)
-		}
-		return ids
-	}
 	return nil
 }
 
@@ -5829,6 +5598,9 @@ func (m *MovieMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *MovieMutation) ClearEdge(name string) error {
 	switch name {
+	case movie.EdgeMovieList:
+		m.ClearMovieList()
+		return nil
 	}
 	return fmt.Errorf("unknown Movie unique edge %s", name)
 }
@@ -5858,8 +5630,7 @@ type MovieListMutation struct {
 	movies                   map[int]struct{}
 	removedmovies            map[int]struct{}
 	clearedmovies            bool
-	owner                    map[int]struct{}
-	removedowner             map[int]struct{}
+	owner                    *int
 	clearedowner             bool
 	movie_list_shares        map[int]struct{}
 	removedmovie_list_shares map[int]struct{}
@@ -6165,14 +5936,9 @@ func (m *MovieListMutation) ResetMovies() {
 	m.removedmovies = nil
 }
 
-// AddOwnerIDs adds the "owner" edge to the User entity by ids.
-func (m *MovieListMutation) AddOwnerIDs(ids ...int) {
-	if m.owner == nil {
-		m.owner = make(map[int]struct{})
-	}
-	for i := range ids {
-		m.owner[ids[i]] = struct{}{}
-	}
+// SetOwnerID sets the "owner" edge to the User entity by id.
+func (m *MovieListMutation) SetOwnerID(id int) {
+	m.owner = &id
 }
 
 // ClearOwner clears the "owner" edge to the User entity.
@@ -6185,29 +5951,20 @@ func (m *MovieListMutation) OwnerCleared() bool {
 	return m.clearedowner
 }
 
-// RemoveOwnerIDs removes the "owner" edge to the User entity by IDs.
-func (m *MovieListMutation) RemoveOwnerIDs(ids ...int) {
-	if m.removedowner == nil {
-		m.removedowner = make(map[int]struct{})
-	}
-	for i := range ids {
-		delete(m.owner, ids[i])
-		m.removedowner[ids[i]] = struct{}{}
-	}
-}
-
-// RemovedOwner returns the removed IDs of the "owner" edge to the User entity.
-func (m *MovieListMutation) RemovedOwnerIDs() (ids []int) {
-	for id := range m.removedowner {
-		ids = append(ids, id)
+// OwnerID returns the "owner" edge ID in the mutation.
+func (m *MovieListMutation) OwnerID() (id int, exists bool) {
+	if m.owner != nil {
+		return *m.owner, true
 	}
 	return
 }
 
 // OwnerIDs returns the "owner" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// OwnerID instead. It exists only for internal usage by the builders.
 func (m *MovieListMutation) OwnerIDs() (ids []int) {
-	for id := range m.owner {
-		ids = append(ids, id)
+	if id := m.owner; id != nil {
+		ids = append(ids, *id)
 	}
 	return
 }
@@ -6216,7 +5973,6 @@ func (m *MovieListMutation) OwnerIDs() (ids []int) {
 func (m *MovieListMutation) ResetOwner() {
 	m.owner = nil
 	m.clearedowner = false
-	m.removedowner = nil
 }
 
 // AddMovieListShareIDs adds the "movie_list_shares" edge to the MovieListShare entity by ids.
@@ -6481,11 +6237,9 @@ func (m *MovieListMutation) AddedIDs(name string) []ent.Value {
 		}
 		return ids
 	case movielist.EdgeOwner:
-		ids := make([]ent.Value, 0, len(m.owner))
-		for id := range m.owner {
-			ids = append(ids, id)
+		if id := m.owner; id != nil {
+			return []ent.Value{*id}
 		}
-		return ids
 	case movielist.EdgeMovieListShares:
 		ids := make([]ent.Value, 0, len(m.movie_list_shares))
 		for id := range m.movie_list_shares {
@@ -6502,9 +6256,6 @@ func (m *MovieListMutation) RemovedEdges() []string {
 	if m.removedmovies != nil {
 		edges = append(edges, movielist.EdgeMovies)
 	}
-	if m.removedowner != nil {
-		edges = append(edges, movielist.EdgeOwner)
-	}
 	if m.removedmovie_list_shares != nil {
 		edges = append(edges, movielist.EdgeMovieListShares)
 	}
@@ -6518,12 +6269,6 @@ func (m *MovieListMutation) RemovedIDs(name string) []ent.Value {
 	case movielist.EdgeMovies:
 		ids := make([]ent.Value, 0, len(m.removedmovies))
 		for id := range m.removedmovies {
-			ids = append(ids, id)
-		}
-		return ids
-	case movielist.EdgeOwner:
-		ids := make([]ent.Value, 0, len(m.removedowner))
-		for id := range m.removedowner {
 			ids = append(ids, id)
 		}
 		return ids
@@ -6570,6 +6315,9 @@ func (m *MovieListMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *MovieListMutation) ClearEdge(name string) error {
 	switch name {
+	case movielist.EdgeOwner:
+		m.ClearOwner()
+		return nil
 	}
 	return fmt.Errorf("unknown MovieList unique edge %s", name)
 }
@@ -6600,11 +6348,9 @@ type MovieListShareMutation struct {
 	can_edit          *bool
 	created_at        *time.Time
 	clearedFields     map[string]struct{}
-	user              map[int]struct{}
-	removeduser       map[int]struct{}
+	user              *int
 	cleareduser       bool
-	movie_list        map[int]struct{}
-	removedmovie_list map[int]struct{}
+	movie_list        *int
 	clearedmovie_list bool
 	done              bool
 	oldValue          func(context.Context) (*MovieListShare, error)
@@ -6781,14 +6527,9 @@ func (m *MovieListShareMutation) ResetCreatedAt() {
 	m.created_at = nil
 }
 
-// AddUserIDs adds the "user" edge to the User entity by ids.
-func (m *MovieListShareMutation) AddUserIDs(ids ...int) {
-	if m.user == nil {
-		m.user = make(map[int]struct{})
-	}
-	for i := range ids {
-		m.user[ids[i]] = struct{}{}
-	}
+// SetUserID sets the "user" edge to the User entity by id.
+func (m *MovieListShareMutation) SetUserID(id int) {
+	m.user = &id
 }
 
 // ClearUser clears the "user" edge to the User entity.
@@ -6801,29 +6542,20 @@ func (m *MovieListShareMutation) UserCleared() bool {
 	return m.cleareduser
 }
 
-// RemoveUserIDs removes the "user" edge to the User entity by IDs.
-func (m *MovieListShareMutation) RemoveUserIDs(ids ...int) {
-	if m.removeduser == nil {
-		m.removeduser = make(map[int]struct{})
-	}
-	for i := range ids {
-		delete(m.user, ids[i])
-		m.removeduser[ids[i]] = struct{}{}
-	}
-}
-
-// RemovedUser returns the removed IDs of the "user" edge to the User entity.
-func (m *MovieListShareMutation) RemovedUserIDs() (ids []int) {
-	for id := range m.removeduser {
-		ids = append(ids, id)
+// UserID returns the "user" edge ID in the mutation.
+func (m *MovieListShareMutation) UserID() (id int, exists bool) {
+	if m.user != nil {
+		return *m.user, true
 	}
 	return
 }
 
 // UserIDs returns the "user" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// UserID instead. It exists only for internal usage by the builders.
 func (m *MovieListShareMutation) UserIDs() (ids []int) {
-	for id := range m.user {
-		ids = append(ids, id)
+	if id := m.user; id != nil {
+		ids = append(ids, *id)
 	}
 	return
 }
@@ -6832,17 +6564,11 @@ func (m *MovieListShareMutation) UserIDs() (ids []int) {
 func (m *MovieListShareMutation) ResetUser() {
 	m.user = nil
 	m.cleareduser = false
-	m.removeduser = nil
 }
 
-// AddMovieListIDs adds the "movie_list" edge to the MovieList entity by ids.
-func (m *MovieListShareMutation) AddMovieListIDs(ids ...int) {
-	if m.movie_list == nil {
-		m.movie_list = make(map[int]struct{})
-	}
-	for i := range ids {
-		m.movie_list[ids[i]] = struct{}{}
-	}
+// SetMovieListID sets the "movie_list" edge to the MovieList entity by id.
+func (m *MovieListShareMutation) SetMovieListID(id int) {
+	m.movie_list = &id
 }
 
 // ClearMovieList clears the "movie_list" edge to the MovieList entity.
@@ -6855,29 +6581,20 @@ func (m *MovieListShareMutation) MovieListCleared() bool {
 	return m.clearedmovie_list
 }
 
-// RemoveMovieListIDs removes the "movie_list" edge to the MovieList entity by IDs.
-func (m *MovieListShareMutation) RemoveMovieListIDs(ids ...int) {
-	if m.removedmovie_list == nil {
-		m.removedmovie_list = make(map[int]struct{})
-	}
-	for i := range ids {
-		delete(m.movie_list, ids[i])
-		m.removedmovie_list[ids[i]] = struct{}{}
-	}
-}
-
-// RemovedMovieList returns the removed IDs of the "movie_list" edge to the MovieList entity.
-func (m *MovieListShareMutation) RemovedMovieListIDs() (ids []int) {
-	for id := range m.removedmovie_list {
-		ids = append(ids, id)
+// MovieListID returns the "movie_list" edge ID in the mutation.
+func (m *MovieListShareMutation) MovieListID() (id int, exists bool) {
+	if m.movie_list != nil {
+		return *m.movie_list, true
 	}
 	return
 }
 
 // MovieListIDs returns the "movie_list" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// MovieListID instead. It exists only for internal usage by the builders.
 func (m *MovieListShareMutation) MovieListIDs() (ids []int) {
-	for id := range m.movie_list {
-		ids = append(ids, id)
+	if id := m.movie_list; id != nil {
+		ids = append(ids, *id)
 	}
 	return
 }
@@ -6886,7 +6603,6 @@ func (m *MovieListShareMutation) MovieListIDs() (ids []int) {
 func (m *MovieListShareMutation) ResetMovieList() {
 	m.movie_list = nil
 	m.clearedmovie_list = false
-	m.removedmovie_list = nil
 }
 
 // Where appends a list predicates to the MovieListShareMutation builder.
@@ -7054,17 +6770,13 @@ func (m *MovieListShareMutation) AddedEdges() []string {
 func (m *MovieListShareMutation) AddedIDs(name string) []ent.Value {
 	switch name {
 	case movielistshare.EdgeUser:
-		ids := make([]ent.Value, 0, len(m.user))
-		for id := range m.user {
-			ids = append(ids, id)
+		if id := m.user; id != nil {
+			return []ent.Value{*id}
 		}
-		return ids
 	case movielistshare.EdgeMovieList:
-		ids := make([]ent.Value, 0, len(m.movie_list))
-		for id := range m.movie_list {
-			ids = append(ids, id)
+		if id := m.movie_list; id != nil {
+			return []ent.Value{*id}
 		}
-		return ids
 	}
 	return nil
 }
@@ -7072,32 +6784,12 @@ func (m *MovieListShareMutation) AddedIDs(name string) []ent.Value {
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *MovieListShareMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 2)
-	if m.removeduser != nil {
-		edges = append(edges, movielistshare.EdgeUser)
-	}
-	if m.removedmovie_list != nil {
-		edges = append(edges, movielistshare.EdgeMovieList)
-	}
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *MovieListShareMutation) RemovedIDs(name string) []ent.Value {
-	switch name {
-	case movielistshare.EdgeUser:
-		ids := make([]ent.Value, 0, len(m.removeduser))
-		for id := range m.removeduser {
-			ids = append(ids, id)
-		}
-		return ids
-	case movielistshare.EdgeMovieList:
-		ids := make([]ent.Value, 0, len(m.removedmovie_list))
-		for id := range m.removedmovie_list {
-			ids = append(ids, id)
-		}
-		return ids
-	}
 	return nil
 }
 
@@ -7129,6 +6821,12 @@ func (m *MovieListShareMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *MovieListShareMutation) ClearEdge(name string) error {
 	switch name {
+	case movielistshare.EdgeUser:
+		m.ClearUser()
+		return nil
+	case movielistshare.EdgeMovieList:
+		m.ClearMovieList()
+		return nil
 	}
 	return fmt.Errorf("unknown MovieListShare unique edge %s", name)
 }
@@ -7159,6 +6857,7 @@ type UserMutation struct {
 	email                      *string
 	verified                   *bool
 	locked                     *bool
+	last_login                 *time.Time
 	created_at                 *time.Time
 	clearedFields              map[string]struct{}
 	amazon_shares              map[int]struct{}
@@ -7483,6 +7182,42 @@ func (m *UserMutation) OldLocked(ctx context.Context) (v bool, err error) {
 // ResetLocked resets all changes to the "locked" field.
 func (m *UserMutation) ResetLocked() {
 	m.locked = nil
+}
+
+// SetLastLogin sets the "last_login" field.
+func (m *UserMutation) SetLastLogin(t time.Time) {
+	m.last_login = &t
+}
+
+// LastLogin returns the value of the "last_login" field in the mutation.
+func (m *UserMutation) LastLogin() (r time.Time, exists bool) {
+	v := m.last_login
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLastLogin returns the old "last_login" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldLastLogin(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLastLogin is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLastLogin requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLastLogin: %w", err)
+	}
+	return oldValue.LastLogin, nil
+}
+
+// ResetLastLogin resets all changes to the "last_login" field.
+func (m *UserMutation) ResetLastLogin() {
+	m.last_login = nil
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -7933,7 +7668,7 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 6)
+	fields := make([]string, 0, 7)
 	if m.display_name != nil {
 		fields = append(fields, user.FieldDisplayName)
 	}
@@ -7948,6 +7683,9 @@ func (m *UserMutation) Fields() []string {
 	}
 	if m.locked != nil {
 		fields = append(fields, user.FieldLocked)
+	}
+	if m.last_login != nil {
+		fields = append(fields, user.FieldLastLogin)
 	}
 	if m.created_at != nil {
 		fields = append(fields, user.FieldCreatedAt)
@@ -7970,6 +7708,8 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 		return m.Verified()
 	case user.FieldLocked:
 		return m.Locked()
+	case user.FieldLastLogin:
+		return m.LastLogin()
 	case user.FieldCreatedAt:
 		return m.CreatedAt()
 	}
@@ -7991,6 +7731,8 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldVerified(ctx)
 	case user.FieldLocked:
 		return m.OldLocked(ctx)
+	case user.FieldLastLogin:
+		return m.OldLastLogin(ctx)
 	case user.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	}
@@ -8036,6 +7778,13 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetLocked(v)
+		return nil
+	case user.FieldLastLogin:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLastLogin(v)
 		return nil
 	case user.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -8122,6 +7871,9 @@ func (m *UserMutation) ResetField(name string) error {
 		return nil
 	case user.FieldLocked:
 		m.ResetLocked()
+		return nil
+	case user.FieldLastLogin:
+		m.ResetLastLogin()
 		return nil
 	case user.FieldCreatedAt:
 		m.ResetCreatedAt()

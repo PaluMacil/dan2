@@ -50,34 +50,42 @@ func (glsc *GroceryListShareCreate) SetNillableCreatedAt(t *time.Time) *GroceryL
 	return glsc
 }
 
-// AddUserIDs adds the "user" edge to the User entity by IDs.
-func (glsc *GroceryListShareCreate) AddUserIDs(ids ...int) *GroceryListShareCreate {
-	glsc.mutation.AddUserIDs(ids...)
+// SetUserID sets the "user" edge to the User entity by ID.
+func (glsc *GroceryListShareCreate) SetUserID(id int) *GroceryListShareCreate {
+	glsc.mutation.SetUserID(id)
 	return glsc
 }
 
-// AddUser adds the "user" edges to the User entity.
-func (glsc *GroceryListShareCreate) AddUser(u ...*User) *GroceryListShareCreate {
-	ids := make([]int, len(u))
-	for i := range u {
-		ids[i] = u[i].ID
+// SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
+func (glsc *GroceryListShareCreate) SetNillableUserID(id *int) *GroceryListShareCreate {
+	if id != nil {
+		glsc = glsc.SetUserID(*id)
 	}
-	return glsc.AddUserIDs(ids...)
-}
-
-// AddGroceryListIDs adds the "grocery_list" edge to the GroceryList entity by IDs.
-func (glsc *GroceryListShareCreate) AddGroceryListIDs(ids ...int) *GroceryListShareCreate {
-	glsc.mutation.AddGroceryListIDs(ids...)
 	return glsc
 }
 
-// AddGroceryList adds the "grocery_list" edges to the GroceryList entity.
-func (glsc *GroceryListShareCreate) AddGroceryList(g ...*GroceryList) *GroceryListShareCreate {
-	ids := make([]int, len(g))
-	for i := range g {
-		ids[i] = g[i].ID
+// SetUser sets the "user" edge to the User entity.
+func (glsc *GroceryListShareCreate) SetUser(u *User) *GroceryListShareCreate {
+	return glsc.SetUserID(u.ID)
+}
+
+// SetGroceryListID sets the "grocery_list" edge to the GroceryList entity by ID.
+func (glsc *GroceryListShareCreate) SetGroceryListID(id int) *GroceryListShareCreate {
+	glsc.mutation.SetGroceryListID(id)
+	return glsc
+}
+
+// SetNillableGroceryListID sets the "grocery_list" edge to the GroceryList entity by ID if the given value is not nil.
+func (glsc *GroceryListShareCreate) SetNillableGroceryListID(id *int) *GroceryListShareCreate {
+	if id != nil {
+		glsc = glsc.SetGroceryListID(*id)
 	}
-	return glsc.AddGroceryListIDs(ids...)
+	return glsc
+}
+
+// SetGroceryList sets the "grocery_list" edge to the GroceryList entity.
+func (glsc *GroceryListShareCreate) SetGroceryList(g *GroceryList) *GroceryListShareCreate {
+	return glsc.SetGroceryListID(g.ID)
 }
 
 // Mutation returns the GroceryListShareMutation object of the builder.
@@ -169,10 +177,10 @@ func (glsc *GroceryListShareCreate) createSpec() (*GroceryListShare, *sqlgraph.C
 	}
 	if nodes := glsc.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   grocerylistshare.UserTable,
-			Columns: grocerylistshare.UserPrimaryKey,
+			Columns: []string{grocerylistshare.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
@@ -181,14 +189,15 @@ func (glsc *GroceryListShareCreate) createSpec() (*GroceryListShare, *sqlgraph.C
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
+		_node.user_grocery_list_shares = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := glsc.mutation.GroceryListIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   grocerylistshare.GroceryListTable,
-			Columns: grocerylistshare.GroceryListPrimaryKey,
+			Columns: []string{grocerylistshare.GroceryListColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(grocerylist.FieldID, field.TypeInt),
@@ -197,6 +206,7 @@ func (glsc *GroceryListShareCreate) createSpec() (*GroceryListShare, *sqlgraph.C
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
+		_node.grocery_list_grocery_list_shares = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

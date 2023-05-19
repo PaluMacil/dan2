@@ -80,6 +80,11 @@ func Locked(v bool) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldLocked, v))
 }
 
+// LastLogin applies equality check predicate on the "last_login" field. It's identical to LastLoginEQ.
+func LastLogin(v time.Time) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldLastLogin, v))
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldCreatedAt, v))
@@ -275,6 +280,46 @@ func LockedNEQ(v bool) predicate.User {
 	return predicate.User(sql.FieldNEQ(FieldLocked, v))
 }
 
+// LastLoginEQ applies the EQ predicate on the "last_login" field.
+func LastLoginEQ(v time.Time) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldLastLogin, v))
+}
+
+// LastLoginNEQ applies the NEQ predicate on the "last_login" field.
+func LastLoginNEQ(v time.Time) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldLastLogin, v))
+}
+
+// LastLoginIn applies the In predicate on the "last_login" field.
+func LastLoginIn(vs ...time.Time) predicate.User {
+	return predicate.User(sql.FieldIn(FieldLastLogin, vs...))
+}
+
+// LastLoginNotIn applies the NotIn predicate on the "last_login" field.
+func LastLoginNotIn(vs ...time.Time) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldLastLogin, vs...))
+}
+
+// LastLoginGT applies the GT predicate on the "last_login" field.
+func LastLoginGT(v time.Time) predicate.User {
+	return predicate.User(sql.FieldGT(FieldLastLogin, v))
+}
+
+// LastLoginGTE applies the GTE predicate on the "last_login" field.
+func LastLoginGTE(v time.Time) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldLastLogin, v))
+}
+
+// LastLoginLT applies the LT predicate on the "last_login" field.
+func LastLoginLT(v time.Time) predicate.User {
+	return predicate.User(sql.FieldLT(FieldLastLogin, v))
+}
+
+// LastLoginLTE applies the LTE predicate on the "last_login" field.
+func LastLoginLTE(v time.Time) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldLastLogin, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldCreatedAt, v))
@@ -320,7 +365,7 @@ func HasAmazonShares() predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, AmazonSharesTable, AmazonSharesPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.O2M, false, AmazonSharesTable, AmazonSharesColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -366,7 +411,7 @@ func HasDrinks() predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, DrinksTable, DrinksPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.O2M, false, DrinksTable, DrinksColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -389,7 +434,7 @@ func HasGroceryLists() predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, GroceryListsTable, GroceryListsPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.O2M, false, GroceryListsTable, GroceryListsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -412,7 +457,7 @@ func HasGroceryListShares() predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, GroceryListSharesTable, GroceryListSharesPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.O2M, false, GroceryListSharesTable, GroceryListSharesColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -435,7 +480,7 @@ func HasMovieLists() predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, MovieListsTable, MovieListsPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.O2M, false, MovieListsTable, MovieListsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -458,7 +503,7 @@ func HasMovieListShares() predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, MovieListSharesTable, MovieListSharesPrimaryKey...),
+			sqlgraph.Edge(sqlgraph.O2M, false, MovieListSharesTable, MovieListSharesColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})

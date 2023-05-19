@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/PaluMacil/dan2/ent/movielist"
+	"github.com/PaluMacil/dan2/ent/user"
 )
 
 // MovieList is the model entity for the MovieList schema.
@@ -27,8 +28,9 @@ type MovieList struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the MovieListQuery when eager-loading is set.
-	Edges        MovieListEdges `json:"edges"`
-	selectValues sql.SelectValues
+	Edges            MovieListEdges `json:"edges"`
+	user_movie_lists *int
+	selectValues     sql.SelectValues
 }
 
 // MovieListEdges holds the relations/edges for other nodes in the graph.
@@ -36,7 +38,7 @@ type MovieListEdges struct {
 	// Movies holds the value of the movies edge.
 	Movies []*Movie `json:"movies,omitempty"`
 	// Owner holds the value of the owner edge.
-	Owner []*User `json:"owner,omitempty"`
+	Owner *User `json:"owner,omitempty"`
 	// MovieListShares holds the value of the movie_list_shares edge.
 	MovieListShares []*MovieListShare `json:"movie_list_shares,omitempty"`
 	// loadedTypes holds the information for reporting if a
@@ -54,9 +56,13 @@ func (e MovieListEdges) MoviesOrErr() ([]*Movie, error) {
 }
 
 // OwnerOrErr returns the Owner value or an error if the edge
-// was not loaded in eager-loading.
-func (e MovieListEdges) OwnerOrErr() ([]*User, error) {
+// was not loaded in eager-loading, or loaded but was not found.
+func (e MovieListEdges) OwnerOrErr() (*User, error) {
 	if e.loadedTypes[1] {
+		if e.Owner == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: user.Label}
+		}
 		return e.Owner, nil
 	}
 	return nil, &NotLoadedError{edge: "owner"}
@@ -84,6 +90,8 @@ func (*MovieList) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullString)
 		case movielist.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
+		case movielist.ForeignKeys[0]: // user_movie_lists
+			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -128,6 +136,13 @@ func (ml *MovieList) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
 				ml.CreatedAt = value.Time
+			}
+		case movielist.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for edge-field user_movie_lists", value)
+			} else if value.Valid {
+				ml.user_movie_lists = new(int)
+				*ml.user_movie_lists = int(value.Int64)
 			}
 		default:
 			ml.selectValues.Set(columns[i], values[i])

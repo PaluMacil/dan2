@@ -24,8 +24,10 @@ func (AmazonShare) Fields() []ent.Field {
 func (AmazonShare) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("user", User.Type).
-			Ref("amazon_shares"),
+			Ref("amazon_shares").
+			Unique(),
 		edge.From("amazon_list", AmazonList.Type).
-			Ref("amazon_shares"),
+			Ref("amazon_shares").
+			Unique(),
 	}
 }

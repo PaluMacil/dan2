@@ -30,21 +30,27 @@ const (
 	EdgeMovieListShares = "movie_list_shares"
 	// Table holds the table name of the movielist in the database.
 	Table = "movie_lists"
-	// MoviesTable is the table that holds the movies relation/edge. The primary key declared below.
-	MoviesTable = "movie_list_movies"
+	// MoviesTable is the table that holds the movies relation/edge.
+	MoviesTable = "movies"
 	// MoviesInverseTable is the table name for the Movie entity.
 	// It exists in this package in order to avoid circular dependency with the "movie" package.
 	MoviesInverseTable = "movies"
-	// OwnerTable is the table that holds the owner relation/edge. The primary key declared below.
-	OwnerTable = "user_movie_lists"
+	// MoviesColumn is the table column denoting the movies relation/edge.
+	MoviesColumn = "movie_list_movies"
+	// OwnerTable is the table that holds the owner relation/edge.
+	OwnerTable = "movie_lists"
 	// OwnerInverseTable is the table name for the User entity.
 	// It exists in this package in order to avoid circular dependency with the "user" package.
 	OwnerInverseTable = "users"
-	// MovieListSharesTable is the table that holds the movie_list_shares relation/edge. The primary key declared below.
-	MovieListSharesTable = "movie_list_movie_list_shares"
+	// OwnerColumn is the table column denoting the owner relation/edge.
+	OwnerColumn = "user_movie_lists"
+	// MovieListSharesTable is the table that holds the movie_list_shares relation/edge.
+	MovieListSharesTable = "movie_list_shares"
 	// MovieListSharesInverseTable is the table name for the MovieListShare entity.
 	// It exists in this package in order to avoid circular dependency with the "movielistshare" package.
 	MovieListSharesInverseTable = "movie_list_shares"
+	// MovieListSharesColumn is the table column denoting the movie_list_shares relation/edge.
+	MovieListSharesColumn = "movie_list_movie_list_shares"
 )
 
 // Columns holds all SQL columns for movielist fields.
@@ -56,22 +62,21 @@ var Columns = []string{
 	FieldCreatedAt,
 }
 
-var (
-	// MoviesPrimaryKey and MoviesColumn2 are the table columns denoting the
-	// primary key for the movies relation (M2M).
-	MoviesPrimaryKey = []string{"movie_list_id", "movie_id"}
-	// OwnerPrimaryKey and OwnerColumn2 are the table columns denoting the
-	// primary key for the owner relation (M2M).
-	OwnerPrimaryKey = []string{"user_id", "movie_list_id"}
-	// MovieListSharesPrimaryKey and MovieListSharesColumn2 are the table columns denoting the
-	// primary key for the movie_list_shares relation (M2M).
-	MovieListSharesPrimaryKey = []string{"movie_list_id", "movie_list_share_id"}
-)
+// ForeignKeys holds the SQL foreign-keys that are owned by the "movie_lists"
+// table and are not defined as standalone fields in the schema.
+var ForeignKeys = []string{
+	"user_movie_lists",
+}
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
+			return true
+		}
+	}
+	for i := range ForeignKeys {
+		if column == ForeignKeys[i] {
 			return true
 		}
 	}
@@ -131,17 +136,10 @@ func ByMovies(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	}
 }
 
-// ByOwnerCount orders the results by owner count.
-func ByOwnerCount(opts ...sql.OrderTermOption) OrderOption {
+// ByOwnerField orders the results by owner field.
+func ByOwnerField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newOwnerStep(), opts...)
-	}
-}
-
-// ByOwner orders the results by owner terms.
-func ByOwner(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newOwnerStep(), append([]sql.OrderTerm{term}, terms...)...)
+		sqlgraph.OrderByNeighborTerms(s, newOwnerStep(), sql.OrderByField(field, opts...))
 	}
 }
 
@@ -162,20 +160,20 @@ func newMoviesStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(MoviesInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2M, false, MoviesTable, MoviesPrimaryKey...),
+		sqlgraph.Edge(sqlgraph.O2M, false, MoviesTable, MoviesColumn),
 	)
 }
 func newOwnerStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(OwnerInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2M, true, OwnerTable, OwnerPrimaryKey...),
+		sqlgraph.Edge(sqlgraph.M2O, true, OwnerTable, OwnerColumn),
 	)
 }
 func newMovieListSharesStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(MovieListSharesInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2M, false, MovieListSharesTable, MovieListSharesPrimaryKey...),
+		sqlgraph.Edge(sqlgraph.O2M, false, MovieListSharesTable, MovieListSharesColumn),
 	)
 }

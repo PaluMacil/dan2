@@ -77,19 +77,23 @@ func (mu *MovieUpdate) SetNillableCreatedAt(t *time.Time) *MovieUpdate {
 	return mu
 }
 
-// AddMovieListIDs adds the "movie_list" edge to the MovieList entity by IDs.
-func (mu *MovieUpdate) AddMovieListIDs(ids ...int) *MovieUpdate {
-	mu.mutation.AddMovieListIDs(ids...)
+// SetMovieListID sets the "movie_list" edge to the MovieList entity by ID.
+func (mu *MovieUpdate) SetMovieListID(id int) *MovieUpdate {
+	mu.mutation.SetMovieListID(id)
 	return mu
 }
 
-// AddMovieList adds the "movie_list" edges to the MovieList entity.
-func (mu *MovieUpdate) AddMovieList(m ...*MovieList) *MovieUpdate {
-	ids := make([]int, len(m))
-	for i := range m {
-		ids[i] = m[i].ID
+// SetNillableMovieListID sets the "movie_list" edge to the MovieList entity by ID if the given value is not nil.
+func (mu *MovieUpdate) SetNillableMovieListID(id *int) *MovieUpdate {
+	if id != nil {
+		mu = mu.SetMovieListID(*id)
 	}
-	return mu.AddMovieListIDs(ids...)
+	return mu
+}
+
+// SetMovieList sets the "movie_list" edge to the MovieList entity.
+func (mu *MovieUpdate) SetMovieList(m *MovieList) *MovieUpdate {
+	return mu.SetMovieListID(m.ID)
 }
 
 // Mutation returns the MovieMutation object of the builder.
@@ -97,25 +101,10 @@ func (mu *MovieUpdate) Mutation() *MovieMutation {
 	return mu.mutation
 }
 
-// ClearMovieList clears all "movie_list" edges to the MovieList entity.
+// ClearMovieList clears the "movie_list" edge to the MovieList entity.
 func (mu *MovieUpdate) ClearMovieList() *MovieUpdate {
 	mu.mutation.ClearMovieList()
 	return mu
-}
-
-// RemoveMovieListIDs removes the "movie_list" edge to MovieList entities by IDs.
-func (mu *MovieUpdate) RemoveMovieListIDs(ids ...int) *MovieUpdate {
-	mu.mutation.RemoveMovieListIDs(ids...)
-	return mu
-}
-
-// RemoveMovieList removes "movie_list" edges to MovieList entities.
-func (mu *MovieUpdate) RemoveMovieList(m ...*MovieList) *MovieUpdate {
-	ids := make([]int, len(m))
-	for i := range m {
-		ids[i] = m[i].ID
-	}
-	return mu.RemoveMovieListIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -168,39 +157,23 @@ func (mu *MovieUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if mu.mutation.MovieListCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   movie.MovieListTable,
-			Columns: movie.MovieListPrimaryKey,
+			Columns: []string{movie.MovieListColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(movielist.FieldID, field.TypeInt),
 			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := mu.mutation.RemovedMovieListIDs(); len(nodes) > 0 && !mu.mutation.MovieListCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   movie.MovieListTable,
-			Columns: movie.MovieListPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(movielist.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := mu.mutation.MovieListIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   movie.MovieListTable,
-			Columns: movie.MovieListPrimaryKey,
+			Columns: []string{movie.MovieListColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(movielist.FieldID, field.TypeInt),
@@ -279,19 +252,23 @@ func (muo *MovieUpdateOne) SetNillableCreatedAt(t *time.Time) *MovieUpdateOne {
 	return muo
 }
 
-// AddMovieListIDs adds the "movie_list" edge to the MovieList entity by IDs.
-func (muo *MovieUpdateOne) AddMovieListIDs(ids ...int) *MovieUpdateOne {
-	muo.mutation.AddMovieListIDs(ids...)
+// SetMovieListID sets the "movie_list" edge to the MovieList entity by ID.
+func (muo *MovieUpdateOne) SetMovieListID(id int) *MovieUpdateOne {
+	muo.mutation.SetMovieListID(id)
 	return muo
 }
 
-// AddMovieList adds the "movie_list" edges to the MovieList entity.
-func (muo *MovieUpdateOne) AddMovieList(m ...*MovieList) *MovieUpdateOne {
-	ids := make([]int, len(m))
-	for i := range m {
-		ids[i] = m[i].ID
+// SetNillableMovieListID sets the "movie_list" edge to the MovieList entity by ID if the given value is not nil.
+func (muo *MovieUpdateOne) SetNillableMovieListID(id *int) *MovieUpdateOne {
+	if id != nil {
+		muo = muo.SetMovieListID(*id)
 	}
-	return muo.AddMovieListIDs(ids...)
+	return muo
+}
+
+// SetMovieList sets the "movie_list" edge to the MovieList entity.
+func (muo *MovieUpdateOne) SetMovieList(m *MovieList) *MovieUpdateOne {
+	return muo.SetMovieListID(m.ID)
 }
 
 // Mutation returns the MovieMutation object of the builder.
@@ -299,25 +276,10 @@ func (muo *MovieUpdateOne) Mutation() *MovieMutation {
 	return muo.mutation
 }
 
-// ClearMovieList clears all "movie_list" edges to the MovieList entity.
+// ClearMovieList clears the "movie_list" edge to the MovieList entity.
 func (muo *MovieUpdateOne) ClearMovieList() *MovieUpdateOne {
 	muo.mutation.ClearMovieList()
 	return muo
-}
-
-// RemoveMovieListIDs removes the "movie_list" edge to MovieList entities by IDs.
-func (muo *MovieUpdateOne) RemoveMovieListIDs(ids ...int) *MovieUpdateOne {
-	muo.mutation.RemoveMovieListIDs(ids...)
-	return muo
-}
-
-// RemoveMovieList removes "movie_list" edges to MovieList entities.
-func (muo *MovieUpdateOne) RemoveMovieList(m ...*MovieList) *MovieUpdateOne {
-	ids := make([]int, len(m))
-	for i := range m {
-		ids[i] = m[i].ID
-	}
-	return muo.RemoveMovieListIDs(ids...)
 }
 
 // Where appends a list predicates to the MovieUpdate builder.
@@ -400,39 +362,23 @@ func (muo *MovieUpdateOne) sqlSave(ctx context.Context) (_node *Movie, err error
 	}
 	if muo.mutation.MovieListCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   movie.MovieListTable,
-			Columns: movie.MovieListPrimaryKey,
+			Columns: []string{movie.MovieListColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(movielist.FieldID, field.TypeInt),
 			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := muo.mutation.RemovedMovieListIDs(); len(nodes) > 0 && !muo.mutation.MovieListCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   movie.MovieListTable,
-			Columns: movie.MovieListPrimaryKey,
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(movielist.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := muo.mutation.MovieListIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   movie.MovieListTable,
-			Columns: movie.MovieListPrimaryKey,
+			Columns: []string{movie.MovieListColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(movielist.FieldID, field.TypeInt),

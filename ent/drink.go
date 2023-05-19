@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/PaluMacil/dan2/ent/drink"
+	"github.com/PaluMacil/dan2/ent/user"
 )
 
 // Drink is the model entity for the Drink schema.
@@ -36,22 +37,27 @@ type Drink struct {
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the DrinkQuery when eager-loading is set.
 	Edges        DrinkEdges `json:"edges"`
+	user_drinks  *int
 	selectValues sql.SelectValues
 }
 
 // DrinkEdges holds the relations/edges for other nodes in the graph.
 type DrinkEdges struct {
 	// Owner holds the value of the owner edge.
-	Owner []*User `json:"owner,omitempty"`
+	Owner *User `json:"owner,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [1]bool
 }
 
 // OwnerOrErr returns the Owner value or an error if the edge
-// was not loaded in eager-loading.
-func (e DrinkEdges) OwnerOrErr() ([]*User, error) {
+// was not loaded in eager-loading, or loaded but was not found.
+func (e DrinkEdges) OwnerOrErr() (*User, error) {
 	if e.loadedTypes[0] {
+		if e.Owner == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: user.Label}
+		}
 		return e.Owner, nil
 	}
 	return nil, &NotLoadedError{edge: "owner"}
@@ -68,6 +74,8 @@ func (*Drink) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullString)
 		case drink.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
+		case drink.ForeignKeys[0]: // user_drinks
+			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -136,6 +144,13 @@ func (d *Drink) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
 				d.CreatedAt = value.Time
+			}
+		case drink.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for edge-field user_drinks", value)
+			} else if value.Valid {
+				d.user_drinks = new(int)
+				*d.user_drinks = int(value.Int64)
 			}
 		default:
 			d.selectValues.Set(columns[i], values[i])

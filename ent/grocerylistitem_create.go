@@ -69,19 +69,23 @@ func (glic *GroceryListItemCreate) SetNillableCreatedAt(t *time.Time) *GroceryLi
 	return glic
 }
 
-// AddGroceryListIDs adds the "grocery_list" edge to the GroceryList entity by IDs.
-func (glic *GroceryListItemCreate) AddGroceryListIDs(ids ...int) *GroceryListItemCreate {
-	glic.mutation.AddGroceryListIDs(ids...)
+// SetGroceryListID sets the "grocery_list" edge to the GroceryList entity by ID.
+func (glic *GroceryListItemCreate) SetGroceryListID(id int) *GroceryListItemCreate {
+	glic.mutation.SetGroceryListID(id)
 	return glic
 }
 
-// AddGroceryList adds the "grocery_list" edges to the GroceryList entity.
-func (glic *GroceryListItemCreate) AddGroceryList(g ...*GroceryList) *GroceryListItemCreate {
-	ids := make([]int, len(g))
-	for i := range g {
-		ids[i] = g[i].ID
+// SetNillableGroceryListID sets the "grocery_list" edge to the GroceryList entity by ID if the given value is not nil.
+func (glic *GroceryListItemCreate) SetNillableGroceryListID(id *int) *GroceryListItemCreate {
+	if id != nil {
+		glic = glic.SetGroceryListID(*id)
 	}
-	return glic.AddGroceryListIDs(ids...)
+	return glic
+}
+
+// SetGroceryList sets the "grocery_list" edge to the GroceryList entity.
+func (glic *GroceryListItemCreate) SetGroceryList(g *GroceryList) *GroceryListItemCreate {
+	return glic.SetGroceryListID(g.ID)
 }
 
 // Mutation returns the GroceryListItemMutation object of the builder.
@@ -191,10 +195,10 @@ func (glic *GroceryListItemCreate) createSpec() (*GroceryListItem, *sqlgraph.Cre
 	}
 	if nodes := glic.mutation.GroceryListIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   grocerylistitem.GroceryListTable,
-			Columns: grocerylistitem.GroceryListPrimaryKey,
+			Columns: []string{grocerylistitem.GroceryListColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(grocerylist.FieldID, field.TypeInt),
@@ -203,6 +207,7 @@ func (glic *GroceryListItemCreate) createSpec() (*GroceryListItem, *sqlgraph.Cre
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
+		_node.grocery_list_grocery_list_items = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

@@ -31,7 +31,8 @@ func (MovieList) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("movies", Movie.Type),
 		edge.From("owner", User.Type).
-			Ref("movie_lists"),
+			Ref("movie_lists").
+			Unique(),
 		edge.To("movie_list_shares", MovieListShare.Type),
 	}
 }

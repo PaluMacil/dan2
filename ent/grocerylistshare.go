@@ -9,7 +9,9 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/PaluMacil/dan2/ent/grocerylist"
 	"github.com/PaluMacil/dan2/ent/grocerylistshare"
+	"github.com/PaluMacil/dan2/ent/user"
 )
 
 // GroceryListShare is the model entity for the GroceryListShare schema.
@@ -23,34 +25,44 @@ type GroceryListShare struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the GroceryListShareQuery when eager-loading is set.
-	Edges        GroceryListShareEdges `json:"edges"`
-	selectValues sql.SelectValues
+	Edges                            GroceryListShareEdges `json:"edges"`
+	grocery_list_grocery_list_shares *int
+	user_grocery_list_shares         *int
+	selectValues                     sql.SelectValues
 }
 
 // GroceryListShareEdges holds the relations/edges for other nodes in the graph.
 type GroceryListShareEdges struct {
 	// User holds the value of the user edge.
-	User []*User `json:"user,omitempty"`
+	User *User `json:"user,omitempty"`
 	// GroceryList holds the value of the grocery_list edge.
-	GroceryList []*GroceryList `json:"grocery_list,omitempty"`
+	GroceryList *GroceryList `json:"grocery_list,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [2]bool
 }
 
 // UserOrErr returns the User value or an error if the edge
-// was not loaded in eager-loading.
-func (e GroceryListShareEdges) UserOrErr() ([]*User, error) {
+// was not loaded in eager-loading, or loaded but was not found.
+func (e GroceryListShareEdges) UserOrErr() (*User, error) {
 	if e.loadedTypes[0] {
+		if e.User == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: user.Label}
+		}
 		return e.User, nil
 	}
 	return nil, &NotLoadedError{edge: "user"}
 }
 
 // GroceryListOrErr returns the GroceryList value or an error if the edge
-// was not loaded in eager-loading.
-func (e GroceryListShareEdges) GroceryListOrErr() ([]*GroceryList, error) {
+// was not loaded in eager-loading, or loaded but was not found.
+func (e GroceryListShareEdges) GroceryListOrErr() (*GroceryList, error) {
 	if e.loadedTypes[1] {
+		if e.GroceryList == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: grocerylist.Label}
+		}
 		return e.GroceryList, nil
 	}
 	return nil, &NotLoadedError{edge: "grocery_list"}
@@ -67,6 +79,10 @@ func (*GroceryListShare) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case grocerylistshare.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
+		case grocerylistshare.ForeignKeys[0]: // grocery_list_grocery_list_shares
+			values[i] = new(sql.NullInt64)
+		case grocerylistshare.ForeignKeys[1]: // user_grocery_list_shares
+			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -99,6 +115,20 @@ func (gls *GroceryListShare) assignValues(columns []string, values []any) error 
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
 				gls.CreatedAt = value.Time
+			}
+		case grocerylistshare.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for edge-field grocery_list_grocery_list_shares", value)
+			} else if value.Valid {
+				gls.grocery_list_grocery_list_shares = new(int)
+				*gls.grocery_list_grocery_list_shares = int(value.Int64)
+			}
+		case grocerylistshare.ForeignKeys[1]:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for edge-field user_grocery_list_shares", value)
+			} else if value.Valid {
+				gls.user_grocery_list_shares = new(int)
+				*gls.user_grocery_list_shares = int(value.Int64)
 			}
 		default:
 			gls.selectValues.Set(columns[i], values[i])

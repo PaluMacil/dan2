@@ -30,21 +30,27 @@ const (
 	EdgeGroceryListShares = "grocery_list_shares"
 	// Table holds the table name of the grocerylist in the database.
 	Table = "grocery_lists"
-	// GroceryListItemsTable is the table that holds the grocery_list_items relation/edge. The primary key declared below.
-	GroceryListItemsTable = "grocery_list_grocery_list_items"
+	// GroceryListItemsTable is the table that holds the grocery_list_items relation/edge.
+	GroceryListItemsTable = "grocery_list_items"
 	// GroceryListItemsInverseTable is the table name for the GroceryListItem entity.
 	// It exists in this package in order to avoid circular dependency with the "grocerylistitem" package.
 	GroceryListItemsInverseTable = "grocery_list_items"
-	// OwnerTable is the table that holds the owner relation/edge. The primary key declared below.
-	OwnerTable = "user_grocery_lists"
+	// GroceryListItemsColumn is the table column denoting the grocery_list_items relation/edge.
+	GroceryListItemsColumn = "grocery_list_grocery_list_items"
+	// OwnerTable is the table that holds the owner relation/edge.
+	OwnerTable = "grocery_lists"
 	// OwnerInverseTable is the table name for the User entity.
 	// It exists in this package in order to avoid circular dependency with the "user" package.
 	OwnerInverseTable = "users"
-	// GroceryListSharesTable is the table that holds the grocery_list_shares relation/edge. The primary key declared below.
-	GroceryListSharesTable = "grocery_list_grocery_list_shares"
+	// OwnerColumn is the table column denoting the owner relation/edge.
+	OwnerColumn = "user_grocery_lists"
+	// GroceryListSharesTable is the table that holds the grocery_list_shares relation/edge.
+	GroceryListSharesTable = "grocery_list_shares"
 	// GroceryListSharesInverseTable is the table name for the GroceryListShare entity.
 	// It exists in this package in order to avoid circular dependency with the "grocerylistshare" package.
 	GroceryListSharesInverseTable = "grocery_list_shares"
+	// GroceryListSharesColumn is the table column denoting the grocery_list_shares relation/edge.
+	GroceryListSharesColumn = "grocery_list_grocery_list_shares"
 )
 
 // Columns holds all SQL columns for grocerylist fields.
@@ -56,22 +62,21 @@ var Columns = []string{
 	FieldCreatedAt,
 }
 
-var (
-	// GroceryListItemsPrimaryKey and GroceryListItemsColumn2 are the table columns denoting the
-	// primary key for the grocery_list_items relation (M2M).
-	GroceryListItemsPrimaryKey = []string{"grocery_list_id", "grocery_list_item_id"}
-	// OwnerPrimaryKey and OwnerColumn2 are the table columns denoting the
-	// primary key for the owner relation (M2M).
-	OwnerPrimaryKey = []string{"user_id", "grocery_list_id"}
-	// GroceryListSharesPrimaryKey and GroceryListSharesColumn2 are the table columns denoting the
-	// primary key for the grocery_list_shares relation (M2M).
-	GroceryListSharesPrimaryKey = []string{"grocery_list_id", "grocery_list_share_id"}
-)
+// ForeignKeys holds the SQL foreign-keys that are owned by the "grocery_lists"
+// table and are not defined as standalone fields in the schema.
+var ForeignKeys = []string{
+	"user_grocery_lists",
+}
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
+			return true
+		}
+	}
+	for i := range ForeignKeys {
+		if column == ForeignKeys[i] {
 			return true
 		}
 	}
@@ -131,17 +136,10 @@ func ByGroceryListItems(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption 
 	}
 }
 
-// ByOwnerCount orders the results by owner count.
-func ByOwnerCount(opts ...sql.OrderTermOption) OrderOption {
+// ByOwnerField orders the results by owner field.
+func ByOwnerField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newOwnerStep(), opts...)
-	}
-}
-
-// ByOwner orders the results by owner terms.
-func ByOwner(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newOwnerStep(), append([]sql.OrderTerm{term}, terms...)...)
+		sqlgraph.OrderByNeighborTerms(s, newOwnerStep(), sql.OrderByField(field, opts...))
 	}
 }
 
@@ -162,20 +160,20 @@ func newGroceryListItemsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(GroceryListItemsInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2M, false, GroceryListItemsTable, GroceryListItemsPrimaryKey...),
+		sqlgraph.Edge(sqlgraph.O2M, false, GroceryListItemsTable, GroceryListItemsColumn),
 	)
 }
 func newOwnerStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(OwnerInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2M, true, OwnerTable, OwnerPrimaryKey...),
+		sqlgraph.Edge(sqlgraph.M2O, true, OwnerTable, OwnerColumn),
 	)
 }
 func newGroceryListSharesStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(GroceryListSharesInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2M, false, GroceryListSharesTable, GroceryListSharesPrimaryKey...),
+		sqlgraph.Edge(sqlgraph.O2M, false, GroceryListSharesTable, GroceryListSharesColumn),
 	)
 }

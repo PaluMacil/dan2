@@ -9,6 +9,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/PaluMacil/dan2/ent/amazonlist"
 	"github.com/PaluMacil/dan2/ent/amazonorder"
 )
 
@@ -47,23 +48,28 @@ type AmazonOrder struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the AmazonOrderQuery when eager-loading is set.
-	Edges        AmazonOrderEdges `json:"edges"`
-	selectValues sql.SelectValues
+	Edges                     AmazonOrderEdges `json:"edges"`
+	amazon_list_amazon_orders *int
+	selectValues              sql.SelectValues
 }
 
 // AmazonOrderEdges holds the relations/edges for other nodes in the graph.
 type AmazonOrderEdges struct {
 	// AmazonList holds the value of the amazon_list edge.
-	AmazonList []*AmazonList `json:"amazon_list,omitempty"`
+	AmazonList *AmazonList `json:"amazon_list,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [1]bool
 }
 
 // AmazonListOrErr returns the AmazonList value or an error if the edge
-// was not loaded in eager-loading.
-func (e AmazonOrderEdges) AmazonListOrErr() ([]*AmazonList, error) {
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AmazonOrderEdges) AmazonListOrErr() (*AmazonList, error) {
 	if e.loadedTypes[0] {
+		if e.AmazonList == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: amazonlist.Label}
+		}
 		return e.AmazonList, nil
 	}
 	return nil, &NotLoadedError{edge: "amazon_list"}
@@ -84,6 +90,8 @@ func (*AmazonOrder) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullString)
 		case amazonorder.FieldOrderedAt, amazonorder.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
+		case amazonorder.ForeignKeys[0]: // amazon_list_amazon_orders
+			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -188,6 +196,13 @@ func (ao *AmazonOrder) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
 				ao.CreatedAt = value.Time
+			}
+		case amazonorder.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for edge-field amazon_list_amazon_orders", value)
+			} else if value.Valid {
+				ao.amazon_list_amazon_orders = new(int)
+				*ao.amazon_list_amazon_orders = int(value.Int64)
 			}
 		default:
 			ao.selectValues.Set(columns[i], values[i])
