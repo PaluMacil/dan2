@@ -1,7 +1,9 @@
 package schema
 
 import (
+	"entgo.io/contrib/entproto"
 	"entgo.io/ent"
+	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 )
@@ -15,8 +17,14 @@ type AmazonShare struct {
 func (AmazonShare) Fields() []ent.Field {
 	return []ent.Field{
 		field.Bool("can_edit").
-			Default(false),
-		field.Time("created_at"),
+			Default(false).
+			Annotations(
+				entproto.Field(2),
+			),
+		field.Time("created_at").
+			Annotations(
+				entproto.Field(3),
+			),
 	}
 }
 
@@ -25,9 +33,17 @@ func (AmazonShare) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("user", User.Type).
 			Ref("amazon_shares").
-			Unique(),
+			Unique().
+			Annotations(entproto.Field(4)),
 		edge.From("amazon_list", AmazonList.Type).
 			Ref("amazon_shares").
-			Unique(),
+			Unique().
+			Annotations(entproto.Field(5)),
+	}
+}
+
+func (AmazonShare) Annotations() []schema.Annotation {
+	return []schema.Annotation{
+		entproto.Message(),
 	}
 }

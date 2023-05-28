@@ -1,7 +1,9 @@
 package schema
 
 import (
+	"entgo.io/contrib/entproto"
 	"entgo.io/ent"
+	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"time"
@@ -16,31 +18,65 @@ type User struct {
 func (User) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("display_name").
-			Unique(),
+			Unique().
+			Annotations(
+				entproto.Field(2),
+			),
 		field.Int8("name_changes").
-			Default(0),
+			Default(0).
+			Annotations(
+				entproto.Field(3),
+			),
 		field.String("email").
-			Unique(),
+			Unique().
+			Annotations(
+				entproto.Field(4),
+			),
 		field.Bool("verified").
-			Default(false),
+			Default(false).
+			Annotations(
+				entproto.Field(5),
+			),
 		field.Bool("locked").
-			Default(false),
-		//TODO: consider defaulting to zero time but check how js sees that
-		field.Time("last_login"),
+			Default(false).
+			Annotations(
+				entproto.Field(6),
+			),
+		field.Time("last_login").
+			Nillable().
+			Annotations(
+				entproto.Field(7),
+			),
 		field.Time("created_at").
-			Default(time.Now),
+			Default(time.Now).
+			Annotations(
+				entproto.Field(8),
+			),
 	}
 }
 
 // Edges of the User.
 func (User) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("amazon_shares", AmazonShare.Type),
-		edge.To("amazon_lists", AmazonList.Type),
-		edge.To("drinks", Drink.Type),
-		edge.To("grocery_lists", GroceryList.Type),
-		edge.To("grocery_list_shares", GroceryListShare.Type),
-		edge.To("movie_lists", MovieList.Type),
-		edge.To("movie_list_shares", MovieListShare.Type),
+		edge.To("amazon_shares", AmazonShare.Type).
+			Annotations(entproto.Field(9)),
+		edge.To("amazon_lists", AmazonList.Type).
+			Annotations(entproto.Field(10)),
+		edge.To("drinks", Drink.Type).
+			Annotations(entproto.Field(11)),
+		edge.To("grocery_lists", GroceryList.Type).
+			Annotations(entproto.Field(12)),
+		edge.To("grocery_list_shares", GroceryListShare.Type).
+			Annotations(entproto.Field(13)),
+		edge.To("movie_lists", MovieList.Type).
+			Annotations(entproto.Field(14)),
+		edge.To("movie_list_shares", MovieListShare.Type).
+			Annotations(entproto.Field(15)),
+	}
+}
+
+func (User) Annotations() []schema.Annotation {
+	return []schema.Annotation{
+		entproto.Message(),
 	}
 }

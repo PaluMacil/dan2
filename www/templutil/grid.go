@@ -1,4 +1,4 @@
-package www
+package templutil
 
 // MakeRows takes a slice of T and chunks it by the requested number of columns into a slice of rows of T
 func MakeRows[T any](list []T, cols int) [][]T {

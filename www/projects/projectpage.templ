@@ -1,15 +1,15 @@
 package projects
 
+import "github.com/PaluMacil/dan2/www/templutil"
+
 templ ProjectPage(projects []Project) {
-    <div class="grid">
-        <div>
-            @ProjectCard(project)
+    for _, projectRow := range templutil.MakeRows(projects, 2) {
+        <div class="grid">
+            for _, project := range projectRow {
+                <div>
+                    @ProjectCard(project)
+                </div>
+            }
         </div>
-        <div>
-            @ProjectCard(project)
-        </div>
-        <div>
-            @ProjectCard(project)
-        </div>
-    </div>
+    }
 }

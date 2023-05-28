@@ -7201,7 +7201,7 @@ func (m *UserMutation) LastLogin() (r time.Time, exists bool) {
 // OldLastLogin returns the old "last_login" field's value of the User entity.
 // If the User object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldLastLogin(ctx context.Context) (v time.Time, err error) {
+func (m *UserMutation) OldLastLogin(ctx context.Context) (v *time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldLastLogin is only allowed on UpdateOne operations")
 	}

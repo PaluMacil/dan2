@@ -1,13 +1,13 @@
-package www_test
+package templutil_test
 
 import (
-	"github.com/PaluMacil/dan2/www"
+	"github.com/PaluMacil/dan2/www/templutil"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestMakeRows(t *testing.T) {
-	rows := www.MakeRows([]string{"bob", "sam", "houston", "greg"}, 2)
+	rows := templutil.MakeRows([]string{"bob", "sam", "houston", "greg"}, 2)
 	assert.Equal(t, len(rows), 2)
 	assert.Equal(t, len(rows[0]), 2)
 	assert.Equal(t, rows[0][0], "bob")
@@ -18,12 +18,12 @@ func TestMakeRows(t *testing.T) {
 }
 
 func TestMakeRowsZero(t *testing.T) {
-	rows := www.MakeRows([]string{"bob", "sam", "houston", "greg"}, 0)
+	rows := templutil.MakeRows([]string{"bob", "sam", "houston", "greg"}, 0)
 	assert.Equal(t, len(rows), 0)
 }
 
 func TestMakePartial(t *testing.T) {
-	rows := www.MakeRows([]string{"bob", "sam", "houston", "greg"}, 3)
+	rows := templutil.MakeRows([]string{"bob", "sam", "houston", "greg"}, 3)
 	assert.Equal(t, len(rows), 2)
 	assert.Equal(t, len(rows[0]), 3)
 	assert.Equal(t, rows[0][0], "bob")

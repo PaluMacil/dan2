@@ -4,6 +4,8 @@ An experiment in htmx and templ.
 
 ## Generate
 
+When making changes that generate code, it can help to run `go get -u ./...` ro make sure deps of installed code are present.
+
 ### templ
 
 Html templating defined in `.templ` files of the `www` directory.
@@ -39,3 +41,9 @@ After updating the schema (fields, edges), run `go generate ./ent`.
 
 - https://github.com/search?q=repo%3Aargoproj%2Fargo-workflows+proto&type=code
 - https://github.com/argoproj/argo-workflows/blob/e35f4912daa0b1ea9ecb6884c07eae862a61c278/pkg/apiclient/workflowtemplate/workflow-template.proto
+
+## Refs
+
+- cmux
+  - https://www.yellowduck.be/posts/combining-grpc-and-http-on-the-same-port
+  - https://github.com/soheilhy/cmux
