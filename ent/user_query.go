@@ -16,8 +16,8 @@ import (
 	"github.com/PaluMacil/dan2/ent/drink"
 	"github.com/PaluMacil/dan2/ent/grocerylist"
 	"github.com/PaluMacil/dan2/ent/grocerylistshare"
-	"github.com/PaluMacil/dan2/ent/movielist"
-	"github.com/PaluMacil/dan2/ent/movielistshare"
+	"github.com/PaluMacil/dan2/ent/moviecollection"
+	"github.com/PaluMacil/dan2/ent/moviecollectionshare"
 	"github.com/PaluMacil/dan2/ent/predicate"
 	"github.com/PaluMacil/dan2/ent/user"
 )
@@ -25,17 +25,17 @@ import (
 // UserQuery is the builder for querying User entities.
 type UserQuery struct {
 	config
-	ctx                   *QueryContext
-	order                 []user.OrderOption
-	inters                []Interceptor
-	predicates            []predicate.User
-	withAmazonShares      *AmazonShareQuery
-	withAmazonLists       *AmazonListQuery
-	withDrinks            *DrinkQuery
-	withGroceryLists      *GroceryListQuery
-	withGroceryListShares *GroceryListShareQuery
-	withMovieLists        *MovieListQuery
-	withMovieListShares   *MovieListShareQuery
+	ctx                       *QueryContext
+	order                     []user.OrderOption
+	inters                    []Interceptor
+	predicates                []predicate.User
+	withAmazonShares          *AmazonShareQuery
+	withAmazonLists           *AmazonListQuery
+	withDrinks                *DrinkQuery
+	withGroceryLists          *GroceryListQuery
+	withGroceryListShares     *GroceryListShareQuery
+	withMovieCollections      *MovieCollectionQuery
+	withMovieCollectionShares *MovieCollectionShareQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -182,9 +182,9 @@ func (uq *UserQuery) QueryGroceryListShares() *GroceryListShareQuery {
 	return query
 }
 
-// QueryMovieLists chains the current query on the "movie_lists" edge.
-func (uq *UserQuery) QueryMovieLists() *MovieListQuery {
-	query := (&MovieListClient{config: uq.config}).Query()
+// QueryMovieCollections chains the current query on the "movie_collections" edge.
+func (uq *UserQuery) QueryMovieCollections() *MovieCollectionQuery {
+	query := (&MovieCollectionClient{config: uq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := uq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -195,8 +195,8 @@ func (uq *UserQuery) QueryMovieLists() *MovieListQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, selector),
-			sqlgraph.To(movielist.Table, movielist.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, user.MovieListsTable, user.MovieListsColumn),
+			sqlgraph.To(moviecollection.Table, moviecollection.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.MovieCollectionsTable, user.MovieCollectionsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
 		return fromU, nil
@@ -204,9 +204,9 @@ func (uq *UserQuery) QueryMovieLists() *MovieListQuery {
 	return query
 }
 
-// QueryMovieListShares chains the current query on the "movie_list_shares" edge.
-func (uq *UserQuery) QueryMovieListShares() *MovieListShareQuery {
-	query := (&MovieListShareClient{config: uq.config}).Query()
+// QueryMovieCollectionShares chains the current query on the "movie_collection_shares" edge.
+func (uq *UserQuery) QueryMovieCollectionShares() *MovieCollectionShareQuery {
+	query := (&MovieCollectionShareClient{config: uq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := uq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -217,8 +217,8 @@ func (uq *UserQuery) QueryMovieListShares() *MovieListShareQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, selector),
-			sqlgraph.To(movielistshare.Table, movielistshare.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, user.MovieListSharesTable, user.MovieListSharesColumn),
+			sqlgraph.To(moviecollectionshare.Table, moviecollectionshare.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.MovieCollectionSharesTable, user.MovieCollectionSharesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
 		return fromU, nil
@@ -413,18 +413,18 @@ func (uq *UserQuery) Clone() *UserQuery {
 		return nil
 	}
 	return &UserQuery{
-		config:                uq.config,
-		ctx:                   uq.ctx.Clone(),
-		order:                 append([]user.OrderOption{}, uq.order...),
-		inters:                append([]Interceptor{}, uq.inters...),
-		predicates:            append([]predicate.User{}, uq.predicates...),
-		withAmazonShares:      uq.withAmazonShares.Clone(),
-		withAmazonLists:       uq.withAmazonLists.Clone(),
-		withDrinks:            uq.withDrinks.Clone(),
-		withGroceryLists:      uq.withGroceryLists.Clone(),
-		withGroceryListShares: uq.withGroceryListShares.Clone(),
-		withMovieLists:        uq.withMovieLists.Clone(),
-		withMovieListShares:   uq.withMovieListShares.Clone(),
+		config:                    uq.config,
+		ctx:                       uq.ctx.Clone(),
+		order:                     append([]user.OrderOption{}, uq.order...),
+		inters:                    append([]Interceptor{}, uq.inters...),
+		predicates:                append([]predicate.User{}, uq.predicates...),
+		withAmazonShares:          uq.withAmazonShares.Clone(),
+		withAmazonLists:           uq.withAmazonLists.Clone(),
+		withDrinks:                uq.withDrinks.Clone(),
+		withGroceryLists:          uq.withGroceryLists.Clone(),
+		withGroceryListShares:     uq.withGroceryListShares.Clone(),
+		withMovieCollections:      uq.withMovieCollections.Clone(),
+		withMovieCollectionShares: uq.withMovieCollectionShares.Clone(),
 		// clone intermediate query.
 		sql:  uq.sql.Clone(),
 		path: uq.path,
@@ -486,25 +486,25 @@ func (uq *UserQuery) WithGroceryListShares(opts ...func(*GroceryListShareQuery))
 	return uq
 }
 
-// WithMovieLists tells the query-builder to eager-load the nodes that are connected to
-// the "movie_lists" edge. The optional arguments are used to configure the query builder of the edge.
-func (uq *UserQuery) WithMovieLists(opts ...func(*MovieListQuery)) *UserQuery {
-	query := (&MovieListClient{config: uq.config}).Query()
+// WithMovieCollections tells the query-builder to eager-load the nodes that are connected to
+// the "movie_collections" edge. The optional arguments are used to configure the query builder of the edge.
+func (uq *UserQuery) WithMovieCollections(opts ...func(*MovieCollectionQuery)) *UserQuery {
+	query := (&MovieCollectionClient{config: uq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	uq.withMovieLists = query
+	uq.withMovieCollections = query
 	return uq
 }
 
-// WithMovieListShares tells the query-builder to eager-load the nodes that are connected to
-// the "movie_list_shares" edge. The optional arguments are used to configure the query builder of the edge.
-func (uq *UserQuery) WithMovieListShares(opts ...func(*MovieListShareQuery)) *UserQuery {
-	query := (&MovieListShareClient{config: uq.config}).Query()
+// WithMovieCollectionShares tells the query-builder to eager-load the nodes that are connected to
+// the "movie_collection_shares" edge. The optional arguments are used to configure the query builder of the edge.
+func (uq *UserQuery) WithMovieCollectionShares(opts ...func(*MovieCollectionShareQuery)) *UserQuery {
+	query := (&MovieCollectionShareClient{config: uq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	uq.withMovieListShares = query
+	uq.withMovieCollectionShares = query
 	return uq
 }
 
@@ -592,8 +592,8 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 			uq.withDrinks != nil,
 			uq.withGroceryLists != nil,
 			uq.withGroceryListShares != nil,
-			uq.withMovieLists != nil,
-			uq.withMovieListShares != nil,
+			uq.withMovieCollections != nil,
+			uq.withMovieCollectionShares != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -649,17 +649,19 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 			return nil, err
 		}
 	}
-	if query := uq.withMovieLists; query != nil {
-		if err := uq.loadMovieLists(ctx, query, nodes,
-			func(n *User) { n.Edges.MovieLists = []*MovieList{} },
-			func(n *User, e *MovieList) { n.Edges.MovieLists = append(n.Edges.MovieLists, e) }); err != nil {
+	if query := uq.withMovieCollections; query != nil {
+		if err := uq.loadMovieCollections(ctx, query, nodes,
+			func(n *User) { n.Edges.MovieCollections = []*MovieCollection{} },
+			func(n *User, e *MovieCollection) { n.Edges.MovieCollections = append(n.Edges.MovieCollections, e) }); err != nil {
 			return nil, err
 		}
 	}
-	if query := uq.withMovieListShares; query != nil {
-		if err := uq.loadMovieListShares(ctx, query, nodes,
-			func(n *User) { n.Edges.MovieListShares = []*MovieListShare{} },
-			func(n *User, e *MovieListShare) { n.Edges.MovieListShares = append(n.Edges.MovieListShares, e) }); err != nil {
+	if query := uq.withMovieCollectionShares; query != nil {
+		if err := uq.loadMovieCollectionShares(ctx, query, nodes,
+			func(n *User) { n.Edges.MovieCollectionShares = []*MovieCollectionShare{} },
+			func(n *User, e *MovieCollectionShare) {
+				n.Edges.MovieCollectionShares = append(n.Edges.MovieCollectionShares, e)
+			}); err != nil {
 			return nil, err
 		}
 	}
@@ -851,7 +853,7 @@ func (uq *UserQuery) loadGroceryListShares(ctx context.Context, query *GroceryLi
 	}
 	return nil
 }
-func (uq *UserQuery) loadMovieLists(ctx context.Context, query *MovieListQuery, nodes []*User, init func(*User), assign func(*User, *MovieList)) error {
+func (uq *UserQuery) loadMovieCollections(ctx context.Context, query *MovieCollectionQuery, nodes []*User, init func(*User), assign func(*User, *MovieCollection)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[int]*User)
 	for i := range nodes {
@@ -862,27 +864,27 @@ func (uq *UserQuery) loadMovieLists(ctx context.Context, query *MovieListQuery, 
 		}
 	}
 	query.withFKs = true
-	query.Where(predicate.MovieList(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(user.MovieListsColumn), fks...))
+	query.Where(predicate.MovieCollection(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(user.MovieCollectionsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.user_movie_lists
+		fk := n.user_movie_collections
 		if fk == nil {
-			return fmt.Errorf(`foreign-key "user_movie_lists" is nil for node %v`, n.ID)
+			return fmt.Errorf(`foreign-key "user_movie_collections" is nil for node %v`, n.ID)
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "user_movie_lists" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "user_movie_collections" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}
 	return nil
 }
-func (uq *UserQuery) loadMovieListShares(ctx context.Context, query *MovieListShareQuery, nodes []*User, init func(*User), assign func(*User, *MovieListShare)) error {
+func (uq *UserQuery) loadMovieCollectionShares(ctx context.Context, query *MovieCollectionShareQuery, nodes []*User, init func(*User), assign func(*User, *MovieCollectionShare)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[int]*User)
 	for i := range nodes {
@@ -893,21 +895,21 @@ func (uq *UserQuery) loadMovieListShares(ctx context.Context, query *MovieListSh
 		}
 	}
 	query.withFKs = true
-	query.Where(predicate.MovieListShare(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(user.MovieListSharesColumn), fks...))
+	query.Where(predicate.MovieCollectionShare(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(user.MovieCollectionSharesColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.user_movie_list_shares
+		fk := n.user_movie_collection_shares
 		if fk == nil {
-			return fmt.Errorf(`foreign-key "user_movie_list_shares" is nil for node %v`, n.ID)
+			return fmt.Errorf(`foreign-key "user_movie_collection_shares" is nil for node %v`, n.ID)
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "user_movie_list_shares" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "user_movie_collection_shares" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

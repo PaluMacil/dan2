@@ -255,21 +255,21 @@ func CreatedAtLTE(v time.Time) predicate.Movie {
 	return predicate.Movie(sql.FieldLTE(FieldCreatedAt, v))
 }
 
-// HasMovieList applies the HasEdge predicate on the "movie_list" edge.
-func HasMovieList() predicate.Movie {
+// HasMovieCollection applies the HasEdge predicate on the "movie_collection" edge.
+func HasMovieCollection() predicate.Movie {
 	return predicate.Movie(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, MovieListTable, MovieListColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, MovieCollectionTable, MovieCollectionColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasMovieListWith applies the HasEdge predicate on the "movie_list" edge with a given conditions (other predicates).
-func HasMovieListWith(preds ...predicate.MovieList) predicate.Movie {
+// HasMovieCollectionWith applies the HasEdge predicate on the "movie_collection" edge with a given conditions (other predicates).
+func HasMovieCollectionWith(preds ...predicate.MovieCollection) predicate.Movie {
 	return predicate.Movie(func(s *sql.Selector) {
-		step := newMovieListStep()
+		step := newMovieCollectionStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

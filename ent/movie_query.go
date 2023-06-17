@@ -11,19 +11,19 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/PaluMacil/dan2/ent/movie"
-	"github.com/PaluMacil/dan2/ent/movielist"
+	"github.com/PaluMacil/dan2/ent/moviecollection"
 	"github.com/PaluMacil/dan2/ent/predicate"
 )
 
 // MovieQuery is the builder for querying Movie entities.
 type MovieQuery struct {
 	config
-	ctx           *QueryContext
-	order         []movie.OrderOption
-	inters        []Interceptor
-	predicates    []predicate.Movie
-	withMovieList *MovieListQuery
-	withFKs       bool
+	ctx                 *QueryContext
+	order               []movie.OrderOption
+	inters              []Interceptor
+	predicates          []predicate.Movie
+	withMovieCollection *MovieCollectionQuery
+	withFKs             bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -60,9 +60,9 @@ func (mq *MovieQuery) Order(o ...movie.OrderOption) *MovieQuery {
 	return mq
 }
 
-// QueryMovieList chains the current query on the "movie_list" edge.
-func (mq *MovieQuery) QueryMovieList() *MovieListQuery {
-	query := (&MovieListClient{config: mq.config}).Query()
+// QueryMovieCollection chains the current query on the "movie_collection" edge.
+func (mq *MovieQuery) QueryMovieCollection() *MovieCollectionQuery {
+	query := (&MovieCollectionClient{config: mq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := mq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -73,8 +73,8 @@ func (mq *MovieQuery) QueryMovieList() *MovieListQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(movie.Table, movie.FieldID, selector),
-			sqlgraph.To(movielist.Table, movielist.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, movie.MovieListTable, movie.MovieListColumn),
+			sqlgraph.To(moviecollection.Table, moviecollection.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, movie.MovieCollectionTable, movie.MovieCollectionColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(mq.driver.Dialect(), step)
 		return fromU, nil
@@ -269,26 +269,26 @@ func (mq *MovieQuery) Clone() *MovieQuery {
 		return nil
 	}
 	return &MovieQuery{
-		config:        mq.config,
-		ctx:           mq.ctx.Clone(),
-		order:         append([]movie.OrderOption{}, mq.order...),
-		inters:        append([]Interceptor{}, mq.inters...),
-		predicates:    append([]predicate.Movie{}, mq.predicates...),
-		withMovieList: mq.withMovieList.Clone(),
+		config:              mq.config,
+		ctx:                 mq.ctx.Clone(),
+		order:               append([]movie.OrderOption{}, mq.order...),
+		inters:              append([]Interceptor{}, mq.inters...),
+		predicates:          append([]predicate.Movie{}, mq.predicates...),
+		withMovieCollection: mq.withMovieCollection.Clone(),
 		// clone intermediate query.
 		sql:  mq.sql.Clone(),
 		path: mq.path,
 	}
 }
 
-// WithMovieList tells the query-builder to eager-load the nodes that are connected to
-// the "movie_list" edge. The optional arguments are used to configure the query builder of the edge.
-func (mq *MovieQuery) WithMovieList(opts ...func(*MovieListQuery)) *MovieQuery {
-	query := (&MovieListClient{config: mq.config}).Query()
+// WithMovieCollection tells the query-builder to eager-load the nodes that are connected to
+// the "movie_collection" edge. The optional arguments are used to configure the query builder of the edge.
+func (mq *MovieQuery) WithMovieCollection(opts ...func(*MovieCollectionQuery)) *MovieQuery {
+	query := (&MovieCollectionClient{config: mq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	mq.withMovieList = query
+	mq.withMovieCollection = query
 	return mq
 }
 
@@ -372,10 +372,10 @@ func (mq *MovieQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Movie,
 		withFKs     = mq.withFKs
 		_spec       = mq.querySpec()
 		loadedTypes = [1]bool{
-			mq.withMovieList != nil,
+			mq.withMovieCollection != nil,
 		}
 	)
-	if mq.withMovieList != nil {
+	if mq.withMovieCollection != nil {
 		withFKs = true
 	}
 	if withFKs {
@@ -399,23 +399,23 @@ func (mq *MovieQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Movie,
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
-	if query := mq.withMovieList; query != nil {
-		if err := mq.loadMovieList(ctx, query, nodes, nil,
-			func(n *Movie, e *MovieList) { n.Edges.MovieList = e }); err != nil {
+	if query := mq.withMovieCollection; query != nil {
+		if err := mq.loadMovieCollection(ctx, query, nodes, nil,
+			func(n *Movie, e *MovieCollection) { n.Edges.MovieCollection = e }); err != nil {
 			return nil, err
 		}
 	}
 	return nodes, nil
 }
 
-func (mq *MovieQuery) loadMovieList(ctx context.Context, query *MovieListQuery, nodes []*Movie, init func(*Movie), assign func(*Movie, *MovieList)) error {
+func (mq *MovieQuery) loadMovieCollection(ctx context.Context, query *MovieCollectionQuery, nodes []*Movie, init func(*Movie), assign func(*Movie, *MovieCollection)) error {
 	ids := make([]int, 0, len(nodes))
 	nodeids := make(map[int][]*Movie)
 	for i := range nodes {
-		if nodes[i].movie_list_movies == nil {
+		if nodes[i].movie_collection_movies == nil {
 			continue
 		}
-		fk := *nodes[i].movie_list_movies
+		fk := *nodes[i].movie_collection_movies
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -424,7 +424,7 @@ func (mq *MovieQuery) loadMovieList(ctx context.Context, query *MovieListQuery, 
 	if len(ids) == 0 {
 		return nil
 	}
-	query.Where(movielist.IDIn(ids...))
+	query.Where(moviecollection.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
 		return err
@@ -432,7 +432,7 @@ func (mq *MovieQuery) loadMovieList(ctx context.Context, query *MovieListQuery, 
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "movie_list_movies" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "movie_collection_movies" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)

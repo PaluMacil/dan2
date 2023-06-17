@@ -13,8 +13,8 @@ import (
 	"github.com/PaluMacil/dan2/ent/grocerylistitem"
 	"github.com/PaluMacil/dan2/ent/grocerylistshare"
 	"github.com/PaluMacil/dan2/ent/movie"
-	"github.com/PaluMacil/dan2/ent/movielist"
-	"github.com/PaluMacil/dan2/ent/movielistshare"
+	"github.com/PaluMacil/dan2/ent/moviecollection"
+	"github.com/PaluMacil/dan2/ent/moviecollectionshare"
 	"github.com/PaluMacil/dan2/ent/schema"
 	"github.com/PaluMacil/dan2/ent/user"
 )
@@ -127,34 +127,34 @@ func init() {
 	movieDescCreatedAt := movieFields[3].Descriptor()
 	// movie.DefaultCreatedAt holds the default value on creation for the created_at field.
 	movie.DefaultCreatedAt = movieDescCreatedAt.Default.(func() time.Time)
-	movielistFields := schema.MovieList{}.Fields()
-	_ = movielistFields
-	// movielistDescName is the schema descriptor for name field.
-	movielistDescName := movielistFields[0].Descriptor()
-	// movielist.DefaultName holds the default value on creation for the name field.
-	movielist.DefaultName = movielistDescName.Default.(string)
-	// movielistDescNote is the schema descriptor for note field.
-	movielistDescNote := movielistFields[1].Descriptor()
-	// movielist.DefaultNote holds the default value on creation for the note field.
-	movielist.DefaultNote = movielistDescNote.Default.(string)
-	// movielistDescShowWatched is the schema descriptor for show_watched field.
-	movielistDescShowWatched := movielistFields[2].Descriptor()
-	// movielist.DefaultShowWatched holds the default value on creation for the show_watched field.
-	movielist.DefaultShowWatched = movielistDescShowWatched.Default.(bool)
-	// movielistDescCreatedAt is the schema descriptor for created_at field.
-	movielistDescCreatedAt := movielistFields[3].Descriptor()
-	// movielist.DefaultCreatedAt holds the default value on creation for the created_at field.
-	movielist.DefaultCreatedAt = movielistDescCreatedAt.Default.(func() time.Time)
-	movielistshareFields := schema.MovieListShare{}.Fields()
-	_ = movielistshareFields
-	// movielistshareDescCanEdit is the schema descriptor for can_edit field.
-	movielistshareDescCanEdit := movielistshareFields[0].Descriptor()
-	// movielistshare.DefaultCanEdit holds the default value on creation for the can_edit field.
-	movielistshare.DefaultCanEdit = movielistshareDescCanEdit.Default.(bool)
-	// movielistshareDescCreatedAt is the schema descriptor for created_at field.
-	movielistshareDescCreatedAt := movielistshareFields[1].Descriptor()
-	// movielistshare.DefaultCreatedAt holds the default value on creation for the created_at field.
-	movielistshare.DefaultCreatedAt = movielistshareDescCreatedAt.Default.(func() time.Time)
+	moviecollectionFields := schema.MovieCollection{}.Fields()
+	_ = moviecollectionFields
+	// moviecollectionDescName is the schema descriptor for name field.
+	moviecollectionDescName := moviecollectionFields[0].Descriptor()
+	// moviecollection.DefaultName holds the default value on creation for the name field.
+	moviecollection.DefaultName = moviecollectionDescName.Default.(string)
+	// moviecollectionDescNote is the schema descriptor for note field.
+	moviecollectionDescNote := moviecollectionFields[1].Descriptor()
+	// moviecollection.DefaultNote holds the default value on creation for the note field.
+	moviecollection.DefaultNote = moviecollectionDescNote.Default.(string)
+	// moviecollectionDescShowWatched is the schema descriptor for show_watched field.
+	moviecollectionDescShowWatched := moviecollectionFields[2].Descriptor()
+	// moviecollection.DefaultShowWatched holds the default value on creation for the show_watched field.
+	moviecollection.DefaultShowWatched = moviecollectionDescShowWatched.Default.(bool)
+	// moviecollectionDescCreatedAt is the schema descriptor for created_at field.
+	moviecollectionDescCreatedAt := moviecollectionFields[3].Descriptor()
+	// moviecollection.DefaultCreatedAt holds the default value on creation for the created_at field.
+	moviecollection.DefaultCreatedAt = moviecollectionDescCreatedAt.Default.(func() time.Time)
+	moviecollectionshareFields := schema.MovieCollectionShare{}.Fields()
+	_ = moviecollectionshareFields
+	// moviecollectionshareDescCanEdit is the schema descriptor for can_edit field.
+	moviecollectionshareDescCanEdit := moviecollectionshareFields[0].Descriptor()
+	// moviecollectionshare.DefaultCanEdit holds the default value on creation for the can_edit field.
+	moviecollectionshare.DefaultCanEdit = moviecollectionshareDescCanEdit.Default.(bool)
+	// moviecollectionshareDescCreatedAt is the schema descriptor for created_at field.
+	moviecollectionshareDescCreatedAt := moviecollectionshareFields[1].Descriptor()
+	// moviecollectionshare.DefaultCreatedAt holds the default value on creation for the created_at field.
+	moviecollectionshare.DefaultCreatedAt = moviecollectionshareDescCreatedAt.Default.(func() time.Time)
 	userFields := schema.User{}.Fields()
 	_ = userFields
 	// userDescNameChanges is the schema descriptor for name_changes field.

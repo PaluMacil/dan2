@@ -20,8 +20,8 @@ import (
 	"github.com/PaluMacil/dan2/ent/grocerylistitem"
 	"github.com/PaluMacil/dan2/ent/grocerylistshare"
 	"github.com/PaluMacil/dan2/ent/movie"
-	"github.com/PaluMacil/dan2/ent/movielist"
-	"github.com/PaluMacil/dan2/ent/movielistshare"
+	"github.com/PaluMacil/dan2/ent/moviecollection"
+	"github.com/PaluMacil/dan2/ent/moviecollectionshare"
 	"github.com/PaluMacil/dan2/ent/user"
 )
 
@@ -83,17 +83,17 @@ var (
 func checkColumn(table, column string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
-			amazonlist.Table:       amazonlist.ValidColumn,
-			amazonorder.Table:      amazonorder.ValidColumn,
-			amazonshare.Table:      amazonshare.ValidColumn,
-			drink.Table:            drink.ValidColumn,
-			grocerylist.Table:      grocerylist.ValidColumn,
-			grocerylistitem.Table:  grocerylistitem.ValidColumn,
-			grocerylistshare.Table: grocerylistshare.ValidColumn,
-			movie.Table:            movie.ValidColumn,
-			movielist.Table:        movielist.ValidColumn,
-			movielistshare.Table:   movielistshare.ValidColumn,
-			user.Table:             user.ValidColumn,
+			amazonlist.Table:           amazonlist.ValidColumn,
+			amazonorder.Table:          amazonorder.ValidColumn,
+			amazonshare.Table:          amazonshare.ValidColumn,
+			drink.Table:                drink.ValidColumn,
+			grocerylist.Table:          grocerylist.ValidColumn,
+			grocerylistitem.Table:      grocerylistitem.ValidColumn,
+			grocerylistshare.Table:     grocerylistshare.ValidColumn,
+			movie.Table:                movie.ValidColumn,
+			moviecollection.Table:      moviecollection.ValidColumn,
+			moviecollectionshare.Table: moviecollectionshare.ValidColumn,
+			user.Table:                 user.ValidColumn,
 		})
 	})
 	return columnCheck(table, column)

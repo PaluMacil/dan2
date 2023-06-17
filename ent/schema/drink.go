@@ -83,5 +83,6 @@ func (Drink) Edges() []ent.Edge {
 func (Drink) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		entproto.Message(),
+		entproto.Service(),
 	}
 }

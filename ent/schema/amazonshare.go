@@ -45,5 +45,6 @@ func (AmazonShare) Edges() []ent.Edge {
 func (AmazonShare) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		entproto.Message(),
+		entproto.Service(),
 	}
 }

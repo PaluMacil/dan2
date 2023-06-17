@@ -42,7 +42,7 @@ func (Movie) Fields() []ent.Field {
 // Edges of the Movie.
 func (Movie) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("movie_list", MovieList.Type).
+		edge.From("movie_collection", MovieCollection.Type).
 			Ref("movies").
 			Unique().
 			Annotations(entproto.Field(6)),
@@ -52,5 +52,6 @@ func (Movie) Edges() []ent.Edge {
 func (Movie) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		entproto.Message(),
+		entproto.Service(),
 	}
 }

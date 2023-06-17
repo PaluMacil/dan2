@@ -9,13 +9,13 @@ import (
 	"time"
 )
 
-// MovieList holds the schema definition for the MovieList entity.
-type MovieList struct {
+// MovieCollection holds the schema definition for the MovieCollection entity.
+type MovieCollection struct {
 	ent.Schema
 }
 
-// Fields of the MovieList.
-func (MovieList) Fields() []ent.Field {
+// Fields of the MovieCollection.
+func (MovieCollection) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("name").
 			Default("My List").
@@ -40,22 +40,23 @@ func (MovieList) Fields() []ent.Field {
 	}
 }
 
-// Edges of the MovieList.
-func (MovieList) Edges() []ent.Edge {
+// Edges of the MovieCollection.
+func (MovieCollection) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("movies", Movie.Type).
 			Annotations(entproto.Field(6)),
 		edge.From("owner", User.Type).
-			Ref("movie_lists").
+			Ref("movie_collections").
 			Unique().
 			Annotations(entproto.Field(7)),
-		edge.To("movie_list_shares", MovieListShare.Type).
+		edge.To("movie_collection_shares", MovieCollectionShare.Type).
 			Annotations(entproto.Field(8)),
 	}
 }
 
-func (MovieList) Annotations() []schema.Annotation {
+func (MovieCollection) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		entproto.Message(),
+		entproto.Service(),
 	}
 }

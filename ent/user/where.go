@@ -475,21 +475,21 @@ func HasGroceryListSharesWith(preds ...predicate.GroceryListShare) predicate.Use
 	})
 }
 
-// HasMovieLists applies the HasEdge predicate on the "movie_lists" edge.
-func HasMovieLists() predicate.User {
+// HasMovieCollections applies the HasEdge predicate on the "movie_collections" edge.
+func HasMovieCollections() predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, MovieListsTable, MovieListsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, MovieCollectionsTable, MovieCollectionsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasMovieListsWith applies the HasEdge predicate on the "movie_lists" edge with a given conditions (other predicates).
-func HasMovieListsWith(preds ...predicate.MovieList) predicate.User {
+// HasMovieCollectionsWith applies the HasEdge predicate on the "movie_collections" edge with a given conditions (other predicates).
+func HasMovieCollectionsWith(preds ...predicate.MovieCollection) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
-		step := newMovieListsStep()
+		step := newMovieCollectionsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -498,21 +498,21 @@ func HasMovieListsWith(preds ...predicate.MovieList) predicate.User {
 	})
 }
 
-// HasMovieListShares applies the HasEdge predicate on the "movie_list_shares" edge.
-func HasMovieListShares() predicate.User {
+// HasMovieCollectionShares applies the HasEdge predicate on the "movie_collection_shares" edge.
+func HasMovieCollectionShares() predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, MovieListSharesTable, MovieListSharesColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, MovieCollectionSharesTable, MovieCollectionSharesColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasMovieListSharesWith applies the HasEdge predicate on the "movie_list_shares" edge with a given conditions (other predicates).
-func HasMovieListSharesWith(preds ...predicate.MovieListShare) predicate.User {
+// HasMovieCollectionSharesWith applies the HasEdge predicate on the "movie_collection_shares" edge with a given conditions (other predicates).
+func HasMovieCollectionSharesWith(preds ...predicate.MovieCollectionShare) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
-		step := newMovieListSharesStep()
+		step := newMovieCollectionSharesStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

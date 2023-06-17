@@ -12,7 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/PaluMacil/dan2/ent/movie"
-	"github.com/PaluMacil/dan2/ent/movielist"
+	"github.com/PaluMacil/dan2/ent/moviecollection"
 	"github.com/PaluMacil/dan2/ent/predicate"
 )
 
@@ -77,23 +77,23 @@ func (mu *MovieUpdate) SetNillableCreatedAt(t *time.Time) *MovieUpdate {
 	return mu
 }
 
-// SetMovieListID sets the "movie_list" edge to the MovieList entity by ID.
-func (mu *MovieUpdate) SetMovieListID(id int) *MovieUpdate {
-	mu.mutation.SetMovieListID(id)
+// SetMovieCollectionID sets the "movie_collection" edge to the MovieCollection entity by ID.
+func (mu *MovieUpdate) SetMovieCollectionID(id int) *MovieUpdate {
+	mu.mutation.SetMovieCollectionID(id)
 	return mu
 }
 
-// SetNillableMovieListID sets the "movie_list" edge to the MovieList entity by ID if the given value is not nil.
-func (mu *MovieUpdate) SetNillableMovieListID(id *int) *MovieUpdate {
+// SetNillableMovieCollectionID sets the "movie_collection" edge to the MovieCollection entity by ID if the given value is not nil.
+func (mu *MovieUpdate) SetNillableMovieCollectionID(id *int) *MovieUpdate {
 	if id != nil {
-		mu = mu.SetMovieListID(*id)
+		mu = mu.SetMovieCollectionID(*id)
 	}
 	return mu
 }
 
-// SetMovieList sets the "movie_list" edge to the MovieList entity.
-func (mu *MovieUpdate) SetMovieList(m *MovieList) *MovieUpdate {
-	return mu.SetMovieListID(m.ID)
+// SetMovieCollection sets the "movie_collection" edge to the MovieCollection entity.
+func (mu *MovieUpdate) SetMovieCollection(m *MovieCollection) *MovieUpdate {
+	return mu.SetMovieCollectionID(m.ID)
 }
 
 // Mutation returns the MovieMutation object of the builder.
@@ -101,9 +101,9 @@ func (mu *MovieUpdate) Mutation() *MovieMutation {
 	return mu.mutation
 }
 
-// ClearMovieList clears the "movie_list" edge to the MovieList entity.
-func (mu *MovieUpdate) ClearMovieList() *MovieUpdate {
-	mu.mutation.ClearMovieList()
+// ClearMovieCollection clears the "movie_collection" edge to the MovieCollection entity.
+func (mu *MovieUpdate) ClearMovieCollection() *MovieUpdate {
+	mu.mutation.ClearMovieCollection()
 	return mu
 }
 
@@ -155,28 +155,28 @@ func (mu *MovieUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := mu.mutation.CreatedAt(); ok {
 		_spec.SetField(movie.FieldCreatedAt, field.TypeTime, value)
 	}
-	if mu.mutation.MovieListCleared() {
+	if mu.mutation.MovieCollectionCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   movie.MovieListTable,
-			Columns: []string{movie.MovieListColumn},
+			Table:   movie.MovieCollectionTable,
+			Columns: []string{movie.MovieCollectionColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(movielist.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(moviecollection.FieldID, field.TypeInt),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := mu.mutation.MovieListIDs(); len(nodes) > 0 {
+	if nodes := mu.mutation.MovieCollectionIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   movie.MovieListTable,
-			Columns: []string{movie.MovieListColumn},
+			Table:   movie.MovieCollectionTable,
+			Columns: []string{movie.MovieCollectionColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(movielist.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(moviecollection.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -252,23 +252,23 @@ func (muo *MovieUpdateOne) SetNillableCreatedAt(t *time.Time) *MovieUpdateOne {
 	return muo
 }
 
-// SetMovieListID sets the "movie_list" edge to the MovieList entity by ID.
-func (muo *MovieUpdateOne) SetMovieListID(id int) *MovieUpdateOne {
-	muo.mutation.SetMovieListID(id)
+// SetMovieCollectionID sets the "movie_collection" edge to the MovieCollection entity by ID.
+func (muo *MovieUpdateOne) SetMovieCollectionID(id int) *MovieUpdateOne {
+	muo.mutation.SetMovieCollectionID(id)
 	return muo
 }
 
-// SetNillableMovieListID sets the "movie_list" edge to the MovieList entity by ID if the given value is not nil.
-func (muo *MovieUpdateOne) SetNillableMovieListID(id *int) *MovieUpdateOne {
+// SetNillableMovieCollectionID sets the "movie_collection" edge to the MovieCollection entity by ID if the given value is not nil.
+func (muo *MovieUpdateOne) SetNillableMovieCollectionID(id *int) *MovieUpdateOne {
 	if id != nil {
-		muo = muo.SetMovieListID(*id)
+		muo = muo.SetMovieCollectionID(*id)
 	}
 	return muo
 }
 
-// SetMovieList sets the "movie_list" edge to the MovieList entity.
-func (muo *MovieUpdateOne) SetMovieList(m *MovieList) *MovieUpdateOne {
-	return muo.SetMovieListID(m.ID)
+// SetMovieCollection sets the "movie_collection" edge to the MovieCollection entity.
+func (muo *MovieUpdateOne) SetMovieCollection(m *MovieCollection) *MovieUpdateOne {
+	return muo.SetMovieCollectionID(m.ID)
 }
 
 // Mutation returns the MovieMutation object of the builder.
@@ -276,9 +276,9 @@ func (muo *MovieUpdateOne) Mutation() *MovieMutation {
 	return muo.mutation
 }
 
-// ClearMovieList clears the "movie_list" edge to the MovieList entity.
-func (muo *MovieUpdateOne) ClearMovieList() *MovieUpdateOne {
-	muo.mutation.ClearMovieList()
+// ClearMovieCollection clears the "movie_collection" edge to the MovieCollection entity.
+func (muo *MovieUpdateOne) ClearMovieCollection() *MovieUpdateOne {
+	muo.mutation.ClearMovieCollection()
 	return muo
 }
 
@@ -360,28 +360,28 @@ func (muo *MovieUpdateOne) sqlSave(ctx context.Context) (_node *Movie, err error
 	if value, ok := muo.mutation.CreatedAt(); ok {
 		_spec.SetField(movie.FieldCreatedAt, field.TypeTime, value)
 	}
-	if muo.mutation.MovieListCleared() {
+	if muo.mutation.MovieCollectionCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   movie.MovieListTable,
-			Columns: []string{movie.MovieListColumn},
+			Table:   movie.MovieCollectionTable,
+			Columns: []string{movie.MovieCollectionColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(movielist.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(moviecollection.FieldID, field.TypeInt),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := muo.mutation.MovieListIDs(); len(nodes) > 0 {
+	if nodes := muo.mutation.MovieCollectionIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   movie.MovieListTable,
-			Columns: []string{movie.MovieListColumn},
+			Table:   movie.MovieCollectionTable,
+			Columns: []string{movie.MovieCollectionColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(movielist.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(moviecollection.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

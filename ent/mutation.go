@@ -19,8 +19,8 @@ import (
 	"github.com/PaluMacil/dan2/ent/grocerylistitem"
 	"github.com/PaluMacil/dan2/ent/grocerylistshare"
 	"github.com/PaluMacil/dan2/ent/movie"
-	"github.com/PaluMacil/dan2/ent/movielist"
-	"github.com/PaluMacil/dan2/ent/movielistshare"
+	"github.com/PaluMacil/dan2/ent/moviecollection"
+	"github.com/PaluMacil/dan2/ent/moviecollectionshare"
 	"github.com/PaluMacil/dan2/ent/predicate"
 	"github.com/PaluMacil/dan2/ent/user"
 )
@@ -34,17 +34,17 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeAmazonList       = "AmazonList"
-	TypeAmazonOrder      = "AmazonOrder"
-	TypeAmazonShare      = "AmazonShare"
-	TypeDrink            = "Drink"
-	TypeGroceryList      = "GroceryList"
-	TypeGroceryListItem  = "GroceryListItem"
-	TypeGroceryListShare = "GroceryListShare"
-	TypeMovie            = "Movie"
-	TypeMovieList        = "MovieList"
-	TypeMovieListShare   = "MovieListShare"
-	TypeUser             = "User"
+	TypeAmazonList           = "AmazonList"
+	TypeAmazonOrder          = "AmazonOrder"
+	TypeAmazonShare          = "AmazonShare"
+	TypeDrink                = "Drink"
+	TypeGroceryList          = "GroceryList"
+	TypeGroceryListItem      = "GroceryListItem"
+	TypeGroceryListShare     = "GroceryListShare"
+	TypeMovie                = "Movie"
+	TypeMovieCollection      = "MovieCollection"
+	TypeMovieCollectionShare = "MovieCollectionShare"
+	TypeUser                 = "User"
 )
 
 // AmazonListMutation represents an operation that mutates the AmazonList nodes in the graph.
@@ -5064,19 +5064,19 @@ func (m *GroceryListShareMutation) ResetEdge(name string) error {
 // MovieMutation represents an operation that mutates the Movie nodes in the graph.
 type MovieMutation struct {
 	config
-	op                Op
-	typ               string
-	id                *int
-	name              *string
-	note              *string
-	watched           *bool
-	created_at        *time.Time
-	clearedFields     map[string]struct{}
-	movie_list        *int
-	clearedmovie_list bool
-	done              bool
-	oldValue          func(context.Context) (*Movie, error)
-	predicates        []predicate.Movie
+	op                      Op
+	typ                     string
+	id                      *int
+	name                    *string
+	note                    *string
+	watched                 *bool
+	created_at              *time.Time
+	clearedFields           map[string]struct{}
+	movie_collection        *int
+	clearedmovie_collection bool
+	done                    bool
+	oldValue                func(context.Context) (*Movie, error)
+	predicates              []predicate.Movie
 }
 
 var _ ent.Mutation = (*MovieMutation)(nil)
@@ -5321,43 +5321,43 @@ func (m *MovieMutation) ResetCreatedAt() {
 	m.created_at = nil
 }
 
-// SetMovieListID sets the "movie_list" edge to the MovieList entity by id.
-func (m *MovieMutation) SetMovieListID(id int) {
-	m.movie_list = &id
+// SetMovieCollectionID sets the "movie_collection" edge to the MovieCollection entity by id.
+func (m *MovieMutation) SetMovieCollectionID(id int) {
+	m.movie_collection = &id
 }
 
-// ClearMovieList clears the "movie_list" edge to the MovieList entity.
-func (m *MovieMutation) ClearMovieList() {
-	m.clearedmovie_list = true
+// ClearMovieCollection clears the "movie_collection" edge to the MovieCollection entity.
+func (m *MovieMutation) ClearMovieCollection() {
+	m.clearedmovie_collection = true
 }
 
-// MovieListCleared reports if the "movie_list" edge to the MovieList entity was cleared.
-func (m *MovieMutation) MovieListCleared() bool {
-	return m.clearedmovie_list
+// MovieCollectionCleared reports if the "movie_collection" edge to the MovieCollection entity was cleared.
+func (m *MovieMutation) MovieCollectionCleared() bool {
+	return m.clearedmovie_collection
 }
 
-// MovieListID returns the "movie_list" edge ID in the mutation.
-func (m *MovieMutation) MovieListID() (id int, exists bool) {
-	if m.movie_list != nil {
-		return *m.movie_list, true
+// MovieCollectionID returns the "movie_collection" edge ID in the mutation.
+func (m *MovieMutation) MovieCollectionID() (id int, exists bool) {
+	if m.movie_collection != nil {
+		return *m.movie_collection, true
 	}
 	return
 }
 
-// MovieListIDs returns the "movie_list" edge IDs in the mutation.
+// MovieCollectionIDs returns the "movie_collection" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// MovieListID instead. It exists only for internal usage by the builders.
-func (m *MovieMutation) MovieListIDs() (ids []int) {
-	if id := m.movie_list; id != nil {
+// MovieCollectionID instead. It exists only for internal usage by the builders.
+func (m *MovieMutation) MovieCollectionIDs() (ids []int) {
+	if id := m.movie_collection; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetMovieList resets all changes to the "movie_list" edge.
-func (m *MovieMutation) ResetMovieList() {
-	m.movie_list = nil
-	m.clearedmovie_list = false
+// ResetMovieCollection resets all changes to the "movie_collection" edge.
+func (m *MovieMutation) ResetMovieCollection() {
+	m.movie_collection = nil
+	m.clearedmovie_collection = false
 }
 
 // Where appends a list predicates to the MovieMutation builder.
@@ -5545,8 +5545,8 @@ func (m *MovieMutation) ResetField(name string) error {
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *MovieMutation) AddedEdges() []string {
 	edges := make([]string, 0, 1)
-	if m.movie_list != nil {
-		edges = append(edges, movie.EdgeMovieList)
+	if m.movie_collection != nil {
+		edges = append(edges, movie.EdgeMovieCollection)
 	}
 	return edges
 }
@@ -5555,8 +5555,8 @@ func (m *MovieMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *MovieMutation) AddedIDs(name string) []ent.Value {
 	switch name {
-	case movie.EdgeMovieList:
-		if id := m.movie_list; id != nil {
+	case movie.EdgeMovieCollection:
+		if id := m.movie_collection; id != nil {
 			return []ent.Value{*id}
 		}
 	}
@@ -5578,8 +5578,8 @@ func (m *MovieMutation) RemovedIDs(name string) []ent.Value {
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *MovieMutation) ClearedEdges() []string {
 	edges := make([]string, 0, 1)
-	if m.clearedmovie_list {
-		edges = append(edges, movie.EdgeMovieList)
+	if m.clearedmovie_collection {
+		edges = append(edges, movie.EdgeMovieCollection)
 	}
 	return edges
 }
@@ -5588,8 +5588,8 @@ func (m *MovieMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *MovieMutation) EdgeCleared(name string) bool {
 	switch name {
-	case movie.EdgeMovieList:
-		return m.clearedmovie_list
+	case movie.EdgeMovieCollection:
+		return m.clearedmovie_collection
 	}
 	return false
 }
@@ -5598,8 +5598,8 @@ func (m *MovieMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *MovieMutation) ClearEdge(name string) error {
 	switch name {
-	case movie.EdgeMovieList:
-		m.ClearMovieList()
+	case movie.EdgeMovieCollection:
+		m.ClearMovieCollection()
 		return nil
 	}
 	return fmt.Errorf("unknown Movie unique edge %s", name)
@@ -5609,48 +5609,48 @@ func (m *MovieMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *MovieMutation) ResetEdge(name string) error {
 	switch name {
-	case movie.EdgeMovieList:
-		m.ResetMovieList()
+	case movie.EdgeMovieCollection:
+		m.ResetMovieCollection()
 		return nil
 	}
 	return fmt.Errorf("unknown Movie edge %s", name)
 }
 
-// MovieListMutation represents an operation that mutates the MovieList nodes in the graph.
-type MovieListMutation struct {
+// MovieCollectionMutation represents an operation that mutates the MovieCollection nodes in the graph.
+type MovieCollectionMutation struct {
 	config
-	op                       Op
-	typ                      string
-	id                       *int
-	name                     *string
-	note                     *string
-	show_watched             *bool
-	created_at               *time.Time
-	clearedFields            map[string]struct{}
-	movies                   map[int]struct{}
-	removedmovies            map[int]struct{}
-	clearedmovies            bool
-	owner                    *int
-	clearedowner             bool
-	movie_list_shares        map[int]struct{}
-	removedmovie_list_shares map[int]struct{}
-	clearedmovie_list_shares bool
-	done                     bool
-	oldValue                 func(context.Context) (*MovieList, error)
-	predicates               []predicate.MovieList
+	op                             Op
+	typ                            string
+	id                             *int
+	name                           *string
+	note                           *string
+	show_watched                   *bool
+	created_at                     *time.Time
+	clearedFields                  map[string]struct{}
+	movies                         map[int]struct{}
+	removedmovies                  map[int]struct{}
+	clearedmovies                  bool
+	owner                          *int
+	clearedowner                   bool
+	movie_collection_shares        map[int]struct{}
+	removedmovie_collection_shares map[int]struct{}
+	clearedmovie_collection_shares bool
+	done                           bool
+	oldValue                       func(context.Context) (*MovieCollection, error)
+	predicates                     []predicate.MovieCollection
 }
 
-var _ ent.Mutation = (*MovieListMutation)(nil)
+var _ ent.Mutation = (*MovieCollectionMutation)(nil)
 
-// movielistOption allows management of the mutation configuration using functional options.
-type movielistOption func(*MovieListMutation)
+// moviecollectionOption allows management of the mutation configuration using functional options.
+type moviecollectionOption func(*MovieCollectionMutation)
 
-// newMovieListMutation creates new mutation for the MovieList entity.
-func newMovieListMutation(c config, op Op, opts ...movielistOption) *MovieListMutation {
-	m := &MovieListMutation{
+// newMovieCollectionMutation creates new mutation for the MovieCollection entity.
+func newMovieCollectionMutation(c config, op Op, opts ...moviecollectionOption) *MovieCollectionMutation {
+	m := &MovieCollectionMutation{
 		config:        c,
 		op:            op,
-		typ:           TypeMovieList,
+		typ:           TypeMovieCollection,
 		clearedFields: make(map[string]struct{}),
 	}
 	for _, opt := range opts {
@@ -5659,20 +5659,20 @@ func newMovieListMutation(c config, op Op, opts ...movielistOption) *MovieListMu
 	return m
 }
 
-// withMovieListID sets the ID field of the mutation.
-func withMovieListID(id int) movielistOption {
-	return func(m *MovieListMutation) {
+// withMovieCollectionID sets the ID field of the mutation.
+func withMovieCollectionID(id int) moviecollectionOption {
+	return func(m *MovieCollectionMutation) {
 		var (
 			err   error
 			once  sync.Once
-			value *MovieList
+			value *MovieCollection
 		)
-		m.oldValue = func(ctx context.Context) (*MovieList, error) {
+		m.oldValue = func(ctx context.Context) (*MovieCollection, error) {
 			once.Do(func() {
 				if m.done {
 					err = errors.New("querying old values post mutation is not allowed")
 				} else {
-					value, err = m.Client().MovieList.Get(ctx, id)
+					value, err = m.Client().MovieCollection.Get(ctx, id)
 				}
 			})
 			return value, err
@@ -5681,10 +5681,10 @@ func withMovieListID(id int) movielistOption {
 	}
 }
 
-// withMovieList sets the old MovieList of the mutation.
-func withMovieList(node *MovieList) movielistOption {
-	return func(m *MovieListMutation) {
-		m.oldValue = func(context.Context) (*MovieList, error) {
+// withMovieCollection sets the old MovieCollection of the mutation.
+func withMovieCollection(node *MovieCollection) moviecollectionOption {
+	return func(m *MovieCollectionMutation) {
+		m.oldValue = func(context.Context) (*MovieCollection, error) {
 			return node, nil
 		}
 		m.id = &node.ID
@@ -5693,7 +5693,7 @@ func withMovieList(node *MovieList) movielistOption {
 
 // Client returns a new `ent.Client` from the mutation. If the mutation was
 // executed in a transaction (ent.Tx), a transactional client is returned.
-func (m MovieListMutation) Client() *Client {
+func (m MovieCollectionMutation) Client() *Client {
 	client := &Client{config: m.config}
 	client.init()
 	return client
@@ -5701,7 +5701,7 @@ func (m MovieListMutation) Client() *Client {
 
 // Tx returns an `ent.Tx` for mutations that were executed in transactions;
 // it returns an error otherwise.
-func (m MovieListMutation) Tx() (*Tx, error) {
+func (m MovieCollectionMutation) Tx() (*Tx, error) {
 	if _, ok := m.driver.(*txDriver); !ok {
 		return nil, errors.New("ent: mutation is not running in a transaction")
 	}
@@ -5712,7 +5712,7 @@ func (m MovieListMutation) Tx() (*Tx, error) {
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *MovieListMutation) ID() (id int, exists bool) {
+func (m *MovieCollectionMutation) ID() (id int, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -5723,7 +5723,7 @@ func (m *MovieListMutation) ID() (id int, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *MovieListMutation) IDs(ctx context.Context) ([]int, error) {
+func (m *MovieCollectionMutation) IDs(ctx context.Context) ([]int, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
@@ -5732,19 +5732,19 @@ func (m *MovieListMutation) IDs(ctx context.Context) ([]int, error) {
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
-		return m.Client().MovieList.Query().Where(m.predicates...).IDs(ctx)
+		return m.Client().MovieCollection.Query().Where(m.predicates...).IDs(ctx)
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
 }
 
 // SetName sets the "name" field.
-func (m *MovieListMutation) SetName(s string) {
+func (m *MovieCollectionMutation) SetName(s string) {
 	m.name = &s
 }
 
 // Name returns the value of the "name" field in the mutation.
-func (m *MovieListMutation) Name() (r string, exists bool) {
+func (m *MovieCollectionMutation) Name() (r string, exists bool) {
 	v := m.name
 	if v == nil {
 		return
@@ -5752,10 +5752,10 @@ func (m *MovieListMutation) Name() (r string, exists bool) {
 	return *v, true
 }
 
-// OldName returns the old "name" field's value of the MovieList entity.
-// If the MovieList object wasn't provided to the builder, the object is fetched from the database.
+// OldName returns the old "name" field's value of the MovieCollection entity.
+// If the MovieCollection object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *MovieListMutation) OldName(ctx context.Context) (v string, err error) {
+func (m *MovieCollectionMutation) OldName(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldName is only allowed on UpdateOne operations")
 	}
@@ -5770,17 +5770,17 @@ func (m *MovieListMutation) OldName(ctx context.Context) (v string, err error) {
 }
 
 // ResetName resets all changes to the "name" field.
-func (m *MovieListMutation) ResetName() {
+func (m *MovieCollectionMutation) ResetName() {
 	m.name = nil
 }
 
 // SetNote sets the "note" field.
-func (m *MovieListMutation) SetNote(s string) {
+func (m *MovieCollectionMutation) SetNote(s string) {
 	m.note = &s
 }
 
 // Note returns the value of the "note" field in the mutation.
-func (m *MovieListMutation) Note() (r string, exists bool) {
+func (m *MovieCollectionMutation) Note() (r string, exists bool) {
 	v := m.note
 	if v == nil {
 		return
@@ -5788,10 +5788,10 @@ func (m *MovieListMutation) Note() (r string, exists bool) {
 	return *v, true
 }
 
-// OldNote returns the old "note" field's value of the MovieList entity.
-// If the MovieList object wasn't provided to the builder, the object is fetched from the database.
+// OldNote returns the old "note" field's value of the MovieCollection entity.
+// If the MovieCollection object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *MovieListMutation) OldNote(ctx context.Context) (v string, err error) {
+func (m *MovieCollectionMutation) OldNote(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldNote is only allowed on UpdateOne operations")
 	}
@@ -5806,17 +5806,17 @@ func (m *MovieListMutation) OldNote(ctx context.Context) (v string, err error) {
 }
 
 // ResetNote resets all changes to the "note" field.
-func (m *MovieListMutation) ResetNote() {
+func (m *MovieCollectionMutation) ResetNote() {
 	m.note = nil
 }
 
 // SetShowWatched sets the "show_watched" field.
-func (m *MovieListMutation) SetShowWatched(b bool) {
+func (m *MovieCollectionMutation) SetShowWatched(b bool) {
 	m.show_watched = &b
 }
 
 // ShowWatched returns the value of the "show_watched" field in the mutation.
-func (m *MovieListMutation) ShowWatched() (r bool, exists bool) {
+func (m *MovieCollectionMutation) ShowWatched() (r bool, exists bool) {
 	v := m.show_watched
 	if v == nil {
 		return
@@ -5824,10 +5824,10 @@ func (m *MovieListMutation) ShowWatched() (r bool, exists bool) {
 	return *v, true
 }
 
-// OldShowWatched returns the old "show_watched" field's value of the MovieList entity.
-// If the MovieList object wasn't provided to the builder, the object is fetched from the database.
+// OldShowWatched returns the old "show_watched" field's value of the MovieCollection entity.
+// If the MovieCollection object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *MovieListMutation) OldShowWatched(ctx context.Context) (v bool, err error) {
+func (m *MovieCollectionMutation) OldShowWatched(ctx context.Context) (v bool, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldShowWatched is only allowed on UpdateOne operations")
 	}
@@ -5842,17 +5842,17 @@ func (m *MovieListMutation) OldShowWatched(ctx context.Context) (v bool, err err
 }
 
 // ResetShowWatched resets all changes to the "show_watched" field.
-func (m *MovieListMutation) ResetShowWatched() {
+func (m *MovieCollectionMutation) ResetShowWatched() {
 	m.show_watched = nil
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (m *MovieListMutation) SetCreatedAt(t time.Time) {
+func (m *MovieCollectionMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
 }
 
 // CreatedAt returns the value of the "created_at" field in the mutation.
-func (m *MovieListMutation) CreatedAt() (r time.Time, exists bool) {
+func (m *MovieCollectionMutation) CreatedAt() (r time.Time, exists bool) {
 	v := m.created_at
 	if v == nil {
 		return
@@ -5860,10 +5860,10 @@ func (m *MovieListMutation) CreatedAt() (r time.Time, exists bool) {
 	return *v, true
 }
 
-// OldCreatedAt returns the old "created_at" field's value of the MovieList entity.
-// If the MovieList object wasn't provided to the builder, the object is fetched from the database.
+// OldCreatedAt returns the old "created_at" field's value of the MovieCollection entity.
+// If the MovieCollection object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *MovieListMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+func (m *MovieCollectionMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
 	}
@@ -5878,12 +5878,12 @@ func (m *MovieListMutation) OldCreatedAt(ctx context.Context) (v time.Time, err 
 }
 
 // ResetCreatedAt resets all changes to the "created_at" field.
-func (m *MovieListMutation) ResetCreatedAt() {
+func (m *MovieCollectionMutation) ResetCreatedAt() {
 	m.created_at = nil
 }
 
 // AddMovieIDs adds the "movies" edge to the Movie entity by ids.
-func (m *MovieListMutation) AddMovieIDs(ids ...int) {
+func (m *MovieCollectionMutation) AddMovieIDs(ids ...int) {
 	if m.movies == nil {
 		m.movies = make(map[int]struct{})
 	}
@@ -5893,17 +5893,17 @@ func (m *MovieListMutation) AddMovieIDs(ids ...int) {
 }
 
 // ClearMovies clears the "movies" edge to the Movie entity.
-func (m *MovieListMutation) ClearMovies() {
+func (m *MovieCollectionMutation) ClearMovies() {
 	m.clearedmovies = true
 }
 
 // MoviesCleared reports if the "movies" edge to the Movie entity was cleared.
-func (m *MovieListMutation) MoviesCleared() bool {
+func (m *MovieCollectionMutation) MoviesCleared() bool {
 	return m.clearedmovies
 }
 
 // RemoveMovieIDs removes the "movies" edge to the Movie entity by IDs.
-func (m *MovieListMutation) RemoveMovieIDs(ids ...int) {
+func (m *MovieCollectionMutation) RemoveMovieIDs(ids ...int) {
 	if m.removedmovies == nil {
 		m.removedmovies = make(map[int]struct{})
 	}
@@ -5914,7 +5914,7 @@ func (m *MovieListMutation) RemoveMovieIDs(ids ...int) {
 }
 
 // RemovedMovies returns the removed IDs of the "movies" edge to the Movie entity.
-func (m *MovieListMutation) RemovedMoviesIDs() (ids []int) {
+func (m *MovieCollectionMutation) RemovedMoviesIDs() (ids []int) {
 	for id := range m.removedmovies {
 		ids = append(ids, id)
 	}
@@ -5922,7 +5922,7 @@ func (m *MovieListMutation) RemovedMoviesIDs() (ids []int) {
 }
 
 // MoviesIDs returns the "movies" edge IDs in the mutation.
-func (m *MovieListMutation) MoviesIDs() (ids []int) {
+func (m *MovieCollectionMutation) MoviesIDs() (ids []int) {
 	for id := range m.movies {
 		ids = append(ids, id)
 	}
@@ -5930,29 +5930,29 @@ func (m *MovieListMutation) MoviesIDs() (ids []int) {
 }
 
 // ResetMovies resets all changes to the "movies" edge.
-func (m *MovieListMutation) ResetMovies() {
+func (m *MovieCollectionMutation) ResetMovies() {
 	m.movies = nil
 	m.clearedmovies = false
 	m.removedmovies = nil
 }
 
 // SetOwnerID sets the "owner" edge to the User entity by id.
-func (m *MovieListMutation) SetOwnerID(id int) {
+func (m *MovieCollectionMutation) SetOwnerID(id int) {
 	m.owner = &id
 }
 
 // ClearOwner clears the "owner" edge to the User entity.
-func (m *MovieListMutation) ClearOwner() {
+func (m *MovieCollectionMutation) ClearOwner() {
 	m.clearedowner = true
 }
 
 // OwnerCleared reports if the "owner" edge to the User entity was cleared.
-func (m *MovieListMutation) OwnerCleared() bool {
+func (m *MovieCollectionMutation) OwnerCleared() bool {
 	return m.clearedowner
 }
 
 // OwnerID returns the "owner" edge ID in the mutation.
-func (m *MovieListMutation) OwnerID() (id int, exists bool) {
+func (m *MovieCollectionMutation) OwnerID() (id int, exists bool) {
 	if m.owner != nil {
 		return *m.owner, true
 	}
@@ -5962,7 +5962,7 @@ func (m *MovieListMutation) OwnerID() (id int, exists bool) {
 // OwnerIDs returns the "owner" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // OwnerID instead. It exists only for internal usage by the builders.
-func (m *MovieListMutation) OwnerIDs() (ids []int) {
+func (m *MovieCollectionMutation) OwnerIDs() (ids []int) {
 	if id := m.owner; id != nil {
 		ids = append(ids, *id)
 	}
@@ -5970,74 +5970,74 @@ func (m *MovieListMutation) OwnerIDs() (ids []int) {
 }
 
 // ResetOwner resets all changes to the "owner" edge.
-func (m *MovieListMutation) ResetOwner() {
+func (m *MovieCollectionMutation) ResetOwner() {
 	m.owner = nil
 	m.clearedowner = false
 }
 
-// AddMovieListShareIDs adds the "movie_list_shares" edge to the MovieListShare entity by ids.
-func (m *MovieListMutation) AddMovieListShareIDs(ids ...int) {
-	if m.movie_list_shares == nil {
-		m.movie_list_shares = make(map[int]struct{})
+// AddMovieCollectionShareIDs adds the "movie_collection_shares" edge to the MovieCollectionShare entity by ids.
+func (m *MovieCollectionMutation) AddMovieCollectionShareIDs(ids ...int) {
+	if m.movie_collection_shares == nil {
+		m.movie_collection_shares = make(map[int]struct{})
 	}
 	for i := range ids {
-		m.movie_list_shares[ids[i]] = struct{}{}
+		m.movie_collection_shares[ids[i]] = struct{}{}
 	}
 }
 
-// ClearMovieListShares clears the "movie_list_shares" edge to the MovieListShare entity.
-func (m *MovieListMutation) ClearMovieListShares() {
-	m.clearedmovie_list_shares = true
+// ClearMovieCollectionShares clears the "movie_collection_shares" edge to the MovieCollectionShare entity.
+func (m *MovieCollectionMutation) ClearMovieCollectionShares() {
+	m.clearedmovie_collection_shares = true
 }
 
-// MovieListSharesCleared reports if the "movie_list_shares" edge to the MovieListShare entity was cleared.
-func (m *MovieListMutation) MovieListSharesCleared() bool {
-	return m.clearedmovie_list_shares
+// MovieCollectionSharesCleared reports if the "movie_collection_shares" edge to the MovieCollectionShare entity was cleared.
+func (m *MovieCollectionMutation) MovieCollectionSharesCleared() bool {
+	return m.clearedmovie_collection_shares
 }
 
-// RemoveMovieListShareIDs removes the "movie_list_shares" edge to the MovieListShare entity by IDs.
-func (m *MovieListMutation) RemoveMovieListShareIDs(ids ...int) {
-	if m.removedmovie_list_shares == nil {
-		m.removedmovie_list_shares = make(map[int]struct{})
+// RemoveMovieCollectionShareIDs removes the "movie_collection_shares" edge to the MovieCollectionShare entity by IDs.
+func (m *MovieCollectionMutation) RemoveMovieCollectionShareIDs(ids ...int) {
+	if m.removedmovie_collection_shares == nil {
+		m.removedmovie_collection_shares = make(map[int]struct{})
 	}
 	for i := range ids {
-		delete(m.movie_list_shares, ids[i])
-		m.removedmovie_list_shares[ids[i]] = struct{}{}
+		delete(m.movie_collection_shares, ids[i])
+		m.removedmovie_collection_shares[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedMovieListShares returns the removed IDs of the "movie_list_shares" edge to the MovieListShare entity.
-func (m *MovieListMutation) RemovedMovieListSharesIDs() (ids []int) {
-	for id := range m.removedmovie_list_shares {
+// RemovedMovieCollectionShares returns the removed IDs of the "movie_collection_shares" edge to the MovieCollectionShare entity.
+func (m *MovieCollectionMutation) RemovedMovieCollectionSharesIDs() (ids []int) {
+	for id := range m.removedmovie_collection_shares {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// MovieListSharesIDs returns the "movie_list_shares" edge IDs in the mutation.
-func (m *MovieListMutation) MovieListSharesIDs() (ids []int) {
-	for id := range m.movie_list_shares {
+// MovieCollectionSharesIDs returns the "movie_collection_shares" edge IDs in the mutation.
+func (m *MovieCollectionMutation) MovieCollectionSharesIDs() (ids []int) {
+	for id := range m.movie_collection_shares {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetMovieListShares resets all changes to the "movie_list_shares" edge.
-func (m *MovieListMutation) ResetMovieListShares() {
-	m.movie_list_shares = nil
-	m.clearedmovie_list_shares = false
-	m.removedmovie_list_shares = nil
+// ResetMovieCollectionShares resets all changes to the "movie_collection_shares" edge.
+func (m *MovieCollectionMutation) ResetMovieCollectionShares() {
+	m.movie_collection_shares = nil
+	m.clearedmovie_collection_shares = false
+	m.removedmovie_collection_shares = nil
 }
 
-// Where appends a list predicates to the MovieListMutation builder.
-func (m *MovieListMutation) Where(ps ...predicate.MovieList) {
+// Where appends a list predicates to the MovieCollectionMutation builder.
+func (m *MovieCollectionMutation) Where(ps ...predicate.MovieCollection) {
 	m.predicates = append(m.predicates, ps...)
 }
 
-// WhereP appends storage-level predicates to the MovieListMutation builder. Using this method,
+// WhereP appends storage-level predicates to the MovieCollectionMutation builder. Using this method,
 // users can use type-assertion to append predicates that do not depend on any generated package.
-func (m *MovieListMutation) WhereP(ps ...func(*sql.Selector)) {
-	p := make([]predicate.MovieList, len(ps))
+func (m *MovieCollectionMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.MovieCollection, len(ps))
 	for i := range ps {
 		p[i] = ps[i]
 	}
@@ -6045,36 +6045,36 @@ func (m *MovieListMutation) WhereP(ps ...func(*sql.Selector)) {
 }
 
 // Op returns the operation name.
-func (m *MovieListMutation) Op() Op {
+func (m *MovieCollectionMutation) Op() Op {
 	return m.op
 }
 
 // SetOp allows setting the mutation operation.
-func (m *MovieListMutation) SetOp(op Op) {
+func (m *MovieCollectionMutation) SetOp(op Op) {
 	m.op = op
 }
 
-// Type returns the node type of this mutation (MovieList).
-func (m *MovieListMutation) Type() string {
+// Type returns the node type of this mutation (MovieCollection).
+func (m *MovieCollectionMutation) Type() string {
 	return m.typ
 }
 
 // Fields returns all fields that were changed during this mutation. Note that in
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
-func (m *MovieListMutation) Fields() []string {
+func (m *MovieCollectionMutation) Fields() []string {
 	fields := make([]string, 0, 4)
 	if m.name != nil {
-		fields = append(fields, movielist.FieldName)
+		fields = append(fields, moviecollection.FieldName)
 	}
 	if m.note != nil {
-		fields = append(fields, movielist.FieldNote)
+		fields = append(fields, moviecollection.FieldNote)
 	}
 	if m.show_watched != nil {
-		fields = append(fields, movielist.FieldShowWatched)
+		fields = append(fields, moviecollection.FieldShowWatched)
 	}
 	if m.created_at != nil {
-		fields = append(fields, movielist.FieldCreatedAt)
+		fields = append(fields, moviecollection.FieldCreatedAt)
 	}
 	return fields
 }
@@ -6082,15 +6082,15 @@ func (m *MovieListMutation) Fields() []string {
 // Field returns the value of a field with the given name. The second boolean
 // return value indicates that this field was not set, or was not defined in the
 // schema.
-func (m *MovieListMutation) Field(name string) (ent.Value, bool) {
+func (m *MovieCollectionMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case movielist.FieldName:
+	case moviecollection.FieldName:
 		return m.Name()
-	case movielist.FieldNote:
+	case moviecollection.FieldNote:
 		return m.Note()
-	case movielist.FieldShowWatched:
+	case moviecollection.FieldShowWatched:
 		return m.ShowWatched()
-	case movielist.FieldCreatedAt:
+	case moviecollection.FieldCreatedAt:
 		return m.CreatedAt()
 	}
 	return nil, false
@@ -6099,47 +6099,47 @@ func (m *MovieListMutation) Field(name string) (ent.Value, bool) {
 // OldField returns the old value of the field from the database. An error is
 // returned if the mutation operation is not UpdateOne, or the query to the
 // database failed.
-func (m *MovieListMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+func (m *MovieCollectionMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case movielist.FieldName:
+	case moviecollection.FieldName:
 		return m.OldName(ctx)
-	case movielist.FieldNote:
+	case moviecollection.FieldNote:
 		return m.OldNote(ctx)
-	case movielist.FieldShowWatched:
+	case moviecollection.FieldShowWatched:
 		return m.OldShowWatched(ctx)
-	case movielist.FieldCreatedAt:
+	case moviecollection.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	}
-	return nil, fmt.Errorf("unknown MovieList field %s", name)
+	return nil, fmt.Errorf("unknown MovieCollection field %s", name)
 }
 
 // SetField sets the value of a field with the given name. It returns an error if
 // the field is not defined in the schema, or if the type mismatched the field
 // type.
-func (m *MovieListMutation) SetField(name string, value ent.Value) error {
+func (m *MovieCollectionMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case movielist.FieldName:
+	case moviecollection.FieldName:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetName(v)
 		return nil
-	case movielist.FieldNote:
+	case moviecollection.FieldNote:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetNote(v)
 		return nil
-	case movielist.FieldShowWatched:
+	case moviecollection.FieldShowWatched:
 		v, ok := value.(bool)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetShowWatched(v)
 		return nil
-	case movielist.FieldCreatedAt:
+	case moviecollection.FieldCreatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
@@ -6147,102 +6147,102 @@ func (m *MovieListMutation) SetField(name string, value ent.Value) error {
 		m.SetCreatedAt(v)
 		return nil
 	}
-	return fmt.Errorf("unknown MovieList field %s", name)
+	return fmt.Errorf("unknown MovieCollection field %s", name)
 }
 
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
-func (m *MovieListMutation) AddedFields() []string {
+func (m *MovieCollectionMutation) AddedFields() []string {
 	return nil
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
-func (m *MovieListMutation) AddedField(name string) (ent.Value, bool) {
+func (m *MovieCollectionMutation) AddedField(name string) (ent.Value, bool) {
 	return nil, false
 }
 
 // AddField adds the value to the field with the given name. It returns an error if
 // the field is not defined in the schema, or if the type mismatched the field
 // type.
-func (m *MovieListMutation) AddField(name string, value ent.Value) error {
+func (m *MovieCollectionMutation) AddField(name string, value ent.Value) error {
 	switch name {
 	}
-	return fmt.Errorf("unknown MovieList numeric field %s", name)
+	return fmt.Errorf("unknown MovieCollection numeric field %s", name)
 }
 
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
-func (m *MovieListMutation) ClearedFields() []string {
+func (m *MovieCollectionMutation) ClearedFields() []string {
 	return nil
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
 // cleared in this mutation.
-func (m *MovieListMutation) FieldCleared(name string) bool {
+func (m *MovieCollectionMutation) FieldCleared(name string) bool {
 	_, ok := m.clearedFields[name]
 	return ok
 }
 
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
-func (m *MovieListMutation) ClearField(name string) error {
-	return fmt.Errorf("unknown MovieList nullable field %s", name)
+func (m *MovieCollectionMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown MovieCollection nullable field %s", name)
 }
 
 // ResetField resets all changes in the mutation for the field with the given name.
 // It returns an error if the field is not defined in the schema.
-func (m *MovieListMutation) ResetField(name string) error {
+func (m *MovieCollectionMutation) ResetField(name string) error {
 	switch name {
-	case movielist.FieldName:
+	case moviecollection.FieldName:
 		m.ResetName()
 		return nil
-	case movielist.FieldNote:
+	case moviecollection.FieldNote:
 		m.ResetNote()
 		return nil
-	case movielist.FieldShowWatched:
+	case moviecollection.FieldShowWatched:
 		m.ResetShowWatched()
 		return nil
-	case movielist.FieldCreatedAt:
+	case moviecollection.FieldCreatedAt:
 		m.ResetCreatedAt()
 		return nil
 	}
-	return fmt.Errorf("unknown MovieList field %s", name)
+	return fmt.Errorf("unknown MovieCollection field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
-func (m *MovieListMutation) AddedEdges() []string {
+func (m *MovieCollectionMutation) AddedEdges() []string {
 	edges := make([]string, 0, 3)
 	if m.movies != nil {
-		edges = append(edges, movielist.EdgeMovies)
+		edges = append(edges, moviecollection.EdgeMovies)
 	}
 	if m.owner != nil {
-		edges = append(edges, movielist.EdgeOwner)
+		edges = append(edges, moviecollection.EdgeOwner)
 	}
-	if m.movie_list_shares != nil {
-		edges = append(edges, movielist.EdgeMovieListShares)
+	if m.movie_collection_shares != nil {
+		edges = append(edges, moviecollection.EdgeMovieCollectionShares)
 	}
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
-func (m *MovieListMutation) AddedIDs(name string) []ent.Value {
+func (m *MovieCollectionMutation) AddedIDs(name string) []ent.Value {
 	switch name {
-	case movielist.EdgeMovies:
+	case moviecollection.EdgeMovies:
 		ids := make([]ent.Value, 0, len(m.movies))
 		for id := range m.movies {
 			ids = append(ids, id)
 		}
 		return ids
-	case movielist.EdgeOwner:
+	case moviecollection.EdgeOwner:
 		if id := m.owner; id != nil {
 			return []ent.Value{*id}
 		}
-	case movielist.EdgeMovieListShares:
-		ids := make([]ent.Value, 0, len(m.movie_list_shares))
-		for id := range m.movie_list_shares {
+	case moviecollection.EdgeMovieCollectionShares:
+		ids := make([]ent.Value, 0, len(m.movie_collection_shares))
+		for id := range m.movie_collection_shares {
 			ids = append(ids, id)
 		}
 		return ids
@@ -6251,30 +6251,30 @@ func (m *MovieListMutation) AddedIDs(name string) []ent.Value {
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
-func (m *MovieListMutation) RemovedEdges() []string {
+func (m *MovieCollectionMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 3)
 	if m.removedmovies != nil {
-		edges = append(edges, movielist.EdgeMovies)
+		edges = append(edges, moviecollection.EdgeMovies)
 	}
-	if m.removedmovie_list_shares != nil {
-		edges = append(edges, movielist.EdgeMovieListShares)
+	if m.removedmovie_collection_shares != nil {
+		edges = append(edges, moviecollection.EdgeMovieCollectionShares)
 	}
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
-func (m *MovieListMutation) RemovedIDs(name string) []ent.Value {
+func (m *MovieCollectionMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
-	case movielist.EdgeMovies:
+	case moviecollection.EdgeMovies:
 		ids := make([]ent.Value, 0, len(m.removedmovies))
 		for id := range m.removedmovies {
 			ids = append(ids, id)
 		}
 		return ids
-	case movielist.EdgeMovieListShares:
-		ids := make([]ent.Value, 0, len(m.removedmovie_list_shares))
-		for id := range m.removedmovie_list_shares {
+	case moviecollection.EdgeMovieCollectionShares:
+		ids := make([]ent.Value, 0, len(m.removedmovie_collection_shares))
+		for id := range m.removedmovie_collection_shares {
 			ids = append(ids, id)
 		}
 		return ids
@@ -6283,91 +6283,91 @@ func (m *MovieListMutation) RemovedIDs(name string) []ent.Value {
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
-func (m *MovieListMutation) ClearedEdges() []string {
+func (m *MovieCollectionMutation) ClearedEdges() []string {
 	edges := make([]string, 0, 3)
 	if m.clearedmovies {
-		edges = append(edges, movielist.EdgeMovies)
+		edges = append(edges, moviecollection.EdgeMovies)
 	}
 	if m.clearedowner {
-		edges = append(edges, movielist.EdgeOwner)
+		edges = append(edges, moviecollection.EdgeOwner)
 	}
-	if m.clearedmovie_list_shares {
-		edges = append(edges, movielist.EdgeMovieListShares)
+	if m.clearedmovie_collection_shares {
+		edges = append(edges, moviecollection.EdgeMovieCollectionShares)
 	}
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
-func (m *MovieListMutation) EdgeCleared(name string) bool {
+func (m *MovieCollectionMutation) EdgeCleared(name string) bool {
 	switch name {
-	case movielist.EdgeMovies:
+	case moviecollection.EdgeMovies:
 		return m.clearedmovies
-	case movielist.EdgeOwner:
+	case moviecollection.EdgeOwner:
 		return m.clearedowner
-	case movielist.EdgeMovieListShares:
-		return m.clearedmovie_list_shares
+	case moviecollection.EdgeMovieCollectionShares:
+		return m.clearedmovie_collection_shares
 	}
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
-func (m *MovieListMutation) ClearEdge(name string) error {
+func (m *MovieCollectionMutation) ClearEdge(name string) error {
 	switch name {
-	case movielist.EdgeOwner:
+	case moviecollection.EdgeOwner:
 		m.ClearOwner()
 		return nil
 	}
-	return fmt.Errorf("unknown MovieList unique edge %s", name)
+	return fmt.Errorf("unknown MovieCollection unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
-func (m *MovieListMutation) ResetEdge(name string) error {
+func (m *MovieCollectionMutation) ResetEdge(name string) error {
 	switch name {
-	case movielist.EdgeMovies:
+	case moviecollection.EdgeMovies:
 		m.ResetMovies()
 		return nil
-	case movielist.EdgeOwner:
+	case moviecollection.EdgeOwner:
 		m.ResetOwner()
 		return nil
-	case movielist.EdgeMovieListShares:
-		m.ResetMovieListShares()
+	case moviecollection.EdgeMovieCollectionShares:
+		m.ResetMovieCollectionShares()
 		return nil
 	}
-	return fmt.Errorf("unknown MovieList edge %s", name)
+	return fmt.Errorf("unknown MovieCollection edge %s", name)
 }
 
-// MovieListShareMutation represents an operation that mutates the MovieListShare nodes in the graph.
-type MovieListShareMutation struct {
+// MovieCollectionShareMutation represents an operation that mutates the MovieCollectionShare nodes in the graph.
+type MovieCollectionShareMutation struct {
 	config
-	op                Op
-	typ               string
-	id                *int
-	can_edit          *bool
-	created_at        *time.Time
-	clearedFields     map[string]struct{}
-	user              *int
-	cleareduser       bool
-	movie_list        *int
-	clearedmovie_list bool
-	done              bool
-	oldValue          func(context.Context) (*MovieListShare, error)
-	predicates        []predicate.MovieListShare
+	op                      Op
+	typ                     string
+	id                      *int
+	can_edit                *bool
+	created_at              *time.Time
+	clearedFields           map[string]struct{}
+	user                    *int
+	cleareduser             bool
+	movie_collection        *int
+	clearedmovie_collection bool
+	done                    bool
+	oldValue                func(context.Context) (*MovieCollectionShare, error)
+	predicates              []predicate.MovieCollectionShare
 }
 
-var _ ent.Mutation = (*MovieListShareMutation)(nil)
+var _ ent.Mutation = (*MovieCollectionShareMutation)(nil)
 
-// movielistshareOption allows management of the mutation configuration using functional options.
-type movielistshareOption func(*MovieListShareMutation)
+// moviecollectionshareOption allows management of the mutation configuration using functional options.
+type moviecollectionshareOption func(*MovieCollectionShareMutation)
 
-// newMovieListShareMutation creates new mutation for the MovieListShare entity.
-func newMovieListShareMutation(c config, op Op, opts ...movielistshareOption) *MovieListShareMutation {
-	m := &MovieListShareMutation{
+// newMovieCollectionShareMutation creates new mutation for the MovieCollectionShare entity.
+func newMovieCollectionShareMutation(c config, op Op, opts ...moviecollectionshareOption) *MovieCollectionShareMutation {
+	m := &MovieCollectionShareMutation{
 		config:        c,
 		op:            op,
-		typ:           TypeMovieListShare,
+		typ:           TypeMovieCollectionShare,
 		clearedFields: make(map[string]struct{}),
 	}
 	for _, opt := range opts {
@@ -6376,20 +6376,20 @@ func newMovieListShareMutation(c config, op Op, opts ...movielistshareOption) *M
 	return m
 }
 
-// withMovieListShareID sets the ID field of the mutation.
-func withMovieListShareID(id int) movielistshareOption {
-	return func(m *MovieListShareMutation) {
+// withMovieCollectionShareID sets the ID field of the mutation.
+func withMovieCollectionShareID(id int) moviecollectionshareOption {
+	return func(m *MovieCollectionShareMutation) {
 		var (
 			err   error
 			once  sync.Once
-			value *MovieListShare
+			value *MovieCollectionShare
 		)
-		m.oldValue = func(ctx context.Context) (*MovieListShare, error) {
+		m.oldValue = func(ctx context.Context) (*MovieCollectionShare, error) {
 			once.Do(func() {
 				if m.done {
 					err = errors.New("querying old values post mutation is not allowed")
 				} else {
-					value, err = m.Client().MovieListShare.Get(ctx, id)
+					value, err = m.Client().MovieCollectionShare.Get(ctx, id)
 				}
 			})
 			return value, err
@@ -6398,10 +6398,10 @@ func withMovieListShareID(id int) movielistshareOption {
 	}
 }
 
-// withMovieListShare sets the old MovieListShare of the mutation.
-func withMovieListShare(node *MovieListShare) movielistshareOption {
-	return func(m *MovieListShareMutation) {
-		m.oldValue = func(context.Context) (*MovieListShare, error) {
+// withMovieCollectionShare sets the old MovieCollectionShare of the mutation.
+func withMovieCollectionShare(node *MovieCollectionShare) moviecollectionshareOption {
+	return func(m *MovieCollectionShareMutation) {
+		m.oldValue = func(context.Context) (*MovieCollectionShare, error) {
 			return node, nil
 		}
 		m.id = &node.ID
@@ -6410,7 +6410,7 @@ func withMovieListShare(node *MovieListShare) movielistshareOption {
 
 // Client returns a new `ent.Client` from the mutation. If the mutation was
 // executed in a transaction (ent.Tx), a transactional client is returned.
-func (m MovieListShareMutation) Client() *Client {
+func (m MovieCollectionShareMutation) Client() *Client {
 	client := &Client{config: m.config}
 	client.init()
 	return client
@@ -6418,7 +6418,7 @@ func (m MovieListShareMutation) Client() *Client {
 
 // Tx returns an `ent.Tx` for mutations that were executed in transactions;
 // it returns an error otherwise.
-func (m MovieListShareMutation) Tx() (*Tx, error) {
+func (m MovieCollectionShareMutation) Tx() (*Tx, error) {
 	if _, ok := m.driver.(*txDriver); !ok {
 		return nil, errors.New("ent: mutation is not running in a transaction")
 	}
@@ -6429,7 +6429,7 @@ func (m MovieListShareMutation) Tx() (*Tx, error) {
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *MovieListShareMutation) ID() (id int, exists bool) {
+func (m *MovieCollectionShareMutation) ID() (id int, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -6440,7 +6440,7 @@ func (m *MovieListShareMutation) ID() (id int, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *MovieListShareMutation) IDs(ctx context.Context) ([]int, error) {
+func (m *MovieCollectionShareMutation) IDs(ctx context.Context) ([]int, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
@@ -6449,19 +6449,19 @@ func (m *MovieListShareMutation) IDs(ctx context.Context) ([]int, error) {
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
-		return m.Client().MovieListShare.Query().Where(m.predicates...).IDs(ctx)
+		return m.Client().MovieCollectionShare.Query().Where(m.predicates...).IDs(ctx)
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
 }
 
 // SetCanEdit sets the "can_edit" field.
-func (m *MovieListShareMutation) SetCanEdit(b bool) {
+func (m *MovieCollectionShareMutation) SetCanEdit(b bool) {
 	m.can_edit = &b
 }
 
 // CanEdit returns the value of the "can_edit" field in the mutation.
-func (m *MovieListShareMutation) CanEdit() (r bool, exists bool) {
+func (m *MovieCollectionShareMutation) CanEdit() (r bool, exists bool) {
 	v := m.can_edit
 	if v == nil {
 		return
@@ -6469,10 +6469,10 @@ func (m *MovieListShareMutation) CanEdit() (r bool, exists bool) {
 	return *v, true
 }
 
-// OldCanEdit returns the old "can_edit" field's value of the MovieListShare entity.
-// If the MovieListShare object wasn't provided to the builder, the object is fetched from the database.
+// OldCanEdit returns the old "can_edit" field's value of the MovieCollectionShare entity.
+// If the MovieCollectionShare object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *MovieListShareMutation) OldCanEdit(ctx context.Context) (v bool, err error) {
+func (m *MovieCollectionShareMutation) OldCanEdit(ctx context.Context) (v bool, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldCanEdit is only allowed on UpdateOne operations")
 	}
@@ -6487,17 +6487,17 @@ func (m *MovieListShareMutation) OldCanEdit(ctx context.Context) (v bool, err er
 }
 
 // ResetCanEdit resets all changes to the "can_edit" field.
-func (m *MovieListShareMutation) ResetCanEdit() {
+func (m *MovieCollectionShareMutation) ResetCanEdit() {
 	m.can_edit = nil
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (m *MovieListShareMutation) SetCreatedAt(t time.Time) {
+func (m *MovieCollectionShareMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
 }
 
 // CreatedAt returns the value of the "created_at" field in the mutation.
-func (m *MovieListShareMutation) CreatedAt() (r time.Time, exists bool) {
+func (m *MovieCollectionShareMutation) CreatedAt() (r time.Time, exists bool) {
 	v := m.created_at
 	if v == nil {
 		return
@@ -6505,10 +6505,10 @@ func (m *MovieListShareMutation) CreatedAt() (r time.Time, exists bool) {
 	return *v, true
 }
 
-// OldCreatedAt returns the old "created_at" field's value of the MovieListShare entity.
-// If the MovieListShare object wasn't provided to the builder, the object is fetched from the database.
+// OldCreatedAt returns the old "created_at" field's value of the MovieCollectionShare entity.
+// If the MovieCollectionShare object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *MovieListShareMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+func (m *MovieCollectionShareMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
 	}
@@ -6523,27 +6523,27 @@ func (m *MovieListShareMutation) OldCreatedAt(ctx context.Context) (v time.Time,
 }
 
 // ResetCreatedAt resets all changes to the "created_at" field.
-func (m *MovieListShareMutation) ResetCreatedAt() {
+func (m *MovieCollectionShareMutation) ResetCreatedAt() {
 	m.created_at = nil
 }
 
 // SetUserID sets the "user" edge to the User entity by id.
-func (m *MovieListShareMutation) SetUserID(id int) {
+func (m *MovieCollectionShareMutation) SetUserID(id int) {
 	m.user = &id
 }
 
 // ClearUser clears the "user" edge to the User entity.
-func (m *MovieListShareMutation) ClearUser() {
+func (m *MovieCollectionShareMutation) ClearUser() {
 	m.cleareduser = true
 }
 
 // UserCleared reports if the "user" edge to the User entity was cleared.
-func (m *MovieListShareMutation) UserCleared() bool {
+func (m *MovieCollectionShareMutation) UserCleared() bool {
 	return m.cleareduser
 }
 
 // UserID returns the "user" edge ID in the mutation.
-func (m *MovieListShareMutation) UserID() (id int, exists bool) {
+func (m *MovieCollectionShareMutation) UserID() (id int, exists bool) {
 	if m.user != nil {
 		return *m.user, true
 	}
@@ -6553,7 +6553,7 @@ func (m *MovieListShareMutation) UserID() (id int, exists bool) {
 // UserIDs returns the "user" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // UserID instead. It exists only for internal usage by the builders.
-func (m *MovieListShareMutation) UserIDs() (ids []int) {
+func (m *MovieCollectionShareMutation) UserIDs() (ids []int) {
 	if id := m.user; id != nil {
 		ids = append(ids, *id)
 	}
@@ -6561,59 +6561,59 @@ func (m *MovieListShareMutation) UserIDs() (ids []int) {
 }
 
 // ResetUser resets all changes to the "user" edge.
-func (m *MovieListShareMutation) ResetUser() {
+func (m *MovieCollectionShareMutation) ResetUser() {
 	m.user = nil
 	m.cleareduser = false
 }
 
-// SetMovieListID sets the "movie_list" edge to the MovieList entity by id.
-func (m *MovieListShareMutation) SetMovieListID(id int) {
-	m.movie_list = &id
+// SetMovieCollectionID sets the "movie_collection" edge to the MovieCollection entity by id.
+func (m *MovieCollectionShareMutation) SetMovieCollectionID(id int) {
+	m.movie_collection = &id
 }
 
-// ClearMovieList clears the "movie_list" edge to the MovieList entity.
-func (m *MovieListShareMutation) ClearMovieList() {
-	m.clearedmovie_list = true
+// ClearMovieCollection clears the "movie_collection" edge to the MovieCollection entity.
+func (m *MovieCollectionShareMutation) ClearMovieCollection() {
+	m.clearedmovie_collection = true
 }
 
-// MovieListCleared reports if the "movie_list" edge to the MovieList entity was cleared.
-func (m *MovieListShareMutation) MovieListCleared() bool {
-	return m.clearedmovie_list
+// MovieCollectionCleared reports if the "movie_collection" edge to the MovieCollection entity was cleared.
+func (m *MovieCollectionShareMutation) MovieCollectionCleared() bool {
+	return m.clearedmovie_collection
 }
 
-// MovieListID returns the "movie_list" edge ID in the mutation.
-func (m *MovieListShareMutation) MovieListID() (id int, exists bool) {
-	if m.movie_list != nil {
-		return *m.movie_list, true
+// MovieCollectionID returns the "movie_collection" edge ID in the mutation.
+func (m *MovieCollectionShareMutation) MovieCollectionID() (id int, exists bool) {
+	if m.movie_collection != nil {
+		return *m.movie_collection, true
 	}
 	return
 }
 
-// MovieListIDs returns the "movie_list" edge IDs in the mutation.
+// MovieCollectionIDs returns the "movie_collection" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// MovieListID instead. It exists only for internal usage by the builders.
-func (m *MovieListShareMutation) MovieListIDs() (ids []int) {
-	if id := m.movie_list; id != nil {
+// MovieCollectionID instead. It exists only for internal usage by the builders.
+func (m *MovieCollectionShareMutation) MovieCollectionIDs() (ids []int) {
+	if id := m.movie_collection; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetMovieList resets all changes to the "movie_list" edge.
-func (m *MovieListShareMutation) ResetMovieList() {
-	m.movie_list = nil
-	m.clearedmovie_list = false
+// ResetMovieCollection resets all changes to the "movie_collection" edge.
+func (m *MovieCollectionShareMutation) ResetMovieCollection() {
+	m.movie_collection = nil
+	m.clearedmovie_collection = false
 }
 
-// Where appends a list predicates to the MovieListShareMutation builder.
-func (m *MovieListShareMutation) Where(ps ...predicate.MovieListShare) {
+// Where appends a list predicates to the MovieCollectionShareMutation builder.
+func (m *MovieCollectionShareMutation) Where(ps ...predicate.MovieCollectionShare) {
 	m.predicates = append(m.predicates, ps...)
 }
 
-// WhereP appends storage-level predicates to the MovieListShareMutation builder. Using this method,
+// WhereP appends storage-level predicates to the MovieCollectionShareMutation builder. Using this method,
 // users can use type-assertion to append predicates that do not depend on any generated package.
-func (m *MovieListShareMutation) WhereP(ps ...func(*sql.Selector)) {
-	p := make([]predicate.MovieListShare, len(ps))
+func (m *MovieCollectionShareMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.MovieCollectionShare, len(ps))
 	for i := range ps {
 		p[i] = ps[i]
 	}
@@ -6621,30 +6621,30 @@ func (m *MovieListShareMutation) WhereP(ps ...func(*sql.Selector)) {
 }
 
 // Op returns the operation name.
-func (m *MovieListShareMutation) Op() Op {
+func (m *MovieCollectionShareMutation) Op() Op {
 	return m.op
 }
 
 // SetOp allows setting the mutation operation.
-func (m *MovieListShareMutation) SetOp(op Op) {
+func (m *MovieCollectionShareMutation) SetOp(op Op) {
 	m.op = op
 }
 
-// Type returns the node type of this mutation (MovieListShare).
-func (m *MovieListShareMutation) Type() string {
+// Type returns the node type of this mutation (MovieCollectionShare).
+func (m *MovieCollectionShareMutation) Type() string {
 	return m.typ
 }
 
 // Fields returns all fields that were changed during this mutation. Note that in
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
-func (m *MovieListShareMutation) Fields() []string {
+func (m *MovieCollectionShareMutation) Fields() []string {
 	fields := make([]string, 0, 2)
 	if m.can_edit != nil {
-		fields = append(fields, movielistshare.FieldCanEdit)
+		fields = append(fields, moviecollectionshare.FieldCanEdit)
 	}
 	if m.created_at != nil {
-		fields = append(fields, movielistshare.FieldCreatedAt)
+		fields = append(fields, moviecollectionshare.FieldCreatedAt)
 	}
 	return fields
 }
@@ -6652,11 +6652,11 @@ func (m *MovieListShareMutation) Fields() []string {
 // Field returns the value of a field with the given name. The second boolean
 // return value indicates that this field was not set, or was not defined in the
 // schema.
-func (m *MovieListShareMutation) Field(name string) (ent.Value, bool) {
+func (m *MovieCollectionShareMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case movielistshare.FieldCanEdit:
+	case moviecollectionshare.FieldCanEdit:
 		return m.CanEdit()
-	case movielistshare.FieldCreatedAt:
+	case moviecollectionshare.FieldCreatedAt:
 		return m.CreatedAt()
 	}
 	return nil, false
@@ -6665,29 +6665,29 @@ func (m *MovieListShareMutation) Field(name string) (ent.Value, bool) {
 // OldField returns the old value of the field from the database. An error is
 // returned if the mutation operation is not UpdateOne, or the query to the
 // database failed.
-func (m *MovieListShareMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+func (m *MovieCollectionShareMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case movielistshare.FieldCanEdit:
+	case moviecollectionshare.FieldCanEdit:
 		return m.OldCanEdit(ctx)
-	case movielistshare.FieldCreatedAt:
+	case moviecollectionshare.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	}
-	return nil, fmt.Errorf("unknown MovieListShare field %s", name)
+	return nil, fmt.Errorf("unknown MovieCollectionShare field %s", name)
 }
 
 // SetField sets the value of a field with the given name. It returns an error if
 // the field is not defined in the schema, or if the type mismatched the field
 // type.
-func (m *MovieListShareMutation) SetField(name string, value ent.Value) error {
+func (m *MovieCollectionShareMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case movielistshare.FieldCanEdit:
+	case moviecollectionshare.FieldCanEdit:
 		v, ok := value.(bool)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCanEdit(v)
 		return nil
-	case movielistshare.FieldCreatedAt:
+	case moviecollectionshare.FieldCreatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
@@ -6695,86 +6695,86 @@ func (m *MovieListShareMutation) SetField(name string, value ent.Value) error {
 		m.SetCreatedAt(v)
 		return nil
 	}
-	return fmt.Errorf("unknown MovieListShare field %s", name)
+	return fmt.Errorf("unknown MovieCollectionShare field %s", name)
 }
 
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
-func (m *MovieListShareMutation) AddedFields() []string {
+func (m *MovieCollectionShareMutation) AddedFields() []string {
 	return nil
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
-func (m *MovieListShareMutation) AddedField(name string) (ent.Value, bool) {
+func (m *MovieCollectionShareMutation) AddedField(name string) (ent.Value, bool) {
 	return nil, false
 }
 
 // AddField adds the value to the field with the given name. It returns an error if
 // the field is not defined in the schema, or if the type mismatched the field
 // type.
-func (m *MovieListShareMutation) AddField(name string, value ent.Value) error {
+func (m *MovieCollectionShareMutation) AddField(name string, value ent.Value) error {
 	switch name {
 	}
-	return fmt.Errorf("unknown MovieListShare numeric field %s", name)
+	return fmt.Errorf("unknown MovieCollectionShare numeric field %s", name)
 }
 
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
-func (m *MovieListShareMutation) ClearedFields() []string {
+func (m *MovieCollectionShareMutation) ClearedFields() []string {
 	return nil
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
 // cleared in this mutation.
-func (m *MovieListShareMutation) FieldCleared(name string) bool {
+func (m *MovieCollectionShareMutation) FieldCleared(name string) bool {
 	_, ok := m.clearedFields[name]
 	return ok
 }
 
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
-func (m *MovieListShareMutation) ClearField(name string) error {
-	return fmt.Errorf("unknown MovieListShare nullable field %s", name)
+func (m *MovieCollectionShareMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown MovieCollectionShare nullable field %s", name)
 }
 
 // ResetField resets all changes in the mutation for the field with the given name.
 // It returns an error if the field is not defined in the schema.
-func (m *MovieListShareMutation) ResetField(name string) error {
+func (m *MovieCollectionShareMutation) ResetField(name string) error {
 	switch name {
-	case movielistshare.FieldCanEdit:
+	case moviecollectionshare.FieldCanEdit:
 		m.ResetCanEdit()
 		return nil
-	case movielistshare.FieldCreatedAt:
+	case moviecollectionshare.FieldCreatedAt:
 		m.ResetCreatedAt()
 		return nil
 	}
-	return fmt.Errorf("unknown MovieListShare field %s", name)
+	return fmt.Errorf("unknown MovieCollectionShare field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
-func (m *MovieListShareMutation) AddedEdges() []string {
+func (m *MovieCollectionShareMutation) AddedEdges() []string {
 	edges := make([]string, 0, 2)
 	if m.user != nil {
-		edges = append(edges, movielistshare.EdgeUser)
+		edges = append(edges, moviecollectionshare.EdgeUser)
 	}
-	if m.movie_list != nil {
-		edges = append(edges, movielistshare.EdgeMovieList)
+	if m.movie_collection != nil {
+		edges = append(edges, moviecollectionshare.EdgeMovieCollection)
 	}
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
-func (m *MovieListShareMutation) AddedIDs(name string) []ent.Value {
+func (m *MovieCollectionShareMutation) AddedIDs(name string) []ent.Value {
 	switch name {
-	case movielistshare.EdgeUser:
+	case moviecollectionshare.EdgeUser:
 		if id := m.user; id != nil {
 			return []ent.Value{*id}
 		}
-	case movielistshare.EdgeMovieList:
-		if id := m.movie_list; id != nil {
+	case moviecollectionshare.EdgeMovieCollection:
+		if id := m.movie_collection; id != nil {
 			return []ent.Value{*id}
 		}
 	}
@@ -6782,108 +6782,108 @@ func (m *MovieListShareMutation) AddedIDs(name string) []ent.Value {
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
-func (m *MovieListShareMutation) RemovedEdges() []string {
+func (m *MovieCollectionShareMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 2)
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
-func (m *MovieListShareMutation) RemovedIDs(name string) []ent.Value {
+func (m *MovieCollectionShareMutation) RemovedIDs(name string) []ent.Value {
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
-func (m *MovieListShareMutation) ClearedEdges() []string {
+func (m *MovieCollectionShareMutation) ClearedEdges() []string {
 	edges := make([]string, 0, 2)
 	if m.cleareduser {
-		edges = append(edges, movielistshare.EdgeUser)
+		edges = append(edges, moviecollectionshare.EdgeUser)
 	}
-	if m.clearedmovie_list {
-		edges = append(edges, movielistshare.EdgeMovieList)
+	if m.clearedmovie_collection {
+		edges = append(edges, moviecollectionshare.EdgeMovieCollection)
 	}
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
-func (m *MovieListShareMutation) EdgeCleared(name string) bool {
+func (m *MovieCollectionShareMutation) EdgeCleared(name string) bool {
 	switch name {
-	case movielistshare.EdgeUser:
+	case moviecollectionshare.EdgeUser:
 		return m.cleareduser
-	case movielistshare.EdgeMovieList:
-		return m.clearedmovie_list
+	case moviecollectionshare.EdgeMovieCollection:
+		return m.clearedmovie_collection
 	}
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
-func (m *MovieListShareMutation) ClearEdge(name string) error {
+func (m *MovieCollectionShareMutation) ClearEdge(name string) error {
 	switch name {
-	case movielistshare.EdgeUser:
+	case moviecollectionshare.EdgeUser:
 		m.ClearUser()
 		return nil
-	case movielistshare.EdgeMovieList:
-		m.ClearMovieList()
+	case moviecollectionshare.EdgeMovieCollection:
+		m.ClearMovieCollection()
 		return nil
 	}
-	return fmt.Errorf("unknown MovieListShare unique edge %s", name)
+	return fmt.Errorf("unknown MovieCollectionShare unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
-func (m *MovieListShareMutation) ResetEdge(name string) error {
+func (m *MovieCollectionShareMutation) ResetEdge(name string) error {
 	switch name {
-	case movielistshare.EdgeUser:
+	case moviecollectionshare.EdgeUser:
 		m.ResetUser()
 		return nil
-	case movielistshare.EdgeMovieList:
-		m.ResetMovieList()
+	case moviecollectionshare.EdgeMovieCollection:
+		m.ResetMovieCollection()
 		return nil
 	}
-	return fmt.Errorf("unknown MovieListShare edge %s", name)
+	return fmt.Errorf("unknown MovieCollectionShare edge %s", name)
 }
 
 // UserMutation represents an operation that mutates the User nodes in the graph.
 type UserMutation struct {
 	config
-	op                         Op
-	typ                        string
-	id                         *int
-	display_name               *string
-	name_changes               *int8
-	addname_changes            *int8
-	email                      *string
-	verified                   *bool
-	locked                     *bool
-	last_login                 *time.Time
-	created_at                 *time.Time
-	clearedFields              map[string]struct{}
-	amazon_shares              map[int]struct{}
-	removedamazon_shares       map[int]struct{}
-	clearedamazon_shares       bool
-	amazon_lists               map[int]struct{}
-	removedamazon_lists        map[int]struct{}
-	clearedamazon_lists        bool
-	drinks                     map[int]struct{}
-	removeddrinks              map[int]struct{}
-	cleareddrinks              bool
-	grocery_lists              map[int]struct{}
-	removedgrocery_lists       map[int]struct{}
-	clearedgrocery_lists       bool
-	grocery_list_shares        map[int]struct{}
-	removedgrocery_list_shares map[int]struct{}
-	clearedgrocery_list_shares bool
-	movie_lists                map[int]struct{}
-	removedmovie_lists         map[int]struct{}
-	clearedmovie_lists         bool
-	movie_list_shares          map[int]struct{}
-	removedmovie_list_shares   map[int]struct{}
-	clearedmovie_list_shares   bool
-	done                       bool
-	oldValue                   func(context.Context) (*User, error)
-	predicates                 []predicate.User
+	op                             Op
+	typ                            string
+	id                             *int
+	display_name                   *string
+	name_changes                   *int8
+	addname_changes                *int8
+	email                          *string
+	verified                       *bool
+	locked                         *bool
+	last_login                     *time.Time
+	created_at                     *time.Time
+	clearedFields                  map[string]struct{}
+	amazon_shares                  map[int]struct{}
+	removedamazon_shares           map[int]struct{}
+	clearedamazon_shares           bool
+	amazon_lists                   map[int]struct{}
+	removedamazon_lists            map[int]struct{}
+	clearedamazon_lists            bool
+	drinks                         map[int]struct{}
+	removeddrinks                  map[int]struct{}
+	cleareddrinks                  bool
+	grocery_lists                  map[int]struct{}
+	removedgrocery_lists           map[int]struct{}
+	clearedgrocery_lists           bool
+	grocery_list_shares            map[int]struct{}
+	removedgrocery_list_shares     map[int]struct{}
+	clearedgrocery_list_shares     bool
+	movie_collections              map[int]struct{}
+	removedmovie_collections       map[int]struct{}
+	clearedmovie_collections       bool
+	movie_collection_shares        map[int]struct{}
+	removedmovie_collection_shares map[int]struct{}
+	clearedmovie_collection_shares bool
+	done                           bool
+	oldValue                       func(context.Context) (*User, error)
+	predicates                     []predicate.User
 }
 
 var _ ent.Mutation = (*UserMutation)(nil)
@@ -7526,112 +7526,112 @@ func (m *UserMutation) ResetGroceryListShares() {
 	m.removedgrocery_list_shares = nil
 }
 
-// AddMovieListIDs adds the "movie_lists" edge to the MovieList entity by ids.
-func (m *UserMutation) AddMovieListIDs(ids ...int) {
-	if m.movie_lists == nil {
-		m.movie_lists = make(map[int]struct{})
+// AddMovieCollectionIDs adds the "movie_collections" edge to the MovieCollection entity by ids.
+func (m *UserMutation) AddMovieCollectionIDs(ids ...int) {
+	if m.movie_collections == nil {
+		m.movie_collections = make(map[int]struct{})
 	}
 	for i := range ids {
-		m.movie_lists[ids[i]] = struct{}{}
+		m.movie_collections[ids[i]] = struct{}{}
 	}
 }
 
-// ClearMovieLists clears the "movie_lists" edge to the MovieList entity.
-func (m *UserMutation) ClearMovieLists() {
-	m.clearedmovie_lists = true
+// ClearMovieCollections clears the "movie_collections" edge to the MovieCollection entity.
+func (m *UserMutation) ClearMovieCollections() {
+	m.clearedmovie_collections = true
 }
 
-// MovieListsCleared reports if the "movie_lists" edge to the MovieList entity was cleared.
-func (m *UserMutation) MovieListsCleared() bool {
-	return m.clearedmovie_lists
+// MovieCollectionsCleared reports if the "movie_collections" edge to the MovieCollection entity was cleared.
+func (m *UserMutation) MovieCollectionsCleared() bool {
+	return m.clearedmovie_collections
 }
 
-// RemoveMovieListIDs removes the "movie_lists" edge to the MovieList entity by IDs.
-func (m *UserMutation) RemoveMovieListIDs(ids ...int) {
-	if m.removedmovie_lists == nil {
-		m.removedmovie_lists = make(map[int]struct{})
+// RemoveMovieCollectionIDs removes the "movie_collections" edge to the MovieCollection entity by IDs.
+func (m *UserMutation) RemoveMovieCollectionIDs(ids ...int) {
+	if m.removedmovie_collections == nil {
+		m.removedmovie_collections = make(map[int]struct{})
 	}
 	for i := range ids {
-		delete(m.movie_lists, ids[i])
-		m.removedmovie_lists[ids[i]] = struct{}{}
+		delete(m.movie_collections, ids[i])
+		m.removedmovie_collections[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedMovieLists returns the removed IDs of the "movie_lists" edge to the MovieList entity.
-func (m *UserMutation) RemovedMovieListsIDs() (ids []int) {
-	for id := range m.removedmovie_lists {
+// RemovedMovieCollections returns the removed IDs of the "movie_collections" edge to the MovieCollection entity.
+func (m *UserMutation) RemovedMovieCollectionsIDs() (ids []int) {
+	for id := range m.removedmovie_collections {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// MovieListsIDs returns the "movie_lists" edge IDs in the mutation.
-func (m *UserMutation) MovieListsIDs() (ids []int) {
-	for id := range m.movie_lists {
+// MovieCollectionsIDs returns the "movie_collections" edge IDs in the mutation.
+func (m *UserMutation) MovieCollectionsIDs() (ids []int) {
+	for id := range m.movie_collections {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetMovieLists resets all changes to the "movie_lists" edge.
-func (m *UserMutation) ResetMovieLists() {
-	m.movie_lists = nil
-	m.clearedmovie_lists = false
-	m.removedmovie_lists = nil
+// ResetMovieCollections resets all changes to the "movie_collections" edge.
+func (m *UserMutation) ResetMovieCollections() {
+	m.movie_collections = nil
+	m.clearedmovie_collections = false
+	m.removedmovie_collections = nil
 }
 
-// AddMovieListShareIDs adds the "movie_list_shares" edge to the MovieListShare entity by ids.
-func (m *UserMutation) AddMovieListShareIDs(ids ...int) {
-	if m.movie_list_shares == nil {
-		m.movie_list_shares = make(map[int]struct{})
+// AddMovieCollectionShareIDs adds the "movie_collection_shares" edge to the MovieCollectionShare entity by ids.
+func (m *UserMutation) AddMovieCollectionShareIDs(ids ...int) {
+	if m.movie_collection_shares == nil {
+		m.movie_collection_shares = make(map[int]struct{})
 	}
 	for i := range ids {
-		m.movie_list_shares[ids[i]] = struct{}{}
+		m.movie_collection_shares[ids[i]] = struct{}{}
 	}
 }
 
-// ClearMovieListShares clears the "movie_list_shares" edge to the MovieListShare entity.
-func (m *UserMutation) ClearMovieListShares() {
-	m.clearedmovie_list_shares = true
+// ClearMovieCollectionShares clears the "movie_collection_shares" edge to the MovieCollectionShare entity.
+func (m *UserMutation) ClearMovieCollectionShares() {
+	m.clearedmovie_collection_shares = true
 }
 
-// MovieListSharesCleared reports if the "movie_list_shares" edge to the MovieListShare entity was cleared.
-func (m *UserMutation) MovieListSharesCleared() bool {
-	return m.clearedmovie_list_shares
+// MovieCollectionSharesCleared reports if the "movie_collection_shares" edge to the MovieCollectionShare entity was cleared.
+func (m *UserMutation) MovieCollectionSharesCleared() bool {
+	return m.clearedmovie_collection_shares
 }
 
-// RemoveMovieListShareIDs removes the "movie_list_shares" edge to the MovieListShare entity by IDs.
-func (m *UserMutation) RemoveMovieListShareIDs(ids ...int) {
-	if m.removedmovie_list_shares == nil {
-		m.removedmovie_list_shares = make(map[int]struct{})
+// RemoveMovieCollectionShareIDs removes the "movie_collection_shares" edge to the MovieCollectionShare entity by IDs.
+func (m *UserMutation) RemoveMovieCollectionShareIDs(ids ...int) {
+	if m.removedmovie_collection_shares == nil {
+		m.removedmovie_collection_shares = make(map[int]struct{})
 	}
 	for i := range ids {
-		delete(m.movie_list_shares, ids[i])
-		m.removedmovie_list_shares[ids[i]] = struct{}{}
+		delete(m.movie_collection_shares, ids[i])
+		m.removedmovie_collection_shares[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedMovieListShares returns the removed IDs of the "movie_list_shares" edge to the MovieListShare entity.
-func (m *UserMutation) RemovedMovieListSharesIDs() (ids []int) {
-	for id := range m.removedmovie_list_shares {
+// RemovedMovieCollectionShares returns the removed IDs of the "movie_collection_shares" edge to the MovieCollectionShare entity.
+func (m *UserMutation) RemovedMovieCollectionSharesIDs() (ids []int) {
+	for id := range m.removedmovie_collection_shares {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// MovieListSharesIDs returns the "movie_list_shares" edge IDs in the mutation.
-func (m *UserMutation) MovieListSharesIDs() (ids []int) {
-	for id := range m.movie_list_shares {
+// MovieCollectionSharesIDs returns the "movie_collection_shares" edge IDs in the mutation.
+func (m *UserMutation) MovieCollectionSharesIDs() (ids []int) {
+	for id := range m.movie_collection_shares {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetMovieListShares resets all changes to the "movie_list_shares" edge.
-func (m *UserMutation) ResetMovieListShares() {
-	m.movie_list_shares = nil
-	m.clearedmovie_list_shares = false
-	m.removedmovie_list_shares = nil
+// ResetMovieCollectionShares resets all changes to the "movie_collection_shares" edge.
+func (m *UserMutation) ResetMovieCollectionShares() {
+	m.movie_collection_shares = nil
+	m.clearedmovie_collection_shares = false
+	m.removedmovie_collection_shares = nil
 }
 
 // Where appends a list predicates to the UserMutation builder.
@@ -7900,11 +7900,11 @@ func (m *UserMutation) AddedEdges() []string {
 	if m.grocery_list_shares != nil {
 		edges = append(edges, user.EdgeGroceryListShares)
 	}
-	if m.movie_lists != nil {
-		edges = append(edges, user.EdgeMovieLists)
+	if m.movie_collections != nil {
+		edges = append(edges, user.EdgeMovieCollections)
 	}
-	if m.movie_list_shares != nil {
-		edges = append(edges, user.EdgeMovieListShares)
+	if m.movie_collection_shares != nil {
+		edges = append(edges, user.EdgeMovieCollectionShares)
 	}
 	return edges
 }
@@ -7943,15 +7943,15 @@ func (m *UserMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case user.EdgeMovieLists:
-		ids := make([]ent.Value, 0, len(m.movie_lists))
-		for id := range m.movie_lists {
+	case user.EdgeMovieCollections:
+		ids := make([]ent.Value, 0, len(m.movie_collections))
+		for id := range m.movie_collections {
 			ids = append(ids, id)
 		}
 		return ids
-	case user.EdgeMovieListShares:
-		ids := make([]ent.Value, 0, len(m.movie_list_shares))
-		for id := range m.movie_list_shares {
+	case user.EdgeMovieCollectionShares:
+		ids := make([]ent.Value, 0, len(m.movie_collection_shares))
+		for id := range m.movie_collection_shares {
 			ids = append(ids, id)
 		}
 		return ids
@@ -7977,11 +7977,11 @@ func (m *UserMutation) RemovedEdges() []string {
 	if m.removedgrocery_list_shares != nil {
 		edges = append(edges, user.EdgeGroceryListShares)
 	}
-	if m.removedmovie_lists != nil {
-		edges = append(edges, user.EdgeMovieLists)
+	if m.removedmovie_collections != nil {
+		edges = append(edges, user.EdgeMovieCollections)
 	}
-	if m.removedmovie_list_shares != nil {
-		edges = append(edges, user.EdgeMovieListShares)
+	if m.removedmovie_collection_shares != nil {
+		edges = append(edges, user.EdgeMovieCollectionShares)
 	}
 	return edges
 }
@@ -8020,15 +8020,15 @@ func (m *UserMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case user.EdgeMovieLists:
-		ids := make([]ent.Value, 0, len(m.removedmovie_lists))
-		for id := range m.removedmovie_lists {
+	case user.EdgeMovieCollections:
+		ids := make([]ent.Value, 0, len(m.removedmovie_collections))
+		for id := range m.removedmovie_collections {
 			ids = append(ids, id)
 		}
 		return ids
-	case user.EdgeMovieListShares:
-		ids := make([]ent.Value, 0, len(m.removedmovie_list_shares))
-		for id := range m.removedmovie_list_shares {
+	case user.EdgeMovieCollectionShares:
+		ids := make([]ent.Value, 0, len(m.removedmovie_collection_shares))
+		for id := range m.removedmovie_collection_shares {
 			ids = append(ids, id)
 		}
 		return ids
@@ -8054,11 +8054,11 @@ func (m *UserMutation) ClearedEdges() []string {
 	if m.clearedgrocery_list_shares {
 		edges = append(edges, user.EdgeGroceryListShares)
 	}
-	if m.clearedmovie_lists {
-		edges = append(edges, user.EdgeMovieLists)
+	if m.clearedmovie_collections {
+		edges = append(edges, user.EdgeMovieCollections)
 	}
-	if m.clearedmovie_list_shares {
-		edges = append(edges, user.EdgeMovieListShares)
+	if m.clearedmovie_collection_shares {
+		edges = append(edges, user.EdgeMovieCollectionShares)
 	}
 	return edges
 }
@@ -8077,10 +8077,10 @@ func (m *UserMutation) EdgeCleared(name string) bool {
 		return m.clearedgrocery_lists
 	case user.EdgeGroceryListShares:
 		return m.clearedgrocery_list_shares
-	case user.EdgeMovieLists:
-		return m.clearedmovie_lists
-	case user.EdgeMovieListShares:
-		return m.clearedmovie_list_shares
+	case user.EdgeMovieCollections:
+		return m.clearedmovie_collections
+	case user.EdgeMovieCollectionShares:
+		return m.clearedmovie_collection_shares
 	}
 	return false
 }
@@ -8112,11 +8112,11 @@ func (m *UserMutation) ResetEdge(name string) error {
 	case user.EdgeGroceryListShares:
 		m.ResetGroceryListShares()
 		return nil
-	case user.EdgeMovieLists:
-		m.ResetMovieLists()
+	case user.EdgeMovieCollections:
+		m.ResetMovieCollections()
 		return nil
-	case user.EdgeMovieListShares:
-		m.ResetMovieListShares()
+	case user.EdgeMovieCollectionShares:
+		m.ResetMovieCollectionShares()
 		return nil
 	}
 	return fmt.Errorf("unknown User edge %s", name)

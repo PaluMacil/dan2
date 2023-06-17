@@ -9,13 +9,13 @@ import (
 	"time"
 )
 
-// MovieListShare holds the schema definition for the MovieListShare entity.
-type MovieListShare struct {
+// MovieCollectionShare holds the schema definition for the MovieCollectionShare entity.
+type MovieCollectionShare struct {
 	ent.Schema
 }
 
-// Fields of the MovieListShare.
-func (MovieListShare) Fields() []ent.Field {
+// Fields of the MovieCollectionShare.
+func (MovieCollectionShare) Fields() []ent.Field {
 	return []ent.Field{
 		field.Bool("can_edit").
 			Default(false).
@@ -30,22 +30,23 @@ func (MovieListShare) Fields() []ent.Field {
 	}
 }
 
-// Edges of the MovieListShare.
-func (MovieListShare) Edges() []ent.Edge {
+// Edges of the MovieCollectionShare.
+func (MovieCollectionShare) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("user", User.Type).
-			Ref("movie_list_shares").
+			Ref("movie_collection_shares").
 			Unique().
 			Annotations(entproto.Field(4)),
-		edge.From("movie_list", MovieList.Type).
-			Ref("movie_list_shares").
+		edge.From("movie_collection", MovieCollection.Type).
+			Ref("movie_collection_shares").
 			Unique().
 			Annotations(entproto.Field(5)),
 	}
 }
 
-func (MovieListShare) Annotations() []schema.Annotation {
+func (MovieCollectionShare) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		entproto.Message(),
+		entproto.Service(),
 	}
 }

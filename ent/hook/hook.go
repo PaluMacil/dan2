@@ -105,28 +105,28 @@ func (f MovieFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.MovieMutation", m)
 }
 
-// The MovieListFunc type is an adapter to allow the use of ordinary
-// function as MovieList mutator.
-type MovieListFunc func(context.Context, *ent.MovieListMutation) (ent.Value, error)
+// The MovieCollectionFunc type is an adapter to allow the use of ordinary
+// function as MovieCollection mutator.
+type MovieCollectionFunc func(context.Context, *ent.MovieCollectionMutation) (ent.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f MovieListFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.MovieListMutation); ok {
+func (f MovieCollectionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.MovieCollectionMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.MovieListMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.MovieCollectionMutation", m)
 }
 
-// The MovieListShareFunc type is an adapter to allow the use of ordinary
-// function as MovieListShare mutator.
-type MovieListShareFunc func(context.Context, *ent.MovieListShareMutation) (ent.Value, error)
+// The MovieCollectionShareFunc type is an adapter to allow the use of ordinary
+// function as MovieCollectionShare mutator.
+type MovieCollectionShareFunc func(context.Context, *ent.MovieCollectionShareMutation) (ent.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f MovieListShareFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.MovieListShareMutation); ok {
+func (f MovieCollectionShareFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.MovieCollectionShareMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.MovieListShareMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.MovieCollectionShareMutation", m)
 }
 
 // The UserFunc type is an adapter to allow the use of ordinary

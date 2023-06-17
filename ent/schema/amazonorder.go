@@ -90,5 +90,6 @@ func (AmazonOrder) Edges() []ent.Edge {
 func (AmazonOrder) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		entproto.Message(),
+		entproto.Service(),
 	}
 }

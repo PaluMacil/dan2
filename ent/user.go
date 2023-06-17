@@ -49,10 +49,10 @@ type UserEdges struct {
 	GroceryLists []*GroceryList `json:"grocery_lists,omitempty"`
 	// GroceryListShares holds the value of the grocery_list_shares edge.
 	GroceryListShares []*GroceryListShare `json:"grocery_list_shares,omitempty"`
-	// MovieLists holds the value of the movie_lists edge.
-	MovieLists []*MovieList `json:"movie_lists,omitempty"`
-	// MovieListShares holds the value of the movie_list_shares edge.
-	MovieListShares []*MovieListShare `json:"movie_list_shares,omitempty"`
+	// MovieCollections holds the value of the movie_collections edge.
+	MovieCollections []*MovieCollection `json:"movie_collections,omitempty"`
+	// MovieCollectionShares holds the value of the movie_collection_shares edge.
+	MovieCollectionShares []*MovieCollectionShare `json:"movie_collection_shares,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [7]bool
@@ -103,22 +103,22 @@ func (e UserEdges) GroceryListSharesOrErr() ([]*GroceryListShare, error) {
 	return nil, &NotLoadedError{edge: "grocery_list_shares"}
 }
 
-// MovieListsOrErr returns the MovieLists value or an error if the edge
+// MovieCollectionsOrErr returns the MovieCollections value or an error if the edge
 // was not loaded in eager-loading.
-func (e UserEdges) MovieListsOrErr() ([]*MovieList, error) {
+func (e UserEdges) MovieCollectionsOrErr() ([]*MovieCollection, error) {
 	if e.loadedTypes[5] {
-		return e.MovieLists, nil
+		return e.MovieCollections, nil
 	}
-	return nil, &NotLoadedError{edge: "movie_lists"}
+	return nil, &NotLoadedError{edge: "movie_collections"}
 }
 
-// MovieListSharesOrErr returns the MovieListShares value or an error if the edge
+// MovieCollectionSharesOrErr returns the MovieCollectionShares value or an error if the edge
 // was not loaded in eager-loading.
-func (e UserEdges) MovieListSharesOrErr() ([]*MovieListShare, error) {
+func (e UserEdges) MovieCollectionSharesOrErr() ([]*MovieCollectionShare, error) {
 	if e.loadedTypes[6] {
-		return e.MovieListShares, nil
+		return e.MovieCollectionShares, nil
 	}
-	return nil, &NotLoadedError{edge: "movie_list_shares"}
+	return nil, &NotLoadedError{edge: "movie_collection_shares"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -236,14 +236,14 @@ func (u *User) QueryGroceryListShares() *GroceryListShareQuery {
 	return NewUserClient(u.config).QueryGroceryListShares(u)
 }
 
-// QueryMovieLists queries the "movie_lists" edge of the User entity.
-func (u *User) QueryMovieLists() *MovieListQuery {
-	return NewUserClient(u.config).QueryMovieLists(u)
+// QueryMovieCollections queries the "movie_collections" edge of the User entity.
+func (u *User) QueryMovieCollections() *MovieCollectionQuery {
+	return NewUserClient(u.config).QueryMovieCollections(u)
 }
 
-// QueryMovieListShares queries the "movie_list_shares" edge of the User entity.
-func (u *User) QueryMovieListShares() *MovieListShareQuery {
-	return NewUserClient(u.config).QueryMovieListShares(u)
+// QueryMovieCollectionShares queries the "movie_collection_shares" edge of the User entity.
+func (u *User) QueryMovieCollectionShares() *MovieCollectionShareQuery {
+	return NewUserClient(u.config).QueryMovieCollectionShares(u)
 }
 
 // Update returns a builder for updating this User.

@@ -3,6 +3,7 @@ package database
 import (
 	"database/sql"
 	"fmt"
+	"github.com/PaluMacil/dan2/config"
 	"github.com/PaluMacil/dan2/ent"
 
 	"entgo.io/ent/dialect"
@@ -10,9 +11,9 @@ import (
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
-// Open new connection
-func Open(databaseUrl string) (*ent.Client, error) {
-	db, err := sql.Open("pgx", databaseUrl)
+// NewEntClient returns an ent client with an open postgres connection
+func NewEntClient(appEnv config.AppEnv) (*ent.Client, error) {
+	db, err := sql.Open("pgx", appEnv.DBConnectionString)
 	if err != nil {
 		return nil, fmt.Errorf("opening database for pgx: %w", err)
 	}

@@ -30,11 +30,11 @@ type GroceryListShare func(*sql.Selector)
 // Movie is the predicate function for movie builders.
 type Movie func(*sql.Selector)
 
-// MovieList is the predicate function for movielist builders.
-type MovieList func(*sql.Selector)
+// MovieCollection is the predicate function for moviecollection builders.
+type MovieCollection func(*sql.Selector)
 
-// MovieListShare is the predicate function for movielistshare builders.
-type MovieListShare func(*sql.Selector)
+// MovieCollectionShare is the predicate function for moviecollectionshare builders.
+type MovieCollectionShare func(*sql.Selector)
 
 // User is the predicate function for user builders.
 type User func(*sql.Selector)

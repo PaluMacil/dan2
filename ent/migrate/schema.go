@@ -188,7 +188,7 @@ var (
 		{Name: "note", Type: field.TypeString, Default: ""},
 		{Name: "watched", Type: field.TypeBool, Default: false},
 		{Name: "created_at", Type: field.TypeTime},
-		{Name: "movie_list_movies", Type: field.TypeInt, Nullable: true},
+		{Name: "movie_collection_movies", Type: field.TypeInt, Nullable: true},
 	}
 	// MoviesTable holds the schema information for the "movies" table.
 	MoviesTable = &schema.Table{
@@ -197,59 +197,59 @@ var (
 		PrimaryKey: []*schema.Column{MoviesColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "movies_movie_lists_movies",
+				Symbol:     "movies_movie_collections_movies",
 				Columns:    []*schema.Column{MoviesColumns[5]},
-				RefColumns: []*schema.Column{MovieListsColumns[0]},
+				RefColumns: []*schema.Column{MovieCollectionsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
 	}
-	// MovieListsColumns holds the columns for the "movie_lists" table.
-	MovieListsColumns = []*schema.Column{
+	// MovieCollectionsColumns holds the columns for the "movie_collections" table.
+	MovieCollectionsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "name", Type: field.TypeString, Default: "My List"},
 		{Name: "note", Type: field.TypeString, Default: ""},
 		{Name: "show_watched", Type: field.TypeBool, Default: false},
 		{Name: "created_at", Type: field.TypeTime},
-		{Name: "user_movie_lists", Type: field.TypeInt, Nullable: true},
+		{Name: "user_movie_collections", Type: field.TypeInt, Nullable: true},
 	}
-	// MovieListsTable holds the schema information for the "movie_lists" table.
-	MovieListsTable = &schema.Table{
-		Name:       "movie_lists",
-		Columns:    MovieListsColumns,
-		PrimaryKey: []*schema.Column{MovieListsColumns[0]},
+	// MovieCollectionsTable holds the schema information for the "movie_collections" table.
+	MovieCollectionsTable = &schema.Table{
+		Name:       "movie_collections",
+		Columns:    MovieCollectionsColumns,
+		PrimaryKey: []*schema.Column{MovieCollectionsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "movie_lists_users_movie_lists",
-				Columns:    []*schema.Column{MovieListsColumns[5]},
+				Symbol:     "movie_collections_users_movie_collections",
+				Columns:    []*schema.Column{MovieCollectionsColumns[5]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
 	}
-	// MovieListSharesColumns holds the columns for the "movie_list_shares" table.
-	MovieListSharesColumns = []*schema.Column{
+	// MovieCollectionSharesColumns holds the columns for the "movie_collection_shares" table.
+	MovieCollectionSharesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "can_edit", Type: field.TypeBool, Default: false},
 		{Name: "created_at", Type: field.TypeTime},
-		{Name: "movie_list_movie_list_shares", Type: field.TypeInt, Nullable: true},
-		{Name: "user_movie_list_shares", Type: field.TypeInt, Nullable: true},
+		{Name: "movie_collection_movie_collection_shares", Type: field.TypeInt, Nullable: true},
+		{Name: "user_movie_collection_shares", Type: field.TypeInt, Nullable: true},
 	}
-	// MovieListSharesTable holds the schema information for the "movie_list_shares" table.
-	MovieListSharesTable = &schema.Table{
-		Name:       "movie_list_shares",
-		Columns:    MovieListSharesColumns,
-		PrimaryKey: []*schema.Column{MovieListSharesColumns[0]},
+	// MovieCollectionSharesTable holds the schema information for the "movie_collection_shares" table.
+	MovieCollectionSharesTable = &schema.Table{
+		Name:       "movie_collection_shares",
+		Columns:    MovieCollectionSharesColumns,
+		PrimaryKey: []*schema.Column{MovieCollectionSharesColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "movie_list_shares_movie_lists_movie_list_shares",
-				Columns:    []*schema.Column{MovieListSharesColumns[3]},
-				RefColumns: []*schema.Column{MovieListsColumns[0]},
+				Symbol:     "movie_collection_shares_movie_collections_movie_collection_shares",
+				Columns:    []*schema.Column{MovieCollectionSharesColumns[3]},
+				RefColumns: []*schema.Column{MovieCollectionsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "movie_list_shares_users_movie_list_shares",
-				Columns:    []*schema.Column{MovieListSharesColumns[4]},
+				Symbol:     "movie_collection_shares_users_movie_collection_shares",
+				Columns:    []*schema.Column{MovieCollectionSharesColumns[4]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -307,8 +307,8 @@ var (
 		GroceryListItemsTable,
 		GroceryListSharesTable,
 		MoviesTable,
-		MovieListsTable,
-		MovieListSharesTable,
+		MovieCollectionsTable,
+		MovieCollectionSharesTable,
 		UsersTable,
 		UserAmazonListsTable,
 	}
@@ -323,10 +323,10 @@ func init() {
 	GroceryListItemsTable.ForeignKeys[0].RefTable = GroceryListsTable
 	GroceryListSharesTable.ForeignKeys[0].RefTable = GroceryListsTable
 	GroceryListSharesTable.ForeignKeys[1].RefTable = UsersTable
-	MoviesTable.ForeignKeys[0].RefTable = MovieListsTable
-	MovieListsTable.ForeignKeys[0].RefTable = UsersTable
-	MovieListSharesTable.ForeignKeys[0].RefTable = MovieListsTable
-	MovieListSharesTable.ForeignKeys[1].RefTable = UsersTable
+	MoviesTable.ForeignKeys[0].RefTable = MovieCollectionsTable
+	MovieCollectionsTable.ForeignKeys[0].RefTable = UsersTable
+	MovieCollectionSharesTable.ForeignKeys[0].RefTable = MovieCollectionsTable
+	MovieCollectionSharesTable.ForeignKeys[1].RefTable = UsersTable
 	UserAmazonListsTable.ForeignKeys[0].RefTable = UsersTable
 	UserAmazonListsTable.ForeignKeys[1].RefTable = AmazonListsTable
 }

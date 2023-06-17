@@ -68,9 +68,9 @@ func (User) Edges() []ent.Edge {
 			Annotations(entproto.Field(12)),
 		edge.To("grocery_list_shares", GroceryListShare.Type).
 			Annotations(entproto.Field(13)),
-		edge.To("movie_lists", MovieList.Type).
+		edge.To("movie_collections", MovieCollection.Type).
 			Annotations(entproto.Field(14)),
-		edge.To("movie_list_shares", MovieListShare.Type).
+		edge.To("movie_collection_shares", MovieCollectionShare.Type).
 			Annotations(entproto.Field(15)),
 	}
 }
@@ -78,5 +78,6 @@ func (User) Edges() []ent.Edge {
 func (User) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		entproto.Message(),
+		entproto.Service(),
 	}
 }

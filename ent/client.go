@@ -22,8 +22,8 @@ import (
 	"github.com/PaluMacil/dan2/ent/grocerylistitem"
 	"github.com/PaluMacil/dan2/ent/grocerylistshare"
 	"github.com/PaluMacil/dan2/ent/movie"
-	"github.com/PaluMacil/dan2/ent/movielist"
-	"github.com/PaluMacil/dan2/ent/movielistshare"
+	"github.com/PaluMacil/dan2/ent/moviecollection"
+	"github.com/PaluMacil/dan2/ent/moviecollectionshare"
 	"github.com/PaluMacil/dan2/ent/user"
 )
 
@@ -48,10 +48,10 @@ type Client struct {
 	GroceryListShare *GroceryListShareClient
 	// Movie is the client for interacting with the Movie builders.
 	Movie *MovieClient
-	// MovieList is the client for interacting with the MovieList builders.
-	MovieList *MovieListClient
-	// MovieListShare is the client for interacting with the MovieListShare builders.
-	MovieListShare *MovieListShareClient
+	// MovieCollection is the client for interacting with the MovieCollection builders.
+	MovieCollection *MovieCollectionClient
+	// MovieCollectionShare is the client for interacting with the MovieCollectionShare builders.
+	MovieCollectionShare *MovieCollectionShareClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 }
@@ -75,8 +75,8 @@ func (c *Client) init() {
 	c.GroceryListItem = NewGroceryListItemClient(c.config)
 	c.GroceryListShare = NewGroceryListShareClient(c.config)
 	c.Movie = NewMovieClient(c.config)
-	c.MovieList = NewMovieListClient(c.config)
-	c.MovieListShare = NewMovieListShareClient(c.config)
+	c.MovieCollection = NewMovieCollectionClient(c.config)
+	c.MovieCollectionShare = NewMovieCollectionShareClient(c.config)
 	c.User = NewUserClient(c.config)
 }
 
@@ -158,19 +158,19 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:              ctx,
-		config:           cfg,
-		AmazonList:       NewAmazonListClient(cfg),
-		AmazonOrder:      NewAmazonOrderClient(cfg),
-		AmazonShare:      NewAmazonShareClient(cfg),
-		Drink:            NewDrinkClient(cfg),
-		GroceryList:      NewGroceryListClient(cfg),
-		GroceryListItem:  NewGroceryListItemClient(cfg),
-		GroceryListShare: NewGroceryListShareClient(cfg),
-		Movie:            NewMovieClient(cfg),
-		MovieList:        NewMovieListClient(cfg),
-		MovieListShare:   NewMovieListShareClient(cfg),
-		User:             NewUserClient(cfg),
+		ctx:                  ctx,
+		config:               cfg,
+		AmazonList:           NewAmazonListClient(cfg),
+		AmazonOrder:          NewAmazonOrderClient(cfg),
+		AmazonShare:          NewAmazonShareClient(cfg),
+		Drink:                NewDrinkClient(cfg),
+		GroceryList:          NewGroceryListClient(cfg),
+		GroceryListItem:      NewGroceryListItemClient(cfg),
+		GroceryListShare:     NewGroceryListShareClient(cfg),
+		Movie:                NewMovieClient(cfg),
+		MovieCollection:      NewMovieCollectionClient(cfg),
+		MovieCollectionShare: NewMovieCollectionShareClient(cfg),
+		User:                 NewUserClient(cfg),
 	}, nil
 }
 
@@ -188,19 +188,19 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:              ctx,
-		config:           cfg,
-		AmazonList:       NewAmazonListClient(cfg),
-		AmazonOrder:      NewAmazonOrderClient(cfg),
-		AmazonShare:      NewAmazonShareClient(cfg),
-		Drink:            NewDrinkClient(cfg),
-		GroceryList:      NewGroceryListClient(cfg),
-		GroceryListItem:  NewGroceryListItemClient(cfg),
-		GroceryListShare: NewGroceryListShareClient(cfg),
-		Movie:            NewMovieClient(cfg),
-		MovieList:        NewMovieListClient(cfg),
-		MovieListShare:   NewMovieListShareClient(cfg),
-		User:             NewUserClient(cfg),
+		ctx:                  ctx,
+		config:               cfg,
+		AmazonList:           NewAmazonListClient(cfg),
+		AmazonOrder:          NewAmazonOrderClient(cfg),
+		AmazonShare:          NewAmazonShareClient(cfg),
+		Drink:                NewDrinkClient(cfg),
+		GroceryList:          NewGroceryListClient(cfg),
+		GroceryListItem:      NewGroceryListItemClient(cfg),
+		GroceryListShare:     NewGroceryListShareClient(cfg),
+		Movie:                NewMovieClient(cfg),
+		MovieCollection:      NewMovieCollectionClient(cfg),
+		MovieCollectionShare: NewMovieCollectionShareClient(cfg),
+		User:                 NewUserClient(cfg),
 	}, nil
 }
 
@@ -231,8 +231,8 @@ func (c *Client) Close() error {
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.AmazonList, c.AmazonOrder, c.AmazonShare, c.Drink, c.GroceryList,
-		c.GroceryListItem, c.GroceryListShare, c.Movie, c.MovieList, c.MovieListShare,
-		c.User,
+		c.GroceryListItem, c.GroceryListShare, c.Movie, c.MovieCollection,
+		c.MovieCollectionShare, c.User,
 	} {
 		n.Use(hooks...)
 	}
@@ -243,8 +243,8 @@ func (c *Client) Use(hooks ...Hook) {
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.AmazonList, c.AmazonOrder, c.AmazonShare, c.Drink, c.GroceryList,
-		c.GroceryListItem, c.GroceryListShare, c.Movie, c.MovieList, c.MovieListShare,
-		c.User,
+		c.GroceryListItem, c.GroceryListShare, c.Movie, c.MovieCollection,
+		c.MovieCollectionShare, c.User,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -269,10 +269,10 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.GroceryListShare.mutate(ctx, m)
 	case *MovieMutation:
 		return c.Movie.mutate(ctx, m)
-	case *MovieListMutation:
-		return c.MovieList.mutate(ctx, m)
-	case *MovieListShareMutation:
-		return c.MovieListShare.mutate(ctx, m)
+	case *MovieCollectionMutation:
+		return c.MovieCollection.mutate(ctx, m)
+	case *MovieCollectionShareMutation:
+		return c.MovieCollectionShare.mutate(ctx, m)
 	case *UserMutation:
 		return c.User.mutate(ctx, m)
 	default:
@@ -1407,15 +1407,15 @@ func (c *MovieClient) GetX(ctx context.Context, id int) *Movie {
 	return obj
 }
 
-// QueryMovieList queries the movie_list edge of a Movie.
-func (c *MovieClient) QueryMovieList(m *Movie) *MovieListQuery {
-	query := (&MovieListClient{config: c.config}).Query()
+// QueryMovieCollection queries the movie_collection edge of a Movie.
+func (c *MovieClient) QueryMovieCollection(m *Movie) *MovieCollectionQuery {
+	query := (&MovieCollectionClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := m.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(movie.Table, movie.FieldID, id),
-			sqlgraph.To(movielist.Table, movielist.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, movie.MovieListTable, movie.MovieListColumn),
+			sqlgraph.To(moviecollection.Table, moviecollection.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, movie.MovieCollectionTable, movie.MovieCollectionColumn),
 		)
 		fromV = sqlgraph.Neighbors(m.driver.Dialect(), step)
 		return fromV, nil
@@ -1448,92 +1448,92 @@ func (c *MovieClient) mutate(ctx context.Context, m *MovieMutation) (Value, erro
 	}
 }
 
-// MovieListClient is a client for the MovieList schema.
-type MovieListClient struct {
+// MovieCollectionClient is a client for the MovieCollection schema.
+type MovieCollectionClient struct {
 	config
 }
 
-// NewMovieListClient returns a client for the MovieList from the given config.
-func NewMovieListClient(c config) *MovieListClient {
-	return &MovieListClient{config: c}
+// NewMovieCollectionClient returns a client for the MovieCollection from the given config.
+func NewMovieCollectionClient(c config) *MovieCollectionClient {
+	return &MovieCollectionClient{config: c}
 }
 
 // Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `movielist.Hooks(f(g(h())))`.
-func (c *MovieListClient) Use(hooks ...Hook) {
-	c.hooks.MovieList = append(c.hooks.MovieList, hooks...)
+// A call to `Use(f, g, h)` equals to `moviecollection.Hooks(f(g(h())))`.
+func (c *MovieCollectionClient) Use(hooks ...Hook) {
+	c.hooks.MovieCollection = append(c.hooks.MovieCollection, hooks...)
 }
 
 // Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `movielist.Intercept(f(g(h())))`.
-func (c *MovieListClient) Intercept(interceptors ...Interceptor) {
-	c.inters.MovieList = append(c.inters.MovieList, interceptors...)
+// A call to `Intercept(f, g, h)` equals to `moviecollection.Intercept(f(g(h())))`.
+func (c *MovieCollectionClient) Intercept(interceptors ...Interceptor) {
+	c.inters.MovieCollection = append(c.inters.MovieCollection, interceptors...)
 }
 
-// Create returns a builder for creating a MovieList entity.
-func (c *MovieListClient) Create() *MovieListCreate {
-	mutation := newMovieListMutation(c.config, OpCreate)
-	return &MovieListCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Create returns a builder for creating a MovieCollection entity.
+func (c *MovieCollectionClient) Create() *MovieCollectionCreate {
+	mutation := newMovieCollectionMutation(c.config, OpCreate)
+	return &MovieCollectionCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// CreateBulk returns a builder for creating a bulk of MovieList entities.
-func (c *MovieListClient) CreateBulk(builders ...*MovieListCreate) *MovieListCreateBulk {
-	return &MovieListCreateBulk{config: c.config, builders: builders}
+// CreateBulk returns a builder for creating a bulk of MovieCollection entities.
+func (c *MovieCollectionClient) CreateBulk(builders ...*MovieCollectionCreate) *MovieCollectionCreateBulk {
+	return &MovieCollectionCreateBulk{config: c.config, builders: builders}
 }
 
-// Update returns an update builder for MovieList.
-func (c *MovieListClient) Update() *MovieListUpdate {
-	mutation := newMovieListMutation(c.config, OpUpdate)
-	return &MovieListUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Update returns an update builder for MovieCollection.
+func (c *MovieCollectionClient) Update() *MovieCollectionUpdate {
+	mutation := newMovieCollectionMutation(c.config, OpUpdate)
+	return &MovieCollectionUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *MovieListClient) UpdateOne(ml *MovieList) *MovieListUpdateOne {
-	mutation := newMovieListMutation(c.config, OpUpdateOne, withMovieList(ml))
-	return &MovieListUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *MovieCollectionClient) UpdateOne(mc *MovieCollection) *MovieCollectionUpdateOne {
+	mutation := newMovieCollectionMutation(c.config, OpUpdateOne, withMovieCollection(mc))
+	return &MovieCollectionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *MovieListClient) UpdateOneID(id int) *MovieListUpdateOne {
-	mutation := newMovieListMutation(c.config, OpUpdateOne, withMovieListID(id))
-	return &MovieListUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *MovieCollectionClient) UpdateOneID(id int) *MovieCollectionUpdateOne {
+	mutation := newMovieCollectionMutation(c.config, OpUpdateOne, withMovieCollectionID(id))
+	return &MovieCollectionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// Delete returns a delete builder for MovieList.
-func (c *MovieListClient) Delete() *MovieListDelete {
-	mutation := newMovieListMutation(c.config, OpDelete)
-	return &MovieListDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Delete returns a delete builder for MovieCollection.
+func (c *MovieCollectionClient) Delete() *MovieCollectionDelete {
+	mutation := newMovieCollectionMutation(c.config, OpDelete)
+	return &MovieCollectionDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *MovieListClient) DeleteOne(ml *MovieList) *MovieListDeleteOne {
-	return c.DeleteOneID(ml.ID)
+func (c *MovieCollectionClient) DeleteOne(mc *MovieCollection) *MovieCollectionDeleteOne {
+	return c.DeleteOneID(mc.ID)
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *MovieListClient) DeleteOneID(id int) *MovieListDeleteOne {
-	builder := c.Delete().Where(movielist.ID(id))
+func (c *MovieCollectionClient) DeleteOneID(id int) *MovieCollectionDeleteOne {
+	builder := c.Delete().Where(moviecollection.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
-	return &MovieListDeleteOne{builder}
+	return &MovieCollectionDeleteOne{builder}
 }
 
-// Query returns a query builder for MovieList.
-func (c *MovieListClient) Query() *MovieListQuery {
-	return &MovieListQuery{
+// Query returns a query builder for MovieCollection.
+func (c *MovieCollectionClient) Query() *MovieCollectionQuery {
+	return &MovieCollectionQuery{
 		config: c.config,
-		ctx:    &QueryContext{Type: TypeMovieList},
+		ctx:    &QueryContext{Type: TypeMovieCollection},
 		inters: c.Interceptors(),
 	}
 }
 
-// Get returns a MovieList entity by its id.
-func (c *MovieListClient) Get(ctx context.Context, id int) (*MovieList, error) {
-	return c.Query().Where(movielist.ID(id)).Only(ctx)
+// Get returns a MovieCollection entity by its id.
+func (c *MovieCollectionClient) Get(ctx context.Context, id int) (*MovieCollection, error) {
+	return c.Query().Where(moviecollection.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *MovieListClient) GetX(ctx context.Context, id int) *MovieList {
+func (c *MovieCollectionClient) GetX(ctx context.Context, id int) *MovieCollection {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -1541,165 +1541,165 @@ func (c *MovieListClient) GetX(ctx context.Context, id int) *MovieList {
 	return obj
 }
 
-// QueryMovies queries the movies edge of a MovieList.
-func (c *MovieListClient) QueryMovies(ml *MovieList) *MovieQuery {
+// QueryMovies queries the movies edge of a MovieCollection.
+func (c *MovieCollectionClient) QueryMovies(mc *MovieCollection) *MovieQuery {
 	query := (&MovieClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := ml.ID
+		id := mc.ID
 		step := sqlgraph.NewStep(
-			sqlgraph.From(movielist.Table, movielist.FieldID, id),
+			sqlgraph.From(moviecollection.Table, moviecollection.FieldID, id),
 			sqlgraph.To(movie.Table, movie.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, movielist.MoviesTable, movielist.MoviesColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, moviecollection.MoviesTable, moviecollection.MoviesColumn),
 		)
-		fromV = sqlgraph.Neighbors(ml.driver.Dialect(), step)
+		fromV = sqlgraph.Neighbors(mc.driver.Dialect(), step)
 		return fromV, nil
 	}
 	return query
 }
 
-// QueryOwner queries the owner edge of a MovieList.
-func (c *MovieListClient) QueryOwner(ml *MovieList) *UserQuery {
+// QueryOwner queries the owner edge of a MovieCollection.
+func (c *MovieCollectionClient) QueryOwner(mc *MovieCollection) *UserQuery {
 	query := (&UserClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := ml.ID
+		id := mc.ID
 		step := sqlgraph.NewStep(
-			sqlgraph.From(movielist.Table, movielist.FieldID, id),
+			sqlgraph.From(moviecollection.Table, moviecollection.FieldID, id),
 			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, movielist.OwnerTable, movielist.OwnerColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, moviecollection.OwnerTable, moviecollection.OwnerColumn),
 		)
-		fromV = sqlgraph.Neighbors(ml.driver.Dialect(), step)
+		fromV = sqlgraph.Neighbors(mc.driver.Dialect(), step)
 		return fromV, nil
 	}
 	return query
 }
 
-// QueryMovieListShares queries the movie_list_shares edge of a MovieList.
-func (c *MovieListClient) QueryMovieListShares(ml *MovieList) *MovieListShareQuery {
-	query := (&MovieListShareClient{config: c.config}).Query()
+// QueryMovieCollectionShares queries the movie_collection_shares edge of a MovieCollection.
+func (c *MovieCollectionClient) QueryMovieCollectionShares(mc *MovieCollection) *MovieCollectionShareQuery {
+	query := (&MovieCollectionShareClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := ml.ID
+		id := mc.ID
 		step := sqlgraph.NewStep(
-			sqlgraph.From(movielist.Table, movielist.FieldID, id),
-			sqlgraph.To(movielistshare.Table, movielistshare.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, movielist.MovieListSharesTable, movielist.MovieListSharesColumn),
+			sqlgraph.From(moviecollection.Table, moviecollection.FieldID, id),
+			sqlgraph.To(moviecollectionshare.Table, moviecollectionshare.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, moviecollection.MovieCollectionSharesTable, moviecollection.MovieCollectionSharesColumn),
 		)
-		fromV = sqlgraph.Neighbors(ml.driver.Dialect(), step)
+		fromV = sqlgraph.Neighbors(mc.driver.Dialect(), step)
 		return fromV, nil
 	}
 	return query
 }
 
 // Hooks returns the client hooks.
-func (c *MovieListClient) Hooks() []Hook {
-	return c.hooks.MovieList
+func (c *MovieCollectionClient) Hooks() []Hook {
+	return c.hooks.MovieCollection
 }
 
 // Interceptors returns the client interceptors.
-func (c *MovieListClient) Interceptors() []Interceptor {
-	return c.inters.MovieList
+func (c *MovieCollectionClient) Interceptors() []Interceptor {
+	return c.inters.MovieCollection
 }
 
-func (c *MovieListClient) mutate(ctx context.Context, m *MovieListMutation) (Value, error) {
+func (c *MovieCollectionClient) mutate(ctx context.Context, m *MovieCollectionMutation) (Value, error) {
 	switch m.Op() {
 	case OpCreate:
-		return (&MovieListCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&MovieCollectionCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpUpdate:
-		return (&MovieListUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&MovieCollectionUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpUpdateOne:
-		return (&MovieListUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&MovieCollectionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpDelete, OpDeleteOne:
-		return (&MovieListDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+		return (&MovieCollectionDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
-		return nil, fmt.Errorf("ent: unknown MovieList mutation op: %q", m.Op())
+		return nil, fmt.Errorf("ent: unknown MovieCollection mutation op: %q", m.Op())
 	}
 }
 
-// MovieListShareClient is a client for the MovieListShare schema.
-type MovieListShareClient struct {
+// MovieCollectionShareClient is a client for the MovieCollectionShare schema.
+type MovieCollectionShareClient struct {
 	config
 }
 
-// NewMovieListShareClient returns a client for the MovieListShare from the given config.
-func NewMovieListShareClient(c config) *MovieListShareClient {
-	return &MovieListShareClient{config: c}
+// NewMovieCollectionShareClient returns a client for the MovieCollectionShare from the given config.
+func NewMovieCollectionShareClient(c config) *MovieCollectionShareClient {
+	return &MovieCollectionShareClient{config: c}
 }
 
 // Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `movielistshare.Hooks(f(g(h())))`.
-func (c *MovieListShareClient) Use(hooks ...Hook) {
-	c.hooks.MovieListShare = append(c.hooks.MovieListShare, hooks...)
+// A call to `Use(f, g, h)` equals to `moviecollectionshare.Hooks(f(g(h())))`.
+func (c *MovieCollectionShareClient) Use(hooks ...Hook) {
+	c.hooks.MovieCollectionShare = append(c.hooks.MovieCollectionShare, hooks...)
 }
 
 // Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `movielistshare.Intercept(f(g(h())))`.
-func (c *MovieListShareClient) Intercept(interceptors ...Interceptor) {
-	c.inters.MovieListShare = append(c.inters.MovieListShare, interceptors...)
+// A call to `Intercept(f, g, h)` equals to `moviecollectionshare.Intercept(f(g(h())))`.
+func (c *MovieCollectionShareClient) Intercept(interceptors ...Interceptor) {
+	c.inters.MovieCollectionShare = append(c.inters.MovieCollectionShare, interceptors...)
 }
 
-// Create returns a builder for creating a MovieListShare entity.
-func (c *MovieListShareClient) Create() *MovieListShareCreate {
-	mutation := newMovieListShareMutation(c.config, OpCreate)
-	return &MovieListShareCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Create returns a builder for creating a MovieCollectionShare entity.
+func (c *MovieCollectionShareClient) Create() *MovieCollectionShareCreate {
+	mutation := newMovieCollectionShareMutation(c.config, OpCreate)
+	return &MovieCollectionShareCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// CreateBulk returns a builder for creating a bulk of MovieListShare entities.
-func (c *MovieListShareClient) CreateBulk(builders ...*MovieListShareCreate) *MovieListShareCreateBulk {
-	return &MovieListShareCreateBulk{config: c.config, builders: builders}
+// CreateBulk returns a builder for creating a bulk of MovieCollectionShare entities.
+func (c *MovieCollectionShareClient) CreateBulk(builders ...*MovieCollectionShareCreate) *MovieCollectionShareCreateBulk {
+	return &MovieCollectionShareCreateBulk{config: c.config, builders: builders}
 }
 
-// Update returns an update builder for MovieListShare.
-func (c *MovieListShareClient) Update() *MovieListShareUpdate {
-	mutation := newMovieListShareMutation(c.config, OpUpdate)
-	return &MovieListShareUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Update returns an update builder for MovieCollectionShare.
+func (c *MovieCollectionShareClient) Update() *MovieCollectionShareUpdate {
+	mutation := newMovieCollectionShareMutation(c.config, OpUpdate)
+	return &MovieCollectionShareUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *MovieListShareClient) UpdateOne(mls *MovieListShare) *MovieListShareUpdateOne {
-	mutation := newMovieListShareMutation(c.config, OpUpdateOne, withMovieListShare(mls))
-	return &MovieListShareUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *MovieCollectionShareClient) UpdateOne(mcs *MovieCollectionShare) *MovieCollectionShareUpdateOne {
+	mutation := newMovieCollectionShareMutation(c.config, OpUpdateOne, withMovieCollectionShare(mcs))
+	return &MovieCollectionShareUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *MovieListShareClient) UpdateOneID(id int) *MovieListShareUpdateOne {
-	mutation := newMovieListShareMutation(c.config, OpUpdateOne, withMovieListShareID(id))
-	return &MovieListShareUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *MovieCollectionShareClient) UpdateOneID(id int) *MovieCollectionShareUpdateOne {
+	mutation := newMovieCollectionShareMutation(c.config, OpUpdateOne, withMovieCollectionShareID(id))
+	return &MovieCollectionShareUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// Delete returns a delete builder for MovieListShare.
-func (c *MovieListShareClient) Delete() *MovieListShareDelete {
-	mutation := newMovieListShareMutation(c.config, OpDelete)
-	return &MovieListShareDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Delete returns a delete builder for MovieCollectionShare.
+func (c *MovieCollectionShareClient) Delete() *MovieCollectionShareDelete {
+	mutation := newMovieCollectionShareMutation(c.config, OpDelete)
+	return &MovieCollectionShareDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *MovieListShareClient) DeleteOne(mls *MovieListShare) *MovieListShareDeleteOne {
-	return c.DeleteOneID(mls.ID)
+func (c *MovieCollectionShareClient) DeleteOne(mcs *MovieCollectionShare) *MovieCollectionShareDeleteOne {
+	return c.DeleteOneID(mcs.ID)
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *MovieListShareClient) DeleteOneID(id int) *MovieListShareDeleteOne {
-	builder := c.Delete().Where(movielistshare.ID(id))
+func (c *MovieCollectionShareClient) DeleteOneID(id int) *MovieCollectionShareDeleteOne {
+	builder := c.Delete().Where(moviecollectionshare.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
-	return &MovieListShareDeleteOne{builder}
+	return &MovieCollectionShareDeleteOne{builder}
 }
 
-// Query returns a query builder for MovieListShare.
-func (c *MovieListShareClient) Query() *MovieListShareQuery {
-	return &MovieListShareQuery{
+// Query returns a query builder for MovieCollectionShare.
+func (c *MovieCollectionShareClient) Query() *MovieCollectionShareQuery {
+	return &MovieCollectionShareQuery{
 		config: c.config,
-		ctx:    &QueryContext{Type: TypeMovieListShare},
+		ctx:    &QueryContext{Type: TypeMovieCollectionShare},
 		inters: c.Interceptors(),
 	}
 }
 
-// Get returns a MovieListShare entity by its id.
-func (c *MovieListShareClient) Get(ctx context.Context, id int) (*MovieListShare, error) {
-	return c.Query().Where(movielistshare.ID(id)).Only(ctx)
+// Get returns a MovieCollectionShare entity by its id.
+func (c *MovieCollectionShareClient) Get(ctx context.Context, id int) (*MovieCollectionShare, error) {
+	return c.Query().Where(moviecollectionshare.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *MovieListShareClient) GetX(ctx context.Context, id int) *MovieListShare {
+func (c *MovieCollectionShareClient) GetX(ctx context.Context, id int) *MovieCollectionShare {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -1707,60 +1707,60 @@ func (c *MovieListShareClient) GetX(ctx context.Context, id int) *MovieListShare
 	return obj
 }
 
-// QueryUser queries the user edge of a MovieListShare.
-func (c *MovieListShareClient) QueryUser(mls *MovieListShare) *UserQuery {
+// QueryUser queries the user edge of a MovieCollectionShare.
+func (c *MovieCollectionShareClient) QueryUser(mcs *MovieCollectionShare) *UserQuery {
 	query := (&UserClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := mls.ID
+		id := mcs.ID
 		step := sqlgraph.NewStep(
-			sqlgraph.From(movielistshare.Table, movielistshare.FieldID, id),
+			sqlgraph.From(moviecollectionshare.Table, moviecollectionshare.FieldID, id),
 			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, movielistshare.UserTable, movielistshare.UserColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, moviecollectionshare.UserTable, moviecollectionshare.UserColumn),
 		)
-		fromV = sqlgraph.Neighbors(mls.driver.Dialect(), step)
+		fromV = sqlgraph.Neighbors(mcs.driver.Dialect(), step)
 		return fromV, nil
 	}
 	return query
 }
 
-// QueryMovieList queries the movie_list edge of a MovieListShare.
-func (c *MovieListShareClient) QueryMovieList(mls *MovieListShare) *MovieListQuery {
-	query := (&MovieListClient{config: c.config}).Query()
+// QueryMovieCollection queries the movie_collection edge of a MovieCollectionShare.
+func (c *MovieCollectionShareClient) QueryMovieCollection(mcs *MovieCollectionShare) *MovieCollectionQuery {
+	query := (&MovieCollectionClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := mls.ID
+		id := mcs.ID
 		step := sqlgraph.NewStep(
-			sqlgraph.From(movielistshare.Table, movielistshare.FieldID, id),
-			sqlgraph.To(movielist.Table, movielist.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, movielistshare.MovieListTable, movielistshare.MovieListColumn),
+			sqlgraph.From(moviecollectionshare.Table, moviecollectionshare.FieldID, id),
+			sqlgraph.To(moviecollection.Table, moviecollection.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, moviecollectionshare.MovieCollectionTable, moviecollectionshare.MovieCollectionColumn),
 		)
-		fromV = sqlgraph.Neighbors(mls.driver.Dialect(), step)
+		fromV = sqlgraph.Neighbors(mcs.driver.Dialect(), step)
 		return fromV, nil
 	}
 	return query
 }
 
 // Hooks returns the client hooks.
-func (c *MovieListShareClient) Hooks() []Hook {
-	return c.hooks.MovieListShare
+func (c *MovieCollectionShareClient) Hooks() []Hook {
+	return c.hooks.MovieCollectionShare
 }
 
 // Interceptors returns the client interceptors.
-func (c *MovieListShareClient) Interceptors() []Interceptor {
-	return c.inters.MovieListShare
+func (c *MovieCollectionShareClient) Interceptors() []Interceptor {
+	return c.inters.MovieCollectionShare
 }
 
-func (c *MovieListShareClient) mutate(ctx context.Context, m *MovieListShareMutation) (Value, error) {
+func (c *MovieCollectionShareClient) mutate(ctx context.Context, m *MovieCollectionShareMutation) (Value, error) {
 	switch m.Op() {
 	case OpCreate:
-		return (&MovieListShareCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&MovieCollectionShareCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpUpdate:
-		return (&MovieListShareUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&MovieCollectionShareUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpUpdateOne:
-		return (&MovieListShareUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&MovieCollectionShareUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpDelete, OpDeleteOne:
-		return (&MovieListShareDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+		return (&MovieCollectionShareDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
-		return nil, fmt.Errorf("ent: unknown MovieListShare mutation op: %q", m.Op())
+		return nil, fmt.Errorf("ent: unknown MovieCollectionShare mutation op: %q", m.Op())
 	}
 }
 
@@ -1937,15 +1937,15 @@ func (c *UserClient) QueryGroceryListShares(u *User) *GroceryListShareQuery {
 	return query
 }
 
-// QueryMovieLists queries the movie_lists edge of a User.
-func (c *UserClient) QueryMovieLists(u *User) *MovieListQuery {
-	query := (&MovieListClient{config: c.config}).Query()
+// QueryMovieCollections queries the movie_collections edge of a User.
+func (c *UserClient) QueryMovieCollections(u *User) *MovieCollectionQuery {
+	query := (&MovieCollectionClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := u.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, id),
-			sqlgraph.To(movielist.Table, movielist.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, user.MovieListsTable, user.MovieListsColumn),
+			sqlgraph.To(moviecollection.Table, moviecollection.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.MovieCollectionsTable, user.MovieCollectionsColumn),
 		)
 		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
 		return fromV, nil
@@ -1953,15 +1953,15 @@ func (c *UserClient) QueryMovieLists(u *User) *MovieListQuery {
 	return query
 }
 
-// QueryMovieListShares queries the movie_list_shares edge of a User.
-func (c *UserClient) QueryMovieListShares(u *User) *MovieListShareQuery {
-	query := (&MovieListShareClient{config: c.config}).Query()
+// QueryMovieCollectionShares queries the movie_collection_shares edge of a User.
+func (c *UserClient) QueryMovieCollectionShares(u *User) *MovieCollectionShareQuery {
+	query := (&MovieCollectionShareClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := u.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, id),
-			sqlgraph.To(movielistshare.Table, movielistshare.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, user.MovieListSharesTable, user.MovieListSharesColumn),
+			sqlgraph.To(moviecollectionshare.Table, moviecollectionshare.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.MovieCollectionSharesTable, user.MovieCollectionSharesColumn),
 		)
 		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
 		return fromV, nil
@@ -1998,10 +1998,11 @@ func (c *UserClient) mutate(ctx context.Context, m *UserMutation) (Value, error)
 type (
 	hooks struct {
 		AmazonList, AmazonOrder, AmazonShare, Drink, GroceryList, GroceryListItem,
-		GroceryListShare, Movie, MovieList, MovieListShare, User []ent.Hook
+		GroceryListShare, Movie, MovieCollection, MovieCollectionShare, User []ent.Hook
 	}
 	inters struct {
 		AmazonList, AmazonOrder, AmazonShare, Drink, GroceryList, GroceryListItem,
-		GroceryListShare, Movie, MovieList, MovieListShare, User []ent.Interceptor
+		GroceryListShare, Movie, MovieCollection, MovieCollectionShare,
+		User []ent.Interceptor
 	}
 )

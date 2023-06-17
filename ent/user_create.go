@@ -15,8 +15,8 @@ import (
 	"github.com/PaluMacil/dan2/ent/drink"
 	"github.com/PaluMacil/dan2/ent/grocerylist"
 	"github.com/PaluMacil/dan2/ent/grocerylistshare"
-	"github.com/PaluMacil/dan2/ent/movielist"
-	"github.com/PaluMacil/dan2/ent/movielistshare"
+	"github.com/PaluMacil/dan2/ent/moviecollection"
+	"github.com/PaluMacil/dan2/ent/moviecollectionshare"
 	"github.com/PaluMacil/dan2/ent/user"
 )
 
@@ -176,34 +176,34 @@ func (uc *UserCreate) AddGroceryListShares(g ...*GroceryListShare) *UserCreate {
 	return uc.AddGroceryListShareIDs(ids...)
 }
 
-// AddMovieListIDs adds the "movie_lists" edge to the MovieList entity by IDs.
-func (uc *UserCreate) AddMovieListIDs(ids ...int) *UserCreate {
-	uc.mutation.AddMovieListIDs(ids...)
+// AddMovieCollectionIDs adds the "movie_collections" edge to the MovieCollection entity by IDs.
+func (uc *UserCreate) AddMovieCollectionIDs(ids ...int) *UserCreate {
+	uc.mutation.AddMovieCollectionIDs(ids...)
 	return uc
 }
 
-// AddMovieLists adds the "movie_lists" edges to the MovieList entity.
-func (uc *UserCreate) AddMovieLists(m ...*MovieList) *UserCreate {
+// AddMovieCollections adds the "movie_collections" edges to the MovieCollection entity.
+func (uc *UserCreate) AddMovieCollections(m ...*MovieCollection) *UserCreate {
 	ids := make([]int, len(m))
 	for i := range m {
 		ids[i] = m[i].ID
 	}
-	return uc.AddMovieListIDs(ids...)
+	return uc.AddMovieCollectionIDs(ids...)
 }
 
-// AddMovieListShareIDs adds the "movie_list_shares" edge to the MovieListShare entity by IDs.
-func (uc *UserCreate) AddMovieListShareIDs(ids ...int) *UserCreate {
-	uc.mutation.AddMovieListShareIDs(ids...)
+// AddMovieCollectionShareIDs adds the "movie_collection_shares" edge to the MovieCollectionShare entity by IDs.
+func (uc *UserCreate) AddMovieCollectionShareIDs(ids ...int) *UserCreate {
+	uc.mutation.AddMovieCollectionShareIDs(ids...)
 	return uc
 }
 
-// AddMovieListShares adds the "movie_list_shares" edges to the MovieListShare entity.
-func (uc *UserCreate) AddMovieListShares(m ...*MovieListShare) *UserCreate {
+// AddMovieCollectionShares adds the "movie_collection_shares" edges to the MovieCollectionShare entity.
+func (uc *UserCreate) AddMovieCollectionShares(m ...*MovieCollectionShare) *UserCreate {
 	ids := make([]int, len(m))
 	for i := range m {
 		ids[i] = m[i].ID
 	}
-	return uc.AddMovieListShareIDs(ids...)
+	return uc.AddMovieCollectionShareIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -416,15 +416,15 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := uc.mutation.MovieListsIDs(); len(nodes) > 0 {
+	if nodes := uc.mutation.MovieCollectionsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.MovieListsTable,
-			Columns: []string{user.MovieListsColumn},
+			Table:   user.MovieCollectionsTable,
+			Columns: []string{user.MovieCollectionsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(movielist.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(moviecollection.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -432,15 +432,15 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := uc.mutation.MovieListSharesIDs(); len(nodes) > 0 {
+	if nodes := uc.mutation.MovieCollectionSharesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.MovieListSharesTable,
-			Columns: []string{user.MovieListSharesColumn},
+			Table:   user.MovieCollectionSharesTable,
+			Columns: []string{user.MovieCollectionSharesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(movielistshare.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(moviecollectionshare.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

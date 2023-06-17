@@ -16,8 +16,8 @@ import (
 	"github.com/PaluMacil/dan2/ent/drink"
 	"github.com/PaluMacil/dan2/ent/grocerylist"
 	"github.com/PaluMacil/dan2/ent/grocerylistshare"
-	"github.com/PaluMacil/dan2/ent/movielist"
-	"github.com/PaluMacil/dan2/ent/movielistshare"
+	"github.com/PaluMacil/dan2/ent/moviecollection"
+	"github.com/PaluMacil/dan2/ent/moviecollectionshare"
 	"github.com/PaluMacil/dan2/ent/predicate"
 	"github.com/PaluMacil/dan2/ent/user"
 )
@@ -191,34 +191,34 @@ func (uu *UserUpdate) AddGroceryListShares(g ...*GroceryListShare) *UserUpdate {
 	return uu.AddGroceryListShareIDs(ids...)
 }
 
-// AddMovieListIDs adds the "movie_lists" edge to the MovieList entity by IDs.
-func (uu *UserUpdate) AddMovieListIDs(ids ...int) *UserUpdate {
-	uu.mutation.AddMovieListIDs(ids...)
+// AddMovieCollectionIDs adds the "movie_collections" edge to the MovieCollection entity by IDs.
+func (uu *UserUpdate) AddMovieCollectionIDs(ids ...int) *UserUpdate {
+	uu.mutation.AddMovieCollectionIDs(ids...)
 	return uu
 }
 
-// AddMovieLists adds the "movie_lists" edges to the MovieList entity.
-func (uu *UserUpdate) AddMovieLists(m ...*MovieList) *UserUpdate {
+// AddMovieCollections adds the "movie_collections" edges to the MovieCollection entity.
+func (uu *UserUpdate) AddMovieCollections(m ...*MovieCollection) *UserUpdate {
 	ids := make([]int, len(m))
 	for i := range m {
 		ids[i] = m[i].ID
 	}
-	return uu.AddMovieListIDs(ids...)
+	return uu.AddMovieCollectionIDs(ids...)
 }
 
-// AddMovieListShareIDs adds the "movie_list_shares" edge to the MovieListShare entity by IDs.
-func (uu *UserUpdate) AddMovieListShareIDs(ids ...int) *UserUpdate {
-	uu.mutation.AddMovieListShareIDs(ids...)
+// AddMovieCollectionShareIDs adds the "movie_collection_shares" edge to the MovieCollectionShare entity by IDs.
+func (uu *UserUpdate) AddMovieCollectionShareIDs(ids ...int) *UserUpdate {
+	uu.mutation.AddMovieCollectionShareIDs(ids...)
 	return uu
 }
 
-// AddMovieListShares adds the "movie_list_shares" edges to the MovieListShare entity.
-func (uu *UserUpdate) AddMovieListShares(m ...*MovieListShare) *UserUpdate {
+// AddMovieCollectionShares adds the "movie_collection_shares" edges to the MovieCollectionShare entity.
+func (uu *UserUpdate) AddMovieCollectionShares(m ...*MovieCollectionShare) *UserUpdate {
 	ids := make([]int, len(m))
 	for i := range m {
 		ids[i] = m[i].ID
 	}
-	return uu.AddMovieListShareIDs(ids...)
+	return uu.AddMovieCollectionShareIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -331,46 +331,46 @@ func (uu *UserUpdate) RemoveGroceryListShares(g ...*GroceryListShare) *UserUpdat
 	return uu.RemoveGroceryListShareIDs(ids...)
 }
 
-// ClearMovieLists clears all "movie_lists" edges to the MovieList entity.
-func (uu *UserUpdate) ClearMovieLists() *UserUpdate {
-	uu.mutation.ClearMovieLists()
+// ClearMovieCollections clears all "movie_collections" edges to the MovieCollection entity.
+func (uu *UserUpdate) ClearMovieCollections() *UserUpdate {
+	uu.mutation.ClearMovieCollections()
 	return uu
 }
 
-// RemoveMovieListIDs removes the "movie_lists" edge to MovieList entities by IDs.
-func (uu *UserUpdate) RemoveMovieListIDs(ids ...int) *UserUpdate {
-	uu.mutation.RemoveMovieListIDs(ids...)
+// RemoveMovieCollectionIDs removes the "movie_collections" edge to MovieCollection entities by IDs.
+func (uu *UserUpdate) RemoveMovieCollectionIDs(ids ...int) *UserUpdate {
+	uu.mutation.RemoveMovieCollectionIDs(ids...)
 	return uu
 }
 
-// RemoveMovieLists removes "movie_lists" edges to MovieList entities.
-func (uu *UserUpdate) RemoveMovieLists(m ...*MovieList) *UserUpdate {
+// RemoveMovieCollections removes "movie_collections" edges to MovieCollection entities.
+func (uu *UserUpdate) RemoveMovieCollections(m ...*MovieCollection) *UserUpdate {
 	ids := make([]int, len(m))
 	for i := range m {
 		ids[i] = m[i].ID
 	}
-	return uu.RemoveMovieListIDs(ids...)
+	return uu.RemoveMovieCollectionIDs(ids...)
 }
 
-// ClearMovieListShares clears all "movie_list_shares" edges to the MovieListShare entity.
-func (uu *UserUpdate) ClearMovieListShares() *UserUpdate {
-	uu.mutation.ClearMovieListShares()
+// ClearMovieCollectionShares clears all "movie_collection_shares" edges to the MovieCollectionShare entity.
+func (uu *UserUpdate) ClearMovieCollectionShares() *UserUpdate {
+	uu.mutation.ClearMovieCollectionShares()
 	return uu
 }
 
-// RemoveMovieListShareIDs removes the "movie_list_shares" edge to MovieListShare entities by IDs.
-func (uu *UserUpdate) RemoveMovieListShareIDs(ids ...int) *UserUpdate {
-	uu.mutation.RemoveMovieListShareIDs(ids...)
+// RemoveMovieCollectionShareIDs removes the "movie_collection_shares" edge to MovieCollectionShare entities by IDs.
+func (uu *UserUpdate) RemoveMovieCollectionShareIDs(ids ...int) *UserUpdate {
+	uu.mutation.RemoveMovieCollectionShareIDs(ids...)
 	return uu
 }
 
-// RemoveMovieListShares removes "movie_list_shares" edges to MovieListShare entities.
-func (uu *UserUpdate) RemoveMovieListShares(m ...*MovieListShare) *UserUpdate {
+// RemoveMovieCollectionShares removes "movie_collection_shares" edges to MovieCollectionShare entities.
+func (uu *UserUpdate) RemoveMovieCollectionShares(m ...*MovieCollectionShare) *UserUpdate {
 	ids := make([]int, len(m))
 	for i := range m {
 		ids[i] = m[i].ID
 	}
-	return uu.RemoveMovieListShareIDs(ids...)
+	return uu.RemoveMovieCollectionShareIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -658,28 +658,28 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if uu.mutation.MovieListsCleared() {
+	if uu.mutation.MovieCollectionsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.MovieListsTable,
-			Columns: []string{user.MovieListsColumn},
+			Table:   user.MovieCollectionsTable,
+			Columns: []string{user.MovieCollectionsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(movielist.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(moviecollection.FieldID, field.TypeInt),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := uu.mutation.RemovedMovieListsIDs(); len(nodes) > 0 && !uu.mutation.MovieListsCleared() {
+	if nodes := uu.mutation.RemovedMovieCollectionsIDs(); len(nodes) > 0 && !uu.mutation.MovieCollectionsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.MovieListsTable,
-			Columns: []string{user.MovieListsColumn},
+			Table:   user.MovieCollectionsTable,
+			Columns: []string{user.MovieCollectionsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(movielist.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(moviecollection.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -687,15 +687,15 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := uu.mutation.MovieListsIDs(); len(nodes) > 0 {
+	if nodes := uu.mutation.MovieCollectionsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.MovieListsTable,
-			Columns: []string{user.MovieListsColumn},
+			Table:   user.MovieCollectionsTable,
+			Columns: []string{user.MovieCollectionsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(movielist.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(moviecollection.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -703,28 +703,28 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if uu.mutation.MovieListSharesCleared() {
+	if uu.mutation.MovieCollectionSharesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.MovieListSharesTable,
-			Columns: []string{user.MovieListSharesColumn},
+			Table:   user.MovieCollectionSharesTable,
+			Columns: []string{user.MovieCollectionSharesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(movielistshare.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(moviecollectionshare.FieldID, field.TypeInt),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := uu.mutation.RemovedMovieListSharesIDs(); len(nodes) > 0 && !uu.mutation.MovieListSharesCleared() {
+	if nodes := uu.mutation.RemovedMovieCollectionSharesIDs(); len(nodes) > 0 && !uu.mutation.MovieCollectionSharesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.MovieListSharesTable,
-			Columns: []string{user.MovieListSharesColumn},
+			Table:   user.MovieCollectionSharesTable,
+			Columns: []string{user.MovieCollectionSharesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(movielistshare.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(moviecollectionshare.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -732,15 +732,15 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := uu.mutation.MovieListSharesIDs(); len(nodes) > 0 {
+	if nodes := uu.mutation.MovieCollectionSharesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.MovieListSharesTable,
-			Columns: []string{user.MovieListSharesColumn},
+			Table:   user.MovieCollectionSharesTable,
+			Columns: []string{user.MovieCollectionSharesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(movielistshare.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(moviecollectionshare.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -924,34 +924,34 @@ func (uuo *UserUpdateOne) AddGroceryListShares(g ...*GroceryListShare) *UserUpda
 	return uuo.AddGroceryListShareIDs(ids...)
 }
 
-// AddMovieListIDs adds the "movie_lists" edge to the MovieList entity by IDs.
-func (uuo *UserUpdateOne) AddMovieListIDs(ids ...int) *UserUpdateOne {
-	uuo.mutation.AddMovieListIDs(ids...)
+// AddMovieCollectionIDs adds the "movie_collections" edge to the MovieCollection entity by IDs.
+func (uuo *UserUpdateOne) AddMovieCollectionIDs(ids ...int) *UserUpdateOne {
+	uuo.mutation.AddMovieCollectionIDs(ids...)
 	return uuo
 }
 
-// AddMovieLists adds the "movie_lists" edges to the MovieList entity.
-func (uuo *UserUpdateOne) AddMovieLists(m ...*MovieList) *UserUpdateOne {
+// AddMovieCollections adds the "movie_collections" edges to the MovieCollection entity.
+func (uuo *UserUpdateOne) AddMovieCollections(m ...*MovieCollection) *UserUpdateOne {
 	ids := make([]int, len(m))
 	for i := range m {
 		ids[i] = m[i].ID
 	}
-	return uuo.AddMovieListIDs(ids...)
+	return uuo.AddMovieCollectionIDs(ids...)
 }
 
-// AddMovieListShareIDs adds the "movie_list_shares" edge to the MovieListShare entity by IDs.
-func (uuo *UserUpdateOne) AddMovieListShareIDs(ids ...int) *UserUpdateOne {
-	uuo.mutation.AddMovieListShareIDs(ids...)
+// AddMovieCollectionShareIDs adds the "movie_collection_shares" edge to the MovieCollectionShare entity by IDs.
+func (uuo *UserUpdateOne) AddMovieCollectionShareIDs(ids ...int) *UserUpdateOne {
+	uuo.mutation.AddMovieCollectionShareIDs(ids...)
 	return uuo
 }
 
-// AddMovieListShares adds the "movie_list_shares" edges to the MovieListShare entity.
-func (uuo *UserUpdateOne) AddMovieListShares(m ...*MovieListShare) *UserUpdateOne {
+// AddMovieCollectionShares adds the "movie_collection_shares" edges to the MovieCollectionShare entity.
+func (uuo *UserUpdateOne) AddMovieCollectionShares(m ...*MovieCollectionShare) *UserUpdateOne {
 	ids := make([]int, len(m))
 	for i := range m {
 		ids[i] = m[i].ID
 	}
-	return uuo.AddMovieListShareIDs(ids...)
+	return uuo.AddMovieCollectionShareIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -1064,46 +1064,46 @@ func (uuo *UserUpdateOne) RemoveGroceryListShares(g ...*GroceryListShare) *UserU
 	return uuo.RemoveGroceryListShareIDs(ids...)
 }
 
-// ClearMovieLists clears all "movie_lists" edges to the MovieList entity.
-func (uuo *UserUpdateOne) ClearMovieLists() *UserUpdateOne {
-	uuo.mutation.ClearMovieLists()
+// ClearMovieCollections clears all "movie_collections" edges to the MovieCollection entity.
+func (uuo *UserUpdateOne) ClearMovieCollections() *UserUpdateOne {
+	uuo.mutation.ClearMovieCollections()
 	return uuo
 }
 
-// RemoveMovieListIDs removes the "movie_lists" edge to MovieList entities by IDs.
-func (uuo *UserUpdateOne) RemoveMovieListIDs(ids ...int) *UserUpdateOne {
-	uuo.mutation.RemoveMovieListIDs(ids...)
+// RemoveMovieCollectionIDs removes the "movie_collections" edge to MovieCollection entities by IDs.
+func (uuo *UserUpdateOne) RemoveMovieCollectionIDs(ids ...int) *UserUpdateOne {
+	uuo.mutation.RemoveMovieCollectionIDs(ids...)
 	return uuo
 }
 
-// RemoveMovieLists removes "movie_lists" edges to MovieList entities.
-func (uuo *UserUpdateOne) RemoveMovieLists(m ...*MovieList) *UserUpdateOne {
+// RemoveMovieCollections removes "movie_collections" edges to MovieCollection entities.
+func (uuo *UserUpdateOne) RemoveMovieCollections(m ...*MovieCollection) *UserUpdateOne {
 	ids := make([]int, len(m))
 	for i := range m {
 		ids[i] = m[i].ID
 	}
-	return uuo.RemoveMovieListIDs(ids...)
+	return uuo.RemoveMovieCollectionIDs(ids...)
 }
 
-// ClearMovieListShares clears all "movie_list_shares" edges to the MovieListShare entity.
-func (uuo *UserUpdateOne) ClearMovieListShares() *UserUpdateOne {
-	uuo.mutation.ClearMovieListShares()
+// ClearMovieCollectionShares clears all "movie_collection_shares" edges to the MovieCollectionShare entity.
+func (uuo *UserUpdateOne) ClearMovieCollectionShares() *UserUpdateOne {
+	uuo.mutation.ClearMovieCollectionShares()
 	return uuo
 }
 
-// RemoveMovieListShareIDs removes the "movie_list_shares" edge to MovieListShare entities by IDs.
-func (uuo *UserUpdateOne) RemoveMovieListShareIDs(ids ...int) *UserUpdateOne {
-	uuo.mutation.RemoveMovieListShareIDs(ids...)
+// RemoveMovieCollectionShareIDs removes the "movie_collection_shares" edge to MovieCollectionShare entities by IDs.
+func (uuo *UserUpdateOne) RemoveMovieCollectionShareIDs(ids ...int) *UserUpdateOne {
+	uuo.mutation.RemoveMovieCollectionShareIDs(ids...)
 	return uuo
 }
 
-// RemoveMovieListShares removes "movie_list_shares" edges to MovieListShare entities.
-func (uuo *UserUpdateOne) RemoveMovieListShares(m ...*MovieListShare) *UserUpdateOne {
+// RemoveMovieCollectionShares removes "movie_collection_shares" edges to MovieCollectionShare entities.
+func (uuo *UserUpdateOne) RemoveMovieCollectionShares(m ...*MovieCollectionShare) *UserUpdateOne {
 	ids := make([]int, len(m))
 	for i := range m {
 		ids[i] = m[i].ID
 	}
-	return uuo.RemoveMovieListShareIDs(ids...)
+	return uuo.RemoveMovieCollectionShareIDs(ids...)
 }
 
 // Where appends a list predicates to the UserUpdate builder.
@@ -1421,28 +1421,28 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if uuo.mutation.MovieListsCleared() {
+	if uuo.mutation.MovieCollectionsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.MovieListsTable,
-			Columns: []string{user.MovieListsColumn},
+			Table:   user.MovieCollectionsTable,
+			Columns: []string{user.MovieCollectionsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(movielist.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(moviecollection.FieldID, field.TypeInt),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := uuo.mutation.RemovedMovieListsIDs(); len(nodes) > 0 && !uuo.mutation.MovieListsCleared() {
+	if nodes := uuo.mutation.RemovedMovieCollectionsIDs(); len(nodes) > 0 && !uuo.mutation.MovieCollectionsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.MovieListsTable,
-			Columns: []string{user.MovieListsColumn},
+			Table:   user.MovieCollectionsTable,
+			Columns: []string{user.MovieCollectionsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(movielist.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(moviecollection.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -1450,15 +1450,15 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := uuo.mutation.MovieListsIDs(); len(nodes) > 0 {
+	if nodes := uuo.mutation.MovieCollectionsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.MovieListsTable,
-			Columns: []string{user.MovieListsColumn},
+			Table:   user.MovieCollectionsTable,
+			Columns: []string{user.MovieCollectionsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(movielist.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(moviecollection.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -1466,28 +1466,28 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if uuo.mutation.MovieListSharesCleared() {
+	if uuo.mutation.MovieCollectionSharesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.MovieListSharesTable,
-			Columns: []string{user.MovieListSharesColumn},
+			Table:   user.MovieCollectionSharesTable,
+			Columns: []string{user.MovieCollectionSharesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(movielistshare.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(moviecollectionshare.FieldID, field.TypeInt),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := uuo.mutation.RemovedMovieListSharesIDs(); len(nodes) > 0 && !uuo.mutation.MovieListSharesCleared() {
+	if nodes := uuo.mutation.RemovedMovieCollectionSharesIDs(); len(nodes) > 0 && !uuo.mutation.MovieCollectionSharesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.MovieListSharesTable,
-			Columns: []string{user.MovieListSharesColumn},
+			Table:   user.MovieCollectionSharesTable,
+			Columns: []string{user.MovieCollectionSharesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(movielistshare.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(moviecollectionshare.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -1495,15 +1495,15 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := uuo.mutation.MovieListSharesIDs(); len(nodes) > 0 {
+	if nodes := uuo.mutation.MovieCollectionSharesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.MovieListSharesTable,
-			Columns: []string{user.MovieListSharesColumn},
+			Table:   user.MovieCollectionSharesTable,
+			Columns: []string{user.MovieCollectionSharesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(movielistshare.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(moviecollectionshare.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

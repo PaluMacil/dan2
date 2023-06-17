@@ -3,6 +3,8 @@ syntax = "proto3";
 
 package entpb;
 
+import "google/protobuf/empty.proto";
+
 import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/PaluMacil/dan2/ent/proto/entpb";
@@ -17,6 +19,62 @@ message AmazonList {
   repeated User owner = 4;
 
   repeated AmazonShare amazon_shares = 5;
+}
+
+message CreateAmazonListRequest {
+  AmazonList amazon_list = 1;
+}
+
+message GetAmazonListRequest {
+  int64 id = 1;
+
+  View view = 2;
+
+  enum View {
+    VIEW_UNSPECIFIED = 0;
+
+    BASIC = 1;
+
+    WITH_EDGE_IDS = 2;
+  }
+}
+
+message UpdateAmazonListRequest {
+  AmazonList amazon_list = 1;
+}
+
+message DeleteAmazonListRequest {
+  int64 id = 1;
+}
+
+message ListAmazonListRequest {
+  int32 page_size = 1;
+
+  string page_token = 2;
+
+  View view = 3;
+
+  enum View {
+    VIEW_UNSPECIFIED = 0;
+
+    BASIC = 1;
+
+    WITH_EDGE_IDS = 2;
+  }
+}
+
+message ListAmazonListResponse {
+  repeated AmazonList amazon_list_list = 1;
+
+  string next_page_token = 2;
+}
+
+message BatchCreateAmazonListsRequest {
+  repeated CreateAmazonListRequest requests = 1;
+}
+
+message BatchCreateAmazonListsResponse {
+  repeated AmazonList amazon_lists = 1;
 }
 
 message AmazonOrder {
@@ -53,6 +111,62 @@ message AmazonOrder {
   AmazonList amazon_list = 16;
 }
 
+message CreateAmazonOrderRequest {
+  AmazonOrder amazon_order = 1;
+}
+
+message GetAmazonOrderRequest {
+  int64 id = 1;
+
+  View view = 2;
+
+  enum View {
+    VIEW_UNSPECIFIED = 0;
+
+    BASIC = 1;
+
+    WITH_EDGE_IDS = 2;
+  }
+}
+
+message UpdateAmazonOrderRequest {
+  AmazonOrder amazon_order = 1;
+}
+
+message DeleteAmazonOrderRequest {
+  int64 id = 1;
+}
+
+message ListAmazonOrderRequest {
+  int32 page_size = 1;
+
+  string page_token = 2;
+
+  View view = 3;
+
+  enum View {
+    VIEW_UNSPECIFIED = 0;
+
+    BASIC = 1;
+
+    WITH_EDGE_IDS = 2;
+  }
+}
+
+message ListAmazonOrderResponse {
+  repeated AmazonOrder amazon_order_list = 1;
+
+  string next_page_token = 2;
+}
+
+message BatchCreateAmazonOrdersRequest {
+  repeated CreateAmazonOrderRequest requests = 1;
+}
+
+message BatchCreateAmazonOrdersResponse {
+  repeated AmazonOrder amazon_orders = 1;
+}
+
 message AmazonShare {
   int64 id = 1;
 
@@ -63,6 +177,62 @@ message AmazonShare {
   User user = 4;
 
   AmazonList amazon_list = 5;
+}
+
+message CreateAmazonShareRequest {
+  AmazonShare amazon_share = 1;
+}
+
+message GetAmazonShareRequest {
+  int64 id = 1;
+
+  View view = 2;
+
+  enum View {
+    VIEW_UNSPECIFIED = 0;
+
+    BASIC = 1;
+
+    WITH_EDGE_IDS = 2;
+  }
+}
+
+message UpdateAmazonShareRequest {
+  AmazonShare amazon_share = 1;
+}
+
+message DeleteAmazonShareRequest {
+  int64 id = 1;
+}
+
+message ListAmazonShareRequest {
+  int32 page_size = 1;
+
+  string page_token = 2;
+
+  View view = 3;
+
+  enum View {
+    VIEW_UNSPECIFIED = 0;
+
+    BASIC = 1;
+
+    WITH_EDGE_IDS = 2;
+  }
+}
+
+message ListAmazonShareResponse {
+  repeated AmazonShare amazon_share_list = 1;
+
+  string next_page_token = 2;
+}
+
+message BatchCreateAmazonSharesRequest {
+  repeated CreateAmazonShareRequest requests = 1;
+}
+
+message BatchCreateAmazonSharesResponse {
+  repeated AmazonShare amazon_shares = 1;
 }
 
 message Drink {
@@ -103,6 +273,62 @@ message Drink {
   }
 }
 
+message CreateDrinkRequest {
+  Drink drink = 1;
+}
+
+message GetDrinkRequest {
+  int64 id = 1;
+
+  View view = 2;
+
+  enum View {
+    VIEW_UNSPECIFIED = 0;
+
+    BASIC = 1;
+
+    WITH_EDGE_IDS = 2;
+  }
+}
+
+message UpdateDrinkRequest {
+  Drink drink = 1;
+}
+
+message DeleteDrinkRequest {
+  int64 id = 1;
+}
+
+message ListDrinkRequest {
+  int32 page_size = 1;
+
+  string page_token = 2;
+
+  View view = 3;
+
+  enum View {
+    VIEW_UNSPECIFIED = 0;
+
+    BASIC = 1;
+
+    WITH_EDGE_IDS = 2;
+  }
+}
+
+message ListDrinkResponse {
+  repeated Drink drink_list = 1;
+
+  string next_page_token = 2;
+}
+
+message BatchCreateDrinksRequest {
+  repeated CreateDrinkRequest requests = 1;
+}
+
+message BatchCreateDrinksResponse {
+  repeated Drink drinks = 1;
+}
+
 message GroceryList {
   int64 id = 1;
 
@@ -121,6 +347,62 @@ message GroceryList {
   repeated GroceryListShare grocery_list_shares = 8;
 }
 
+message CreateGroceryListRequest {
+  GroceryList grocery_list = 1;
+}
+
+message GetGroceryListRequest {
+  int64 id = 1;
+
+  View view = 2;
+
+  enum View {
+    VIEW_UNSPECIFIED = 0;
+
+    BASIC = 1;
+
+    WITH_EDGE_IDS = 2;
+  }
+}
+
+message UpdateGroceryListRequest {
+  GroceryList grocery_list = 1;
+}
+
+message DeleteGroceryListRequest {
+  int64 id = 1;
+}
+
+message ListGroceryListRequest {
+  int32 page_size = 1;
+
+  string page_token = 2;
+
+  View view = 3;
+
+  enum View {
+    VIEW_UNSPECIFIED = 0;
+
+    BASIC = 1;
+
+    WITH_EDGE_IDS = 2;
+  }
+}
+
+message ListGroceryListResponse {
+  repeated GroceryList grocery_list_list = 1;
+
+  string next_page_token = 2;
+}
+
+message BatchCreateGroceryListsRequest {
+  repeated CreateGroceryListRequest requests = 1;
+}
+
+message BatchCreateGroceryListsResponse {
+  repeated GroceryList grocery_lists = 1;
+}
+
 message GroceryListItem {
   int64 id = 1;
 
@@ -135,6 +417,62 @@ message GroceryListItem {
   GroceryList grocery_list = 6;
 }
 
+message CreateGroceryListItemRequest {
+  GroceryListItem grocery_list_item = 1;
+}
+
+message GetGroceryListItemRequest {
+  int64 id = 1;
+
+  View view = 2;
+
+  enum View {
+    VIEW_UNSPECIFIED = 0;
+
+    BASIC = 1;
+
+    WITH_EDGE_IDS = 2;
+  }
+}
+
+message UpdateGroceryListItemRequest {
+  GroceryListItem grocery_list_item = 1;
+}
+
+message DeleteGroceryListItemRequest {
+  int64 id = 1;
+}
+
+message ListGroceryListItemRequest {
+  int32 page_size = 1;
+
+  string page_token = 2;
+
+  View view = 3;
+
+  enum View {
+    VIEW_UNSPECIFIED = 0;
+
+    BASIC = 1;
+
+    WITH_EDGE_IDS = 2;
+  }
+}
+
+message ListGroceryListItemResponse {
+  repeated GroceryListItem grocery_list_item_list = 1;
+
+  string next_page_token = 2;
+}
+
+message BatchCreateGroceryListItemsRequest {
+  repeated CreateGroceryListItemRequest requests = 1;
+}
+
+message BatchCreateGroceryListItemsResponse {
+  repeated GroceryListItem grocery_list_items = 1;
+}
+
 message GroceryListShare {
   int64 id = 1;
 
@@ -145,6 +483,62 @@ message GroceryListShare {
   User user = 4;
 
   GroceryList grocery_list = 5;
+}
+
+message CreateGroceryListShareRequest {
+  GroceryListShare grocery_list_share = 1;
+}
+
+message GetGroceryListShareRequest {
+  int64 id = 1;
+
+  View view = 2;
+
+  enum View {
+    VIEW_UNSPECIFIED = 0;
+
+    BASIC = 1;
+
+    WITH_EDGE_IDS = 2;
+  }
+}
+
+message UpdateGroceryListShareRequest {
+  GroceryListShare grocery_list_share = 1;
+}
+
+message DeleteGroceryListShareRequest {
+  int64 id = 1;
+}
+
+message ListGroceryListShareRequest {
+  int32 page_size = 1;
+
+  string page_token = 2;
+
+  View view = 3;
+
+  enum View {
+    VIEW_UNSPECIFIED = 0;
+
+    BASIC = 1;
+
+    WITH_EDGE_IDS = 2;
+  }
+}
+
+message ListGroceryListShareResponse {
+  repeated GroceryListShare grocery_list_share_list = 1;
+
+  string next_page_token = 2;
+}
+
+message BatchCreateGroceryListSharesRequest {
+  repeated CreateGroceryListShareRequest requests = 1;
+}
+
+message BatchCreateGroceryListSharesResponse {
+  repeated GroceryListShare grocery_list_shares = 1;
 }
 
 message Movie {
@@ -158,10 +552,66 @@ message Movie {
 
   google.protobuf.Timestamp created_at = 5;
 
-  MovieList movie_list = 6;
+  MovieCollection movie_collection = 6;
 }
 
-message MovieList {
+message CreateMovieRequest {
+  Movie movie = 1;
+}
+
+message GetMovieRequest {
+  int64 id = 1;
+
+  View view = 2;
+
+  enum View {
+    VIEW_UNSPECIFIED = 0;
+
+    BASIC = 1;
+
+    WITH_EDGE_IDS = 2;
+  }
+}
+
+message UpdateMovieRequest {
+  Movie movie = 1;
+}
+
+message DeleteMovieRequest {
+  int64 id = 1;
+}
+
+message ListMovieRequest {
+  int32 page_size = 1;
+
+  string page_token = 2;
+
+  View view = 3;
+
+  enum View {
+    VIEW_UNSPECIFIED = 0;
+
+    BASIC = 1;
+
+    WITH_EDGE_IDS = 2;
+  }
+}
+
+message ListMovieResponse {
+  repeated Movie movie_list = 1;
+
+  string next_page_token = 2;
+}
+
+message BatchCreateMoviesRequest {
+  repeated CreateMovieRequest requests = 1;
+}
+
+message BatchCreateMoviesResponse {
+  repeated Movie movies = 1;
+}
+
+message MovieCollection {
   int64 id = 1;
 
   string name = 2;
@@ -176,10 +626,66 @@ message MovieList {
 
   User owner = 7;
 
-  repeated MovieListShare movie_list_shares = 8;
+  repeated MovieCollectionShare movie_collection_shares = 8;
 }
 
-message MovieListShare {
+message CreateMovieCollectionRequest {
+  MovieCollection movie_collection = 1;
+}
+
+message GetMovieCollectionRequest {
+  int64 id = 1;
+
+  View view = 2;
+
+  enum View {
+    VIEW_UNSPECIFIED = 0;
+
+    BASIC = 1;
+
+    WITH_EDGE_IDS = 2;
+  }
+}
+
+message UpdateMovieCollectionRequest {
+  MovieCollection movie_collection = 1;
+}
+
+message DeleteMovieCollectionRequest {
+  int64 id = 1;
+}
+
+message ListMovieCollectionRequest {
+  int32 page_size = 1;
+
+  string page_token = 2;
+
+  View view = 3;
+
+  enum View {
+    VIEW_UNSPECIFIED = 0;
+
+    BASIC = 1;
+
+    WITH_EDGE_IDS = 2;
+  }
+}
+
+message ListMovieCollectionResponse {
+  repeated MovieCollection movie_collection_list = 1;
+
+  string next_page_token = 2;
+}
+
+message BatchCreateMovieCollectionsRequest {
+  repeated CreateMovieCollectionRequest requests = 1;
+}
+
+message BatchCreateMovieCollectionsResponse {
+  repeated MovieCollection movie_collections = 1;
+}
+
+message MovieCollectionShare {
   int64 id = 1;
 
   bool can_edit = 2;
@@ -188,7 +694,63 @@ message MovieListShare {
 
   User user = 4;
 
-  MovieList movie_list = 5;
+  MovieCollection movie_collection = 5;
+}
+
+message CreateMovieCollectionShareRequest {
+  MovieCollectionShare movie_collection_share = 1;
+}
+
+message GetMovieCollectionShareRequest {
+  int64 id = 1;
+
+  View view = 2;
+
+  enum View {
+    VIEW_UNSPECIFIED = 0;
+
+    BASIC = 1;
+
+    WITH_EDGE_IDS = 2;
+  }
+}
+
+message UpdateMovieCollectionShareRequest {
+  MovieCollectionShare movie_collection_share = 1;
+}
+
+message DeleteMovieCollectionShareRequest {
+  int64 id = 1;
+}
+
+message ListMovieCollectionShareRequest {
+  int32 page_size = 1;
+
+  string page_token = 2;
+
+  View view = 3;
+
+  enum View {
+    VIEW_UNSPECIFIED = 0;
+
+    BASIC = 1;
+
+    WITH_EDGE_IDS = 2;
+  }
+}
+
+message ListMovieCollectionShareResponse {
+  repeated MovieCollectionShare movie_collection_share_list = 1;
+
+  string next_page_token = 2;
+}
+
+message BatchCreateMovieCollectionSharesRequest {
+  repeated CreateMovieCollectionShareRequest requests = 1;
+}
+
+message BatchCreateMovieCollectionSharesResponse {
+  repeated MovieCollectionShare movie_collection_shares = 1;
 }
 
 message User {
@@ -218,7 +780,217 @@ message User {
 
   repeated GroceryListShare grocery_list_shares = 13;
 
-  repeated MovieList movie_lists = 14;
+  repeated MovieCollection movie_collections = 14;
 
-  repeated MovieListShare movie_list_shares = 15;
+  repeated MovieCollectionShare movie_collection_shares = 15;
+}
+
+message CreateUserRequest {
+  User user = 1;
+}
+
+message GetUserRequest {
+  int64 id = 1;
+
+  View view = 2;
+
+  enum View {
+    VIEW_UNSPECIFIED = 0;
+
+    BASIC = 1;
+
+    WITH_EDGE_IDS = 2;
+  }
+}
+
+message UpdateUserRequest {
+  User user = 1;
+}
+
+message DeleteUserRequest {
+  int64 id = 1;
+}
+
+message ListUserRequest {
+  int32 page_size = 1;
+
+  string page_token = 2;
+
+  View view = 3;
+
+  enum View {
+    VIEW_UNSPECIFIED = 0;
+
+    BASIC = 1;
+
+    WITH_EDGE_IDS = 2;
+  }
+}
+
+message ListUserResponse {
+  repeated User user_list = 1;
+
+  string next_page_token = 2;
+}
+
+message BatchCreateUsersRequest {
+  repeated CreateUserRequest requests = 1;
+}
+
+message BatchCreateUsersResponse {
+  repeated User users = 1;
+}
+
+service AmazonListService {
+  rpc Create ( CreateAmazonListRequest ) returns ( AmazonList );
+
+  rpc Get ( GetAmazonListRequest ) returns ( AmazonList );
+
+  rpc Update ( UpdateAmazonListRequest ) returns ( AmazonList );
+
+  rpc Delete ( DeleteAmazonListRequest ) returns ( google.protobuf.Empty );
+
+  rpc List ( ListAmazonListRequest ) returns ( ListAmazonListResponse );
+
+  rpc BatchCreate ( BatchCreateAmazonListsRequest ) returns ( BatchCreateAmazonListsResponse );
+}
+
+service AmazonOrderService {
+  rpc Create ( CreateAmazonOrderRequest ) returns ( AmazonOrder );
+
+  rpc Get ( GetAmazonOrderRequest ) returns ( AmazonOrder );
+
+  rpc Update ( UpdateAmazonOrderRequest ) returns ( AmazonOrder );
+
+  rpc Delete ( DeleteAmazonOrderRequest ) returns ( google.protobuf.Empty );
+
+  rpc List ( ListAmazonOrderRequest ) returns ( ListAmazonOrderResponse );
+
+  rpc BatchCreate ( BatchCreateAmazonOrdersRequest ) returns ( BatchCreateAmazonOrdersResponse );
+}
+
+service AmazonShareService {
+  rpc Create ( CreateAmazonShareRequest ) returns ( AmazonShare );
+
+  rpc Get ( GetAmazonShareRequest ) returns ( AmazonShare );
+
+  rpc Update ( UpdateAmazonShareRequest ) returns ( AmazonShare );
+
+  rpc Delete ( DeleteAmazonShareRequest ) returns ( google.protobuf.Empty );
+
+  rpc List ( ListAmazonShareRequest ) returns ( ListAmazonShareResponse );
+
+  rpc BatchCreate ( BatchCreateAmazonSharesRequest ) returns ( BatchCreateAmazonSharesResponse );
+}
+
+service DrinkService {
+  rpc Create ( CreateDrinkRequest ) returns ( Drink );
+
+  rpc Get ( GetDrinkRequest ) returns ( Drink );
+
+  rpc Update ( UpdateDrinkRequest ) returns ( Drink );
+
+  rpc Delete ( DeleteDrinkRequest ) returns ( google.protobuf.Empty );
+
+  rpc List ( ListDrinkRequest ) returns ( ListDrinkResponse );
+
+  rpc BatchCreate ( BatchCreateDrinksRequest ) returns ( BatchCreateDrinksResponse );
+}
+
+service GroceryListService {
+  rpc Create ( CreateGroceryListRequest ) returns ( GroceryList );
+
+  rpc Get ( GetGroceryListRequest ) returns ( GroceryList );
+
+  rpc Update ( UpdateGroceryListRequest ) returns ( GroceryList );
+
+  rpc Delete ( DeleteGroceryListRequest ) returns ( google.protobuf.Empty );
+
+  rpc List ( ListGroceryListRequest ) returns ( ListGroceryListResponse );
+
+  rpc BatchCreate ( BatchCreateGroceryListsRequest ) returns ( BatchCreateGroceryListsResponse );
+}
+
+service GroceryListItemService {
+  rpc Create ( CreateGroceryListItemRequest ) returns ( GroceryListItem );
+
+  rpc Get ( GetGroceryListItemRequest ) returns ( GroceryListItem );
+
+  rpc Update ( UpdateGroceryListItemRequest ) returns ( GroceryListItem );
+
+  rpc Delete ( DeleteGroceryListItemRequest ) returns ( google.protobuf.Empty );
+
+  rpc List ( ListGroceryListItemRequest ) returns ( ListGroceryListItemResponse );
+
+  rpc BatchCreate ( BatchCreateGroceryListItemsRequest ) returns ( BatchCreateGroceryListItemsResponse );
+}
+
+service GroceryListShareService {
+  rpc Create ( CreateGroceryListShareRequest ) returns ( GroceryListShare );
+
+  rpc Get ( GetGroceryListShareRequest ) returns ( GroceryListShare );
+
+  rpc Update ( UpdateGroceryListShareRequest ) returns ( GroceryListShare );
+
+  rpc Delete ( DeleteGroceryListShareRequest ) returns ( google.protobuf.Empty );
+
+  rpc List ( ListGroceryListShareRequest ) returns ( ListGroceryListShareResponse );
+
+  rpc BatchCreate ( BatchCreateGroceryListSharesRequest ) returns ( BatchCreateGroceryListSharesResponse );
+}
+
+service MovieService {
+  rpc Create ( CreateMovieRequest ) returns ( Movie );
+
+  rpc Get ( GetMovieRequest ) returns ( Movie );
+
+  rpc Update ( UpdateMovieRequest ) returns ( Movie );
+
+  rpc Delete ( DeleteMovieRequest ) returns ( google.protobuf.Empty );
+
+  rpc List ( ListMovieRequest ) returns ( ListMovieResponse );
+
+  rpc BatchCreate ( BatchCreateMoviesRequest ) returns ( BatchCreateMoviesResponse );
+}
+
+service MovieCollectionService {
+  rpc Create ( CreateMovieCollectionRequest ) returns ( MovieCollection );
+
+  rpc Get ( GetMovieCollectionRequest ) returns ( MovieCollection );
+
+  rpc Update ( UpdateMovieCollectionRequest ) returns ( MovieCollection );
+
+  rpc Delete ( DeleteMovieCollectionRequest ) returns ( google.protobuf.Empty );
+
+  rpc List ( ListMovieCollectionRequest ) returns ( ListMovieCollectionResponse );
+
+  rpc BatchCreate ( BatchCreateMovieCollectionsRequest ) returns ( BatchCreateMovieCollectionsResponse );
+}
+
+service MovieCollectionShareService {
+  rpc Create ( CreateMovieCollectionShareRequest ) returns ( MovieCollectionShare );
+
+  rpc Get ( GetMovieCollectionShareRequest ) returns ( MovieCollectionShare );
+
+  rpc Update ( UpdateMovieCollectionShareRequest ) returns ( MovieCollectionShare );
+
+  rpc Delete ( DeleteMovieCollectionShareRequest ) returns ( google.protobuf.Empty );
+
+  rpc List ( ListMovieCollectionShareRequest ) returns ( ListMovieCollectionShareResponse );
+
+  rpc BatchCreate ( BatchCreateMovieCollectionSharesRequest ) returns ( BatchCreateMovieCollectionSharesResponse );
+}
+
+service UserService {
+  rpc Create ( CreateUserRequest ) returns ( User );
+
+  rpc Get ( GetUserRequest ) returns ( User );
+
+  rpc Update ( UpdateUserRequest ) returns ( User );
+
+  rpc Delete ( DeleteUserRequest ) returns ( google.protobuf.Empty );
+
+  rpc List ( ListUserRequest ) returns ( ListUserResponse );
+
+  rpc BatchCreate ( BatchCreateUsersRequest ) returns ( BatchCreateUsersResponse );
 }

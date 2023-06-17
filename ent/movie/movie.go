@@ -22,17 +22,17 @@ const (
 	FieldWatched = "watched"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
-	// EdgeMovieList holds the string denoting the movie_list edge name in mutations.
-	EdgeMovieList = "movie_list"
+	// EdgeMovieCollection holds the string denoting the movie_collection edge name in mutations.
+	EdgeMovieCollection = "movie_collection"
 	// Table holds the table name of the movie in the database.
 	Table = "movies"
-	// MovieListTable is the table that holds the movie_list relation/edge.
-	MovieListTable = "movies"
-	// MovieListInverseTable is the table name for the MovieList entity.
-	// It exists in this package in order to avoid circular dependency with the "movielist" package.
-	MovieListInverseTable = "movie_lists"
-	// MovieListColumn is the table column denoting the movie_list relation/edge.
-	MovieListColumn = "movie_list_movies"
+	// MovieCollectionTable is the table that holds the movie_collection relation/edge.
+	MovieCollectionTable = "movies"
+	// MovieCollectionInverseTable is the table name for the MovieCollection entity.
+	// It exists in this package in order to avoid circular dependency with the "moviecollection" package.
+	MovieCollectionInverseTable = "movie_collections"
+	// MovieCollectionColumn is the table column denoting the movie_collection relation/edge.
+	MovieCollectionColumn = "movie_collection_movies"
 )
 
 // Columns holds all SQL columns for movie fields.
@@ -47,7 +47,7 @@ var Columns = []string{
 // ForeignKeys holds the SQL foreign-keys that are owned by the "movies"
 // table and are not defined as standalone fields in the schema.
 var ForeignKeys = []string{
-	"movie_list_movies",
+	"movie_collection_movies",
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -102,16 +102,16 @@ func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
 }
 
-// ByMovieListField orders the results by movie_list field.
-func ByMovieListField(field string, opts ...sql.OrderTermOption) OrderOption {
+// ByMovieCollectionField orders the results by movie_collection field.
+func ByMovieCollectionField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newMovieListStep(), sql.OrderByField(field, opts...))
+		sqlgraph.OrderByNeighborTerms(s, newMovieCollectionStep(), sql.OrderByField(field, opts...))
 	}
 }
-func newMovieListStep() *sqlgraph.Step {
+func newMovieCollectionStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(MovieListInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, true, MovieListTable, MovieListColumn),
+		sqlgraph.To(MovieCollectionInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, MovieCollectionTable, MovieCollectionColumn),
 	)
 }

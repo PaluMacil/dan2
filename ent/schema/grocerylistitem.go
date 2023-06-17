@@ -52,5 +52,6 @@ func (GroceryListItem) Edges() []ent.Edge {
 func (GroceryListItem) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		entproto.Message(),
+		entproto.Service(),
 	}
 }

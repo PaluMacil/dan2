@@ -28,10 +28,10 @@ type Tx struct {
 	GroceryListShare *GroceryListShareClient
 	// Movie is the client for interacting with the Movie builders.
 	Movie *MovieClient
-	// MovieList is the client for interacting with the MovieList builders.
-	MovieList *MovieListClient
-	// MovieListShare is the client for interacting with the MovieListShare builders.
-	MovieListShare *MovieListShareClient
+	// MovieCollection is the client for interacting with the MovieCollection builders.
+	MovieCollection *MovieCollectionClient
+	// MovieCollectionShare is the client for interacting with the MovieCollectionShare builders.
+	MovieCollectionShare *MovieCollectionShareClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 
@@ -173,8 +173,8 @@ func (tx *Tx) init() {
 	tx.GroceryListItem = NewGroceryListItemClient(tx.config)
 	tx.GroceryListShare = NewGroceryListShareClient(tx.config)
 	tx.Movie = NewMovieClient(tx.config)
-	tx.MovieList = NewMovieListClient(tx.config)
-	tx.MovieListShare = NewMovieListShareClient(tx.config)
+	tx.MovieCollection = NewMovieCollectionClient(tx.config)
+	tx.MovieCollectionShare = NewMovieCollectionShareClient(tx.config)
 	tx.User = NewUserClient(tx.config)
 }
 

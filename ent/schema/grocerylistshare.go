@@ -47,5 +47,6 @@ func (GroceryListShare) Edges() []ent.Edge {
 func (GroceryListShare) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		entproto.Message(),
+		entproto.Service(),
 	}
 }

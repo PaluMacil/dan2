@@ -38,10 +38,10 @@ const (
 	EdgeGroceryLists = "grocery_lists"
 	// EdgeGroceryListShares holds the string denoting the grocery_list_shares edge name in mutations.
 	EdgeGroceryListShares = "grocery_list_shares"
-	// EdgeMovieLists holds the string denoting the movie_lists edge name in mutations.
-	EdgeMovieLists = "movie_lists"
-	// EdgeMovieListShares holds the string denoting the movie_list_shares edge name in mutations.
-	EdgeMovieListShares = "movie_list_shares"
+	// EdgeMovieCollections holds the string denoting the movie_collections edge name in mutations.
+	EdgeMovieCollections = "movie_collections"
+	// EdgeMovieCollectionShares holds the string denoting the movie_collection_shares edge name in mutations.
+	EdgeMovieCollectionShares = "movie_collection_shares"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// AmazonSharesTable is the table that holds the amazon_shares relation/edge.
@@ -77,20 +77,20 @@ const (
 	GroceryListSharesInverseTable = "grocery_list_shares"
 	// GroceryListSharesColumn is the table column denoting the grocery_list_shares relation/edge.
 	GroceryListSharesColumn = "user_grocery_list_shares"
-	// MovieListsTable is the table that holds the movie_lists relation/edge.
-	MovieListsTable = "movie_lists"
-	// MovieListsInverseTable is the table name for the MovieList entity.
-	// It exists in this package in order to avoid circular dependency with the "movielist" package.
-	MovieListsInverseTable = "movie_lists"
-	// MovieListsColumn is the table column denoting the movie_lists relation/edge.
-	MovieListsColumn = "user_movie_lists"
-	// MovieListSharesTable is the table that holds the movie_list_shares relation/edge.
-	MovieListSharesTable = "movie_list_shares"
-	// MovieListSharesInverseTable is the table name for the MovieListShare entity.
-	// It exists in this package in order to avoid circular dependency with the "movielistshare" package.
-	MovieListSharesInverseTable = "movie_list_shares"
-	// MovieListSharesColumn is the table column denoting the movie_list_shares relation/edge.
-	MovieListSharesColumn = "user_movie_list_shares"
+	// MovieCollectionsTable is the table that holds the movie_collections relation/edge.
+	MovieCollectionsTable = "movie_collections"
+	// MovieCollectionsInverseTable is the table name for the MovieCollection entity.
+	// It exists in this package in order to avoid circular dependency with the "moviecollection" package.
+	MovieCollectionsInverseTable = "movie_collections"
+	// MovieCollectionsColumn is the table column denoting the movie_collections relation/edge.
+	MovieCollectionsColumn = "user_movie_collections"
+	// MovieCollectionSharesTable is the table that holds the movie_collection_shares relation/edge.
+	MovieCollectionSharesTable = "movie_collection_shares"
+	// MovieCollectionSharesInverseTable is the table name for the MovieCollectionShare entity.
+	// It exists in this package in order to avoid circular dependency with the "moviecollectionshare" package.
+	MovieCollectionSharesInverseTable = "movie_collection_shares"
+	// MovieCollectionSharesColumn is the table column denoting the movie_collection_shares relation/edge.
+	MovieCollectionSharesColumn = "user_movie_collection_shares"
 )
 
 // Columns holds all SQL columns for user fields.
@@ -245,31 +245,31 @@ func ByGroceryListShares(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption
 	}
 }
 
-// ByMovieListsCount orders the results by movie_lists count.
-func ByMovieListsCount(opts ...sql.OrderTermOption) OrderOption {
+// ByMovieCollectionsCount orders the results by movie_collections count.
+func ByMovieCollectionsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newMovieListsStep(), opts...)
+		sqlgraph.OrderByNeighborsCount(s, newMovieCollectionsStep(), opts...)
 	}
 }
 
-// ByMovieLists orders the results by movie_lists terms.
-func ByMovieLists(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+// ByMovieCollections orders the results by movie_collections terms.
+func ByMovieCollections(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newMovieListsStep(), append([]sql.OrderTerm{term}, terms...)...)
+		sqlgraph.OrderByNeighborTerms(s, newMovieCollectionsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
 
-// ByMovieListSharesCount orders the results by movie_list_shares count.
-func ByMovieListSharesCount(opts ...sql.OrderTermOption) OrderOption {
+// ByMovieCollectionSharesCount orders the results by movie_collection_shares count.
+func ByMovieCollectionSharesCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newMovieListSharesStep(), opts...)
+		sqlgraph.OrderByNeighborsCount(s, newMovieCollectionSharesStep(), opts...)
 	}
 }
 
-// ByMovieListShares orders the results by movie_list_shares terms.
-func ByMovieListShares(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+// ByMovieCollectionShares orders the results by movie_collection_shares terms.
+func ByMovieCollectionShares(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newMovieListSharesStep(), append([]sql.OrderTerm{term}, terms...)...)
+		sqlgraph.OrderByNeighborTerms(s, newMovieCollectionSharesStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
 func newAmazonSharesStep() *sqlgraph.Step {
@@ -307,17 +307,17 @@ func newGroceryListSharesStep() *sqlgraph.Step {
 		sqlgraph.Edge(sqlgraph.O2M, false, GroceryListSharesTable, GroceryListSharesColumn),
 	)
 }
-func newMovieListsStep() *sqlgraph.Step {
+func newMovieCollectionsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(MovieListsInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, MovieListsTable, MovieListsColumn),
+		sqlgraph.To(MovieCollectionsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, MovieCollectionsTable, MovieCollectionsColumn),
 	)
 }
-func newMovieListSharesStep() *sqlgraph.Step {
+func newMovieCollectionSharesStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(MovieListSharesInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, MovieListSharesTable, MovieListSharesColumn),
+		sqlgraph.To(MovieCollectionSharesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, MovieCollectionSharesTable, MovieCollectionSharesColumn),
 	)
 }

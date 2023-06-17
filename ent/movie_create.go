@@ -11,7 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/PaluMacil/dan2/ent/movie"
-	"github.com/PaluMacil/dan2/ent/movielist"
+	"github.com/PaluMacil/dan2/ent/moviecollection"
 )
 
 // MovieCreate is the builder for creating a Movie entity.
@@ -69,23 +69,23 @@ func (mc *MovieCreate) SetNillableCreatedAt(t *time.Time) *MovieCreate {
 	return mc
 }
 
-// SetMovieListID sets the "movie_list" edge to the MovieList entity by ID.
-func (mc *MovieCreate) SetMovieListID(id int) *MovieCreate {
-	mc.mutation.SetMovieListID(id)
+// SetMovieCollectionID sets the "movie_collection" edge to the MovieCollection entity by ID.
+func (mc *MovieCreate) SetMovieCollectionID(id int) *MovieCreate {
+	mc.mutation.SetMovieCollectionID(id)
 	return mc
 }
 
-// SetNillableMovieListID sets the "movie_list" edge to the MovieList entity by ID if the given value is not nil.
-func (mc *MovieCreate) SetNillableMovieListID(id *int) *MovieCreate {
+// SetNillableMovieCollectionID sets the "movie_collection" edge to the MovieCollection entity by ID if the given value is not nil.
+func (mc *MovieCreate) SetNillableMovieCollectionID(id *int) *MovieCreate {
 	if id != nil {
-		mc = mc.SetMovieListID(*id)
+		mc = mc.SetMovieCollectionID(*id)
 	}
 	return mc
 }
 
-// SetMovieList sets the "movie_list" edge to the MovieList entity.
-func (mc *MovieCreate) SetMovieList(m *MovieList) *MovieCreate {
-	return mc.SetMovieListID(m.ID)
+// SetMovieCollection sets the "movie_collection" edge to the MovieCollection entity.
+func (mc *MovieCreate) SetMovieCollection(m *MovieCollection) *MovieCreate {
+	return mc.SetMovieCollectionID(m.ID)
 }
 
 // Mutation returns the MovieMutation object of the builder.
@@ -193,21 +193,21 @@ func (mc *MovieCreate) createSpec() (*Movie, *sqlgraph.CreateSpec) {
 		_spec.SetField(movie.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
-	if nodes := mc.mutation.MovieListIDs(); len(nodes) > 0 {
+	if nodes := mc.mutation.MovieCollectionIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   movie.MovieListTable,
-			Columns: []string{movie.MovieListColumn},
+			Table:   movie.MovieCollectionTable,
+			Columns: []string{movie.MovieCollectionColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(movielist.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(moviecollection.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.movie_list_movies = &nodes[0]
+		_node.movie_collection_movies = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

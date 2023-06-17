@@ -10,7 +10,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/PaluMacil/dan2/ent/movie"
-	"github.com/PaluMacil/dan2/ent/movielist"
+	"github.com/PaluMacil/dan2/ent/moviecollection"
 )
 
 // Movie is the model entity for the Movie schema.
@@ -28,31 +28,31 @@ type Movie struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the MovieQuery when eager-loading is set.
-	Edges             MovieEdges `json:"edges"`
-	movie_list_movies *int
-	selectValues      sql.SelectValues
+	Edges                   MovieEdges `json:"edges"`
+	movie_collection_movies *int
+	selectValues            sql.SelectValues
 }
 
 // MovieEdges holds the relations/edges for other nodes in the graph.
 type MovieEdges struct {
-	// MovieList holds the value of the movie_list edge.
-	MovieList *MovieList `json:"movie_list,omitempty"`
+	// MovieCollection holds the value of the movie_collection edge.
+	MovieCollection *MovieCollection `json:"movie_collection,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [1]bool
 }
 
-// MovieListOrErr returns the MovieList value or an error if the edge
+// MovieCollectionOrErr returns the MovieCollection value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e MovieEdges) MovieListOrErr() (*MovieList, error) {
+func (e MovieEdges) MovieCollectionOrErr() (*MovieCollection, error) {
 	if e.loadedTypes[0] {
-		if e.MovieList == nil {
+		if e.MovieCollection == nil {
 			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: movielist.Label}
+			return nil, &NotFoundError{label: moviecollection.Label}
 		}
-		return e.MovieList, nil
+		return e.MovieCollection, nil
 	}
-	return nil, &NotLoadedError{edge: "movie_list"}
+	return nil, &NotLoadedError{edge: "movie_collection"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -68,7 +68,7 @@ func (*Movie) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullString)
 		case movie.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
-		case movie.ForeignKeys[0]: // movie_list_movies
+		case movie.ForeignKeys[0]: // movie_collection_movies
 			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -117,10 +117,10 @@ func (m *Movie) assignValues(columns []string, values []any) error {
 			}
 		case movie.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field movie_list_movies", value)
+				return fmt.Errorf("unexpected type %T for edge-field movie_collection_movies", value)
 			} else if value.Valid {
-				m.movie_list_movies = new(int)
-				*m.movie_list_movies = int(value.Int64)
+				m.movie_collection_movies = new(int)
+				*m.movie_collection_movies = int(value.Int64)
 			}
 		default:
 			m.selectValues.Set(columns[i], values[i])
@@ -135,9 +135,9 @@ func (m *Movie) Value(name string) (ent.Value, error) {
 	return m.selectValues.Get(name)
 }
 
-// QueryMovieList queries the "movie_list" edge of the Movie entity.
-func (m *Movie) QueryMovieList() *MovieListQuery {
-	return NewMovieClient(m.config).QueryMovieList(m)
+// QueryMovieCollection queries the "movie_collection" edge of the Movie entity.
+func (m *Movie) QueryMovieCollection() *MovieCollectionQuery {
+	return NewMovieClient(m.config).QueryMovieCollection(m)
 }
 
 // Update returns a builder for updating this Movie.
