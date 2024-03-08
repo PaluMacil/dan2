@@ -6,9 +6,9 @@ import (
 	"github.com/PaluMacil/dan2/ent"
 	"github.com/PaluMacil/dan2/ent/proto/entpb"
 	"github.com/soheilhy/cmux"
-	"golang.org/x/exp/slog"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
+	"log/slog"
 	"net"
 	"net/http"
 )

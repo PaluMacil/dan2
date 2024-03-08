@@ -9,7 +9,7 @@ import (
 	"github.com/PaluMacil/dan2/database"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/spf13/cobra"
-	"golang.org/x/exp/slog"
+	"log/slog"
 	"os"
 )
 

@@ -3,7 +3,7 @@ package applogger
 import (
 	"github.com/PaluMacil/dan2/config"
 	"github.com/lmittmann/tint"
-	"golang.org/x/exp/slog"
+	"log/slog"
 	"os"
 )
 

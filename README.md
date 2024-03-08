@@ -4,7 +4,7 @@ An experiment in htmx and templ.
 
 ## Generate
 
-When making changes that generate code, it can help to run `go get -u ./...` ro make sure deps of installed code are present.
+When making changes that generate code, it can help to run `go get -u ./...` to make sure deps of installed code are present.
 
 ### templ
 
